@@ -1,0 +1,35 @@
+---
+interface Props {
+  headings: {
+    depth: number;
+    slug: string;
+    text: string;
+  }[];
+}
+
+const { headings } = Astro.props;
+
+// Only show h2 and h3 headings
+const filteredHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
+
+if (filteredHeadings.length === 0) return;
+---
+
+<nav class="bg-surface-elevated rounded-xl p-6" aria-label="Table of contents">
+  <h2 class="text-sm font-semibold text-text-primary uppercase tracking-wider mb-4">
+    On this page
+  </h2>
+
+  <ul class="space-y-2">
+    {filteredHeadings.map((heading) => (
+      <li class={heading.depth === 3 ? 'pl-4' : ''}>
+        <a
+          href={`#${heading.slug}`}
+          class="text-sm text-text-secondary hover:text-accent transition-colors leading-snug block py-0.5"
+        >
+          {heading.text}
+        </a>
+      </li>
+    ))}
+  </ul>
+</nav>

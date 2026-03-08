@@ -1,0 +1,197 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Container from '../components/ui/Container.astro';
+import Breadcrumbs from '../components/common/Breadcrumbs.astro';
+import { SITE } from '../lib/constants';
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Privacy Policy' },
+];
+
+const lastUpdated = '8 March 2026';
+---
+
+<BaseLayout title="Privacy Policy | Econopedia 101" description="Read the Econopedia 101 privacy policy. Learn how we collect, use, and protect your personal data.">
+  <Container>
+    <div class="py-8">
+      <Breadcrumbs items={breadcrumbs} />
+    </div>
+
+    <article class="max-w-3xl pb-16">
+      <header class="mb-10">
+        <h1 class="font-serif text-4xl lg:text-5xl font-semibold text-text-primary mb-3">
+          Privacy Policy
+        </h1>
+        <p class="text-text-muted text-sm">
+          Last updated: {lastUpdated}
+        </p>
+      </header>
+
+      <div class="prose prose-lg max-w-none text-text-secondary space-y-8">
+        <!-- Introduction -->
+        <section>
+          <p>
+            At {SITE.name}, your privacy is important to us. This Privacy Policy explains how we collect,
+            use, disclose, and safeguard your information when you visit our website at{' '}
+            <a href={SITE.url} class="text-accent hover:underline">{SITE.url}</a>.
+            Please read this policy carefully. If you do not agree with the terms of this policy,
+            please do not access the site.
+          </p>
+        </section>
+
+        <!-- Data Collection -->
+        <section>
+          <h2 class="font-serif text-2xl font-semibold text-text-primary mb-4">
+            Information We Collect
+          </h2>
+          <p class="mb-4">We may collect information about you in a variety of ways, including:</p>
+          <ul class="list-disc pl-6 space-y-2">
+            <li>
+              <strong class="text-text-primary">Personal Data:</strong> When you voluntarily provide it, such as
+              your name and email address when subscribing to our newsletter or submitting a contact form.
+            </li>
+            <li>
+              <strong class="text-text-primary">Usage Data:</strong> Information automatically collected when
+              you visit our site, such as your IP address, browser type, operating system, referring URLs,
+              pages viewed, and the dates and times of your visits.
+            </li>
+            <li>
+              <strong class="text-text-primary">Device Data:</strong> Information about the device you use to
+              access our site, including device type, screen resolution, and language preferences.
+            </li>
+          </ul>
+        </section>
+
+        <!-- Cookies -->
+        <section>
+          <h2 class="font-serif text-2xl font-semibold text-text-primary mb-4">
+            Cookies and Tracking Technologies
+          </h2>
+          <p class="mb-4">
+            We may use cookies, web beacons, tracking pixels, and other tracking technologies
+            to help customise the site and improve your experience. You can instruct your browser
+            to refuse all cookies or to indicate when a cookie is being sent. However, if you do not
+            accept cookies, you may not be able to use some parts of our site.
+          </p>
+          <p>
+            Types of cookies we may use:
+          </p>
+          <ul class="list-disc pl-6 space-y-2 mt-2">
+            <li><strong class="text-text-primary">Essential cookies:</strong> Necessary for the site to function properly.</li>
+            <li><strong class="text-text-primary">Analytics cookies:</strong> Help us understand how visitors interact with the site.</li>
+            <li><strong class="text-text-primary">Preference cookies:</strong> Remember your settings and preferences.</li>
+          </ul>
+        </section>
+
+        <!-- Analytics -->
+        <section>
+          <h2 class="font-serif text-2xl font-semibold text-text-primary mb-4">
+            Analytics
+          </h2>
+          <p>
+            We may use third-party analytics services such as Microsoft Clarity and Google Analytics
+            to monitor and analyse web traffic. These services may collect and use data about your
+            browsing behaviour to help us improve our site. The data collected is generally aggregated
+            and anonymised where possible.
+          </p>
+        </section>
+
+        <!-- Third-Party Services -->
+        <section>
+          <h2 class="font-serif text-2xl font-semibold text-text-primary mb-4">
+            Third-Party Services
+          </h2>
+          <p class="mb-4">
+            Our site may contain links to third-party websites and services. We are not responsible
+            for the privacy practices of those third parties. We encourage you to review their privacy
+            policies before providing any information.
+          </p>
+          <p>
+            We may use third-party services for newsletter delivery, form processing, and content
+            delivery. These providers may have access to your personal information only to perform
+            these tasks on our behalf and are obligated not to disclose or use it for any other purpose.
+          </p>
+        </section>
+
+        <!-- Affiliate Disclosure -->
+        <section>
+          <h2 class="font-serif text-2xl font-semibold text-text-primary mb-4">
+            Affiliate Links
+          </h2>
+          <p>
+            Some articles on {SITE.name} may contain affiliate links. This means we may earn a small
+            commission if you click through and make a purchase, at no additional cost to you.
+            Affiliate partnerships do not influence our editorial content or recommendations.
+            All opinions expressed are our own.
+          </p>
+        </section>
+
+        <!-- User Rights -->
+        <section>
+          <h2 class="font-serif text-2xl font-semibold text-text-primary mb-4">
+            Your Rights
+          </h2>
+          <p class="mb-4">
+            Depending on your location, you may have the following rights regarding your personal data:
+          </p>
+          <ul class="list-disc pl-6 space-y-2">
+            <li>The right to access the personal data we hold about you.</li>
+            <li>The right to request correction of inaccurate personal data.</li>
+            <li>The right to request deletion of your personal data.</li>
+            <li>The right to withdraw consent at any time where we rely on consent to process your data.</li>
+            <li>The right to opt out of marketing communications.</li>
+            <li>The right to data portability.</li>
+          </ul>
+          <p class="mt-4">
+            To exercise any of these rights, please contact us using the details below.
+          </p>
+        </section>
+
+        <!-- Children -->
+        <section>
+          <h2 class="font-serif text-2xl font-semibold text-text-primary mb-4">
+            Children's Privacy
+          </h2>
+          <p>
+            Our site is intended for a general audience and is not directed at children under 13.
+            We do not knowingly collect personal information from children. If you believe we have
+            inadvertently collected data from a child, please contact us so we can promptly remove it.
+          </p>
+        </section>
+
+        <!-- Changes -->
+        <section>
+          <h2 class="font-serif text-2xl font-semibold text-text-primary mb-4">
+            Changes to This Policy
+          </h2>
+          <p>
+            We may update this Privacy Policy from time to time. We will notify you of any changes
+            by posting the new policy on this page and updating the "Last updated" date. You are
+            advised to review this policy periodically for any changes.
+          </p>
+        </section>
+
+        <!-- Contact -->
+        <section>
+          <h2 class="font-serif text-2xl font-semibold text-text-primary mb-4">
+            Contact Us
+          </h2>
+          <p>
+            If you have any questions or concerns about this Privacy Policy, please contact us at:
+          </p>
+          <ul class="list-none mt-4 space-y-1">
+            <li>
+              <strong class="text-text-primary">Email:</strong>{' '}
+              <a href="mailto:hello@econopedia101.com" class="text-accent hover:underline">hello@econopedia101.com</a>
+            </li>
+            <li>
+              <strong class="text-text-primary">Website:</strong>{' '}
+              <a href="/contact" class="text-accent hover:underline">{SITE.url}/contact</a>
+            </li>
+          </ul>
+        </section>
+      </div>
+    </article>
+  </Container>
+</BaseLayout>

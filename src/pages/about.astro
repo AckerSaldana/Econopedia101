@@ -1,0 +1,170 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Container from '../components/ui/Container.astro';
+import Section from '../components/ui/Section.astro';
+import Separator from '../components/ui/Separator.astro';
+import Breadcrumbs from '../components/common/Breadcrumbs.astro';
+import { SITE } from '../lib/constants';
+import { getEntry } from 'astro:content';
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'About' },
+];
+
+const tasmin = await getEntry('authors', 'tasmin-angelina-houssein');
+
+const values = [
+  {
+    title: 'Accessibility',
+    description: 'We believe financial literacy should be available to everyone, regardless of background or experience level.',
+    icon: 'M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22ZM16 10L11 15L8 12',
+  },
+  {
+    title: 'Clarity',
+    description: 'Complex topics explained simply. No jargon walls, no gatekeeping — just clear, honest explanations.',
+    icon: 'M9 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 3.89543 3.89543 3 5 3H9M16 17L21 12L16 7M21 12H9',
+  },
+  {
+    title: 'Empowerment',
+    description: 'We arm readers with the knowledge and tools to make confident financial decisions in their own lives.',
+    icon: 'M13 2L3 14H12L11 22L21 10H12L13 2Z',
+  },
+  {
+    title: 'Curiosity',
+    description: 'We encourage asking questions. Every great understanding starts with a simple "but why?".',
+    icon: 'M9.09 9C9.3251 8.33167 9.78915 7.76811 10.4 7.40913C11.0108 7.05016 11.7289 6.91894 12.4272 7.03871C13.1255 7.15849 13.7588 7.52152 14.2151 8.06353C14.6713 8.60553 14.9211 9.29152 14.92 10C14.92 12 11.92 13 11.92 13M12 17H12.01M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z',
+  },
+];
+---
+
+<BaseLayout title="About Econopedia 101" description="Learn about Econopedia 101, our mission to make economics and finance accessible, and the team behind the platform.">
+  <Container>
+    <div class="py-8">
+      <Breadcrumbs items={breadcrumbs} />
+    </div>
+
+    <!-- Mission Section -->
+    <Section>
+      <div class="max-w-3xl">
+        <h1 class="font-serif text-4xl lg:text-5xl font-semibold text-text-primary mb-6">
+          About Econopedia 101
+        </h1>
+        <p class="text-xl text-text-secondary leading-relaxed mb-6">
+          {SITE.tagline}
+        </p>
+        <div class="prose prose-lg text-text-secondary space-y-4">
+          <p>
+            Econopedia 101 is a financial literacy platform built for students, young professionals,
+            and anyone who has ever felt overwhelmed by the world of money, markets, and economics.
+          </p>
+          <p>
+            We break down complex financial concepts into digestible, jargon-free articles.
+            From understanding how central banks work, to building your first investment portfolio,
+            to mastering the art of budgeting — we cover it all.
+          </p>
+          <p>
+            Our mission is simple: make economics and finance accessible, engaging, and empowering
+            for everyone. Because understanding money should not be a privilege.
+          </p>
+        </div>
+      </div>
+    </Section>
+
+    <Separator />
+
+    <!-- Founder Section -->
+    {tasmin && (
+      <Section>
+        <div class="max-w-3xl">
+          <h2 class="font-serif text-3xl font-semibold text-text-primary mb-8">
+            Meet the Founder
+          </h2>
+          <div class="flex flex-col sm:flex-row gap-8 items-start">
+            <div class="w-28 h-28 overflow-hidden bg-surface-elevated border border-border flex-shrink-0">
+              <img
+                src="/images/avatar-tasmin.jpg"
+                alt={tasmin.data.name}
+                class="w-full h-full object-cover"
+                loading="lazy"
+              />
+            </div>
+            <div>
+              <h3 class="text-xl font-semibold text-text-primary">{tasmin.data.name}</h3>
+              <p class="text-accent font-medium text-sm mt-1">{tasmin.data.role}</p>
+              <p class="text-text-secondary mt-4 leading-relaxed">
+                {tasmin.data.bio}
+              </p>
+              {tasmin.data.socials && (
+                <div class="flex gap-4 mt-4">
+                  {tasmin.data.socials.twitter && (
+                    <a href={tasmin.data.socials.twitter} target="_blank" rel="noopener noreferrer" class="text-text-muted hover:text-accent transition-colors" aria-label="Twitter">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
+                      </svg>
+                    </a>
+                  )}
+                  {tasmin.data.socials.linkedin && (
+                    <a href={tasmin.data.socials.linkedin} target="_blank" rel="noopener noreferrer" class="text-text-muted hover:text-accent transition-colors" aria-label="LinkedIn">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+                        <rect x="2" y="9" width="4" height="12" />
+                        <circle cx="4" cy="4" r="2" />
+                      </svg>
+                    </a>
+                  )}
+                  {tasmin.data.socials.instagram && (
+                    <a href={tasmin.data.socials.instagram} target="_blank" rel="noopener noreferrer" class="text-text-muted hover:text-accent transition-colors" aria-label="Instagram">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                      </svg>
+                    </a>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </Section>
+    )}
+
+    <Separator />
+
+    <!-- Values Section -->
+    <Section>
+      <div class="max-w-3xl">
+        <h2 class="font-serif text-3xl font-semibold text-text-primary mb-8">
+          Our Values
+        </h2>
+        <div class="grid sm:grid-cols-2 gap-6">
+          {values.map((value) => (
+            <div class="flex gap-4 p-5 border border-border bg-surface">
+              <div class="flex-shrink-0 w-10 h-10 bg-surface-elevated flex items-center justify-center">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="text-accent"
+                  aria-hidden="true"
+                >
+                  <path d={value.icon} />
+                </svg>
+              </div>
+              <div>
+                <h3 class="font-semibold text-text-primary mb-1">{value.title}</h3>
+                <p class="text-sm text-text-secondary leading-relaxed">{value.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </Section>
+  </Container>
+</BaseLayout>

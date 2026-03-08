@@ -1,0 +1,155 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Container from '../components/ui/Container.astro';
+import Breadcrumbs from '../components/common/Breadcrumbs.astro';
+import PostHeader from '../components/blog/PostHeader.astro';
+import PostBody from '../components/blog/PostBody.astro';
+import AuthorBio from '../components/blog/AuthorBio.astro';
+import ShareButtons from '../components/blog/ShareButtons.astro';
+import RelatedPosts from '../components/blog/RelatedPosts.astro';
+import TableOfContents from '../components/blog/TableOfContents.astro';
+import ReadingProgress from '../components/blog/ReadingProgress';
+import LeadMagnetCTA from '../components/blog/LeadMagnetCTA.astro';
+import { getCategoryLabel } from '../lib/utils';
+import { CATEGORIES } from '../lib/constants';
+
+interface Props {
+  frontmatter: {
+    title: string;
+    description: string;
+    categories: string[];
+    publishedAt: Date;
+    updatedAt?: Date;
+    cover: ImageMetadata;
+    coverAlt: string;
+    leadMagnet?: {
+      title: string;
+      description: string;
+      file: string;
+    };
+    affiliateDisclosure?: boolean;
+  };
+  author: {
+    name: string;
+    role: string;
+    bio: string;
+    avatar: ImageMetadata;
+    socials?: {
+      twitter?: string;
+      linkedin?: string;
+      instagram?: string;
+      website?: string;
+    };
+  };
+  headings: { depth: number; slug: string; text: string }[];
+  readingTime: string;
+  relatedPosts?: any[];
+}
+
+const { frontmatter, author, headings, readingTime, relatedPosts = [] } = Astro.props;
+
+const primaryCategory = frontmatter.categories[0];
+const categoryMeta = CATEGORIES[primaryCategory as keyof typeof CATEGORIES];
+const categorySlug = categoryMeta?.slug || primaryCategory;
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: getCategoryLabel(primaryCategory), href: `/${categorySlug}` },
+  { label: frontmatter.title },
+];
+
+const pageUrl = Astro.url.href;
+---
+
+<BaseLayout
+  title={frontmatter.title}
+  description={frontmatter.description}
+  type="article"
+  publishedAt={frontmatter.publishedAt.toISOString()}
+  updatedAt={frontmatter.updatedAt?.toISOString()}
+  author={author.name}
+  section={getCategoryLabel(primaryCategory)}
+>
+  <ReadingProgress client:load />
+
+  <article>
+    <Container>
+      <!-- Breadcrumbs -->
+      <div class="py-4">
+        <Breadcrumbs items={breadcrumbs} />
+      </div>
+
+      <!-- Post header -->
+      <div class="mb-10">
+        <PostHeader
+          title={frontmatter.title}
+          description={frontmatter.description}
+          categories={frontmatter.categories}
+          publishedAt={frontmatter.publishedAt}
+          updatedAt={frontmatter.updatedAt}
+          author={author}
+          readingTime={readingTime}
+          cover={frontmatter.cover}
+          coverAlt={frontmatter.coverAlt}
+        />
+      </div>
+
+      <!-- Affiliate disclosure -->
+      {frontmatter.affiliateDisclosure && (
+        <div class="mb-8 p-4 bg-surface-elevated border border-border rounded-lg text-sm text-text-secondary">
+          <strong>Disclosure:</strong> This article may contain affiliate links. We may earn a commission at no extra cost to you if you make a purchase through these links.
+        </div>
+      )}
+
+      <!-- Two-column layout: content + sidebar -->
+      <div class="flex gap-10 lg:gap-12">
+        <!-- Main content -->
+        <div class="flex-1 min-w-0">
+          <PostBody>
+            <slot />
+          </PostBody>
+
+          <!-- Lead magnet CTA -->
+          {frontmatter.leadMagnet && (
+            <div class="mt-10">
+              <LeadMagnetCTA
+                title={frontmatter.leadMagnet.title}
+                description={frontmatter.leadMagnet.description}
+                file={frontmatter.leadMagnet.file}
+              />
+            </div>
+          )}
+
+          <!-- Share buttons -->
+          <div class="mt-10 pt-8 border-t border-border">
+            <ShareButtons url={pageUrl} title={frontmatter.title} />
+          </div>
+
+          <!-- Author bio -->
+          <div class="mt-10">
+            <AuthorBio author={author} />
+          </div>
+
+          <!-- Ad slot placeholder -->
+          <div class="mt-10" data-ad-slot="post-bottom" aria-hidden="true">
+            <!-- Ad placeholder -->
+          </div>
+        </div>
+
+        <!-- Sidebar: Table of Contents -->
+        <aside class="hidden lg:block w-64 flex-shrink-0">
+          <div class="sticky top-24">
+            <TableOfContents headings={headings} />
+          </div>
+        </aside>
+      </div>
+
+      <!-- Related posts -->
+      {relatedPosts.length > 0 && (
+        <div class="mt-16 pt-10 border-t border-border">
+          <RelatedPosts posts={relatedPosts} />
+        </div>
+      )}
+    </Container>
+  </article>
+</BaseLayout>

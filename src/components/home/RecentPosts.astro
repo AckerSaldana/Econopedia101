@@ -1,0 +1,39 @@
+---
+import PostCardCompact from '../blog/PostCardCompact.astro';
+import Container from '../ui/Container.astro';
+
+interface Props {
+  posts: Array<{
+    slug: string;
+    data: {
+      title: string;
+      cover: ImageMetadata;
+      coverAlt: string;
+      categories: string[];
+      publishedAt: Date;
+    };
+  }>;
+  title: string;
+}
+
+const { posts, title } = Astro.props;
+---
+
+<section class="py-10 lg:py-14 border-t border-border">
+  <Container>
+    <div class="flex items-end justify-between mb-8">
+      <div>
+        <div class="w-8 h-0.5 bg-accent mb-3" aria-hidden="true"></div>
+        <h2 class="font-serif text-2xl text-text-primary">{title}</h2>
+      </div>
+      <a href="/blog" class="text-xs text-text-muted hover:text-accent transition-colors">
+        View all <span aria-hidden="true">&rarr;</span>
+      </a>
+    </div>
+    <div class="grid md:grid-cols-2 gap-4">
+      {posts.map((post) => (
+        <PostCardCompact post={post} />
+      ))}
+    </div>
+  </Container>
+</section>

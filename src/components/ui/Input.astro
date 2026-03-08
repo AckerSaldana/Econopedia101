@@ -1,0 +1,47 @@
+---
+interface Props {
+  type?: string;
+  name: string;
+  id?: string;
+  placeholder?: string;
+  required?: boolean;
+  label?: string;
+  class?: string;
+}
+
+const {
+  type = 'text',
+  name,
+  id = name,
+  placeholder,
+  required = false,
+  label,
+  class: className,
+} = Astro.props;
+
+const inputClasses = [
+  'w-full border border-border bg-surface px-4 py-2.5 text-text-primary',
+  'placeholder:text-text-muted',
+  'focus:ring-2 focus:ring-accent focus:border-accent focus:outline-none',
+  'transition-colors',
+  className,
+]
+  .filter(Boolean)
+  .join(' ');
+---
+
+<div class="flex flex-col">
+  {label && (
+    <label for={id} class="text-sm font-medium text-text-secondary mb-1.5">
+      {label}
+    </label>
+  )}
+  <input
+    type={type}
+    name={name}
+    id={id}
+    placeholder={placeholder}
+    required={required}
+    class={inputClasses}
+  />
+</div>

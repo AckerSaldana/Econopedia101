@@ -1,0 +1,59 @@
+---
+import { Image } from 'astro:assets';
+import CategoryBadge from './CategoryBadge.astro';
+import { formatDateShort } from '../../lib/utils';
+
+interface Props {
+  post: {
+    slug: string;
+    data: {
+      title: string;
+      cover: ImageMetadata;
+      coverAlt: string;
+      categories: string[];
+      publishedAt: Date;
+    };
+  };
+  readingTime?: string;
+}
+
+const { post, readingTime } = Astro.props;
+const { title, cover, coverAlt, categories, publishedAt } = post.data;
+---
+
+<a
+  href={`/blog/${post.slug}`}
+  class="group flex gap-4 py-4 border-b border-border"
+>
+  <!-- Text content: left-aligned, minimal -->
+  <div class="flex-1 min-w-0 flex flex-col justify-center">
+    {categories[0] && <CategoryBadge category={categories[0]} size="sm" />}
+
+    <h3 class="font-serif text-base font-semibold leading-snug text-text-primary mt-1 line-clamp-2 group-hover:text-accent transition-colors duration-200">
+      {title}
+    </h3>
+
+    <div class="flex items-center gap-1.5 text-xs text-text-muted mt-1.5">
+      <time datetime={publishedAt.toISOString()}>
+        {formatDateShort(publishedAt)}
+      </time>
+      {readingTime && (
+        <>
+          <span aria-hidden="true">&middot;</span>
+          <span>{readingTime}</span>
+        </>
+      )}
+    </div>
+  </div>
+
+  <!-- Thumbnail: landscape ratio, editorial feel -->
+  <div class="w-24 h-16 flex-shrink-0 overflow-hidden">
+    <Image
+      src={cover}
+      alt={coverAlt}
+      widths={[128, 256]}
+      sizes="96px"
+      class="w-full h-full object-cover group-hover:opacity-90 transition-opacity duration-300"
+    />
+  </div>
+</a>

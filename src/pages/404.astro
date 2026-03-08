@@ -1,0 +1,73 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Container from '../components/ui/Container.astro';
+import Button from '../components/ui/Button.astro';
+---
+
+<BaseLayout title="Page Not Found | Econopedia 101" description="The page you're looking for doesn't exist. Browse our articles, tools, or head back to the homepage.">
+  <Container>
+    <div class="flex flex-col items-center justify-center text-center py-24 lg:py-32">
+      <!-- 404 Number -->
+      <p class="text-8xl lg:text-9xl font-bold text-accent/20 font-serif select-none mb-2">
+        404
+      </p>
+
+      <h1 class="font-serif text-3xl lg:text-4xl font-semibold text-text-primary mb-4">
+        Page Not Found
+      </h1>
+
+      <p class="text-text-secondary text-lg max-w-md leading-relaxed mb-4">
+        Looks like this page took an early retirement. It might have been moved,
+        deleted, or perhaps it never existed in the first place.
+      </p>
+
+      <p class="text-text-muted text-sm mb-8">
+        But don't worry — there's plenty more to explore.
+      </p>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-wrap justify-center gap-4">
+        <Button variant="primary" href="/">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+            <polyline points="9 22 9 12 15 12 15 22" />
+          </svg>
+          Back to Home
+        </Button>
+        <Button variant="outline" href="/blog">
+          Browse Articles
+        </Button>
+        <Button variant="ghost" href="/tools">
+          Try Our Tools
+        </Button>
+      </div>
+
+      <!-- Popular Sections -->
+      <div class="mt-16 w-full max-w-lg">
+        <p class="text-sm font-medium text-text-muted uppercase tracking-wide mb-4">
+          Popular sections
+        </p>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <a href="/trading" class="p-3 border border-border bg-surface text-sm text-text-primary hover:border-accent hover:text-accent transition-colors text-center">
+            Trading
+          </a>
+          <a href="/economics" class="p-3 border border-border bg-surface text-sm text-text-primary hover:border-accent hover:text-accent transition-colors text-center">
+            Economics
+          </a>
+          <a href="/finance" class="p-3 border border-border bg-surface text-sm text-text-primary hover:border-accent hover:text-accent transition-colors text-center">
+            Finance
+          </a>
+          <a href="/business" class="p-3 border border-border bg-surface text-sm text-text-primary hover:border-accent hover:text-accent transition-colors text-center">
+            Business
+          </a>
+          <a href="/banking" class="p-3 border border-border bg-surface text-sm text-text-primary hover:border-accent hover:text-accent transition-colors text-center">
+            Banking
+          </a>
+          <a href="/education" class="p-3 border border-border bg-surface text-sm text-text-primary hover:border-accent hover:text-accent transition-colors text-center">
+            Education
+          </a>
+        </div>
+      </div>
+    </div>
+  </Container>
+</BaseLayout>

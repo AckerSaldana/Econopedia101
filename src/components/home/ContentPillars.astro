@@ -1,0 +1,33 @@
+---
+import Container from '../ui/Container.astro';
+import { CATEGORIES } from '../../lib/constants';
+
+const pillars = [
+  { key: 'trading', ...CATEGORIES.trading },
+  { key: 'economics', ...CATEGORIES.economics },
+  { key: 'finance', ...CATEGORIES.finance },
+  { key: 'business', ...CATEGORIES.business },
+  { key: 'banking-insurance', ...CATEGORIES['banking-insurance'] },
+  { key: 'education', ...CATEGORIES.education },
+];
+---
+
+<section class="border-y border-border">
+  <Container wide>
+    <nav class="flex items-center justify-center gap-0 py-3 overflow-x-auto" aria-label="Content sections">
+      {pillars.map((pillar, index) => (
+        <>
+          {index > 0 && (
+            <span class="w-px h-4 bg-border flex-shrink-0" aria-hidden="true"></span>
+          )}
+          <a
+            href={`/${pillar.slug}`}
+            class="flex-shrink-0 px-4 lg:px-6 text-sm font-medium text-text-secondary hover:text-accent transition-colors whitespace-nowrap"
+          >
+            {pillar.label}
+          </a>
+        </>
+      ))}
+    </nav>
+  </Container>
+</section>

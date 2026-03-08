@@ -1,0 +1,13 @@
+---
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+
+const classes = ['border-border', className]
+  .filter(Boolean)
+  .join(' ');
+---
+
+<hr class={classes} />

@@ -1,0 +1,98 @@
+---
+import { Image } from 'astro:assets';
+import CategoryBadge from './CategoryBadge.astro';
+import { formatDate } from '../../lib/utils';
+
+interface Props {
+  title: string;
+  description: string;
+  categories: string[];
+  publishedAt: Date;
+  updatedAt?: Date;
+  author: {
+    name: string;
+    avatar: ImageMetadata;
+    role: string;
+  };
+  readingTime: string;
+  cover: ImageMetadata;
+  coverAlt: string;
+}
+
+const {
+  title,
+  description,
+  categories,
+  publishedAt,
+  updatedAt,
+  author,
+  readingTime,
+  cover,
+  coverAlt,
+} = Astro.props;
+---
+
+<header class="space-y-6">
+  <!-- Categories -->
+  <div class="flex flex-wrap items-center gap-2">
+    {categories.map((cat) => (
+      <CategoryBadge category={cat} size="md" />
+    ))}
+  </div>
+
+  <!-- Title -->
+  <h1 class="font-serif text-4xl lg:text-5xl font-semibold text-text-primary leading-tight">
+    {title}
+  </h1>
+
+  <!-- Description -->
+  <p class="text-lg text-text-secondary leading-relaxed max-w-prose">
+    {description}
+  </p>
+
+  <!-- Author & meta row -->
+  <div class="flex flex-wrap items-center gap-4 text-sm text-text-secondary">
+    <div class="flex items-center gap-3">
+      <Image
+        src={author.avatar}
+        alt={author.name}
+        width={40}
+        height={40}
+        class="rounded-full object-cover"
+      />
+      <div>
+        <span class="font-medium text-text-primary">{author.name}</span>
+        <span class="block text-xs text-text-muted">{author.role}</span>
+      </div>
+    </div>
+
+    <span aria-hidden="true" class="hidden sm:inline">&middot;</span>
+
+    <time datetime={publishedAt.toISOString()}>
+      {formatDate(publishedAt)}
+    </time>
+
+    {updatedAt && (
+      <>
+        <span aria-hidden="true">&middot;</span>
+        <span>
+          Updated <time datetime={updatedAt.toISOString()}>{formatDate(updatedAt)}</time>
+        </span>
+      </>
+    )}
+
+    <span aria-hidden="true">&middot;</span>
+    <span>{readingTime}</span>
+  </div>
+
+  <!-- Cover image -->
+  <div class="rounded-xl overflow-hidden">
+    <Image
+      src={cover}
+      alt={coverAlt}
+      widths={[600, 900, 1200, 1600]}
+      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
+      class="w-full aspect-[16/9] object-cover"
+    />
+  </div>
+</header>

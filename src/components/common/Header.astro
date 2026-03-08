@@ -1,0 +1,50 @@
+---
+import Logo from './Logo.astro';
+import ThemeToggle from './ThemeToggle.astro';
+import MobileMenu from './MobileMenu.tsx';
+import Container from '../ui/Container.astro';
+
+const today = new Date();
+const formattedDate = today.toLocaleDateString('en-GB', {
+  weekday: 'long',
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+---
+
+<header class="sticky top-0 z-50 bg-background">
+  <!-- Accent rule — thin green top line, like FT's pink stripe -->
+  <div class="h-[2px] bg-accent"></div>
+
+  <Container>
+    <div class="grid grid-cols-[1fr_auto_1fr] items-center py-3.5">
+      <!-- Left: date -->
+      <div>
+        <time
+          datetime={today.toISOString().split('T')[0]}
+          class="hidden lg:block text-[11px] tracking-wide text-text-muted"
+        >
+          {formattedDate}
+        </time>
+      </div>
+
+      <!-- Center: logo -->
+      <Logo />
+
+      <!-- Right: utility nav + actions -->
+      <div class="flex items-center justify-end gap-5">
+        <nav class="hidden lg:flex items-center gap-4">
+          <a href="/blog" class="text-xs text-text-secondary hover:text-text-primary transition-colors">Blog</a>
+          <a href="/about" class="text-xs text-text-secondary hover:text-text-primary transition-colors">About</a>
+          <a href="/tools" class="text-xs text-text-secondary hover:text-text-primary transition-colors">Tools</a>
+        </nav>
+        <ThemeToggle />
+        <MobileMenu client:idle />
+      </div>
+    </div>
+  </Container>
+
+  <!-- Bottom hairline -->
+  <div class="border-t border-border"></div>
+</header>

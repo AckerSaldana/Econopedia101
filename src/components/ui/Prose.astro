@@ -1,0 +1,15 @@
+---
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+
+const classes = ['prose', className]
+  .filter(Boolean)
+  .join(' ');
+---
+
+<div class={classes}>
+  <slot />
+</div>

@@ -1,0 +1,59 @@
+---
+import { SITE } from '../../lib/constants';
+
+interface BreadcrumbItem {
+  label: string;
+  href?: string;
+}
+
+interface Props {
+  items: BreadcrumbItem[];
+}
+
+const { items } = Astro.props;
+
+// Build JSON-LD BreadcrumbList structured data
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: items.map((item, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    name: item.label,
+    ...(item.href ? { item: new URL(item.href, SITE.url).href } : {}),
+  })),
+};
+---
+
+<nav aria-label="Breadcrumb" class="text-sm text-text-muted">
+  <ol class="flex items-center flex-wrap gap-1">
+    {items.map((item, index) => {
+      const isLast = index === items.length - 1;
+      return (
+        <li class="flex items-center gap-1">
+          {index > 0 && (
+            <span class="text-text-muted" aria-hidden="true">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </span>
+          )}
+          {isLast || !item.href ? (
+            <span class="text-text-secondary font-medium" aria-current="page">
+              {item.label}
+            </span>
+          ) : (
+            <a
+              href={item.href}
+              class="text-text-muted hover:text-text-primary transition-colors"
+            >
+              {item.label}
+            </a>
+          )}
+        </li>
+      );
+    })}
+  </ol>
+</nav>
+
+<script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />

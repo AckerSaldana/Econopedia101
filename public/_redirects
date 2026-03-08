@@ -1,0 +1,37 @@
+# Cloudflare Pages _redirects file
+
+# Section landings
+/economics-101/                                                     /economics                301
+/finance-101/                                                       /finance                  301
+/about-us/                                                          /about                    301
+/contacts/                                                          /contact                  301
+
+# Categories
+/category/business/                                                 /category/business        301
+/category/economics-archives/                                       /category/economics       301
+/category/education/                                                /category/education       301
+/category/tools-and-reviews/                                        /category/tools-and-reviews 301
+/category/quiz/                                                     /quiz                     301
+
+# Authors
+/author/econoangelina/                                              /author/tasmin-angelina-houssein 301
+
+# Legal
+/privacy-policy-your-privacy-matters/                               /privacy                  301
+
+# Articles (WP root-level slugs → /blog/ prefix)
+/cleanliness-roi-outsourcing-vancouver-businesses/                  /blog/cleanliness-roi-outsourcing-vancouver-businesses 301
+/why-high-maintenance-beauty-is-a-low-yield-asset/                  /blog/why-high-maintenance-beauty-is-a-low-yield-asset 301
+/the-growth-strategy-of-climate-custom-deck/                        /blog/the-growth-strategy-of-climate-custom-deck 301
+/economic-model-behind-eula-aesthetics-success/                     /blog/economic-model-behind-eula-aesthetics-success 301
+/economics-education-with-story-boards-ai/                          /blog/economics-education-with-story-boards-ai 301
+/how-to-value-and-compare-gold-equities/                            /blog/how-to-value-and-compare-gold-equities 301
+/gold-etf-vs-physical-gold-returns-2/                               /blog/gold-etf-vs-physical-gold-returns 301
+/how-to-build-a-gold-allocation-for-portfolio-diversification/      /blog/how-to-build-a-gold-allocation-for-portfolio-diversification 301
+/why-is-gold-more-valuable-than-silver/                             /blog/why-is-gold-more-valuable-than-silver 301
+
+# Kill WordPress legacy paths
+/wp-admin/*        /404  302
+/wp-content/*      /404  302
+/wp-login.php      /404  302
+/wp-json/*         /404  302

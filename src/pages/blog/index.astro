@@ -1,0 +1,61 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Container from '../../components/ui/Container.astro';
+import PostCard from '../../components/blog/PostCard.astro';
+import PostCardFeatured from '../../components/blog/PostCardFeatured.astro';
+import Breadcrumbs from '../../components/common/Breadcrumbs.astro';
+
+const allPosts = await getCollection('posts', ({ data }) => !data.draft);
+const sortedPosts = allPosts.sort(
+  (a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime(),
+);
+
+const featuredPost = sortedPosts.find((p) => p.data.featured);
+const regularPosts = sortedPosts.filter((p) => p !== featuredPost);
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Blog' },
+];
+---
+
+<BaseLayout
+  title="Blog"
+  description="Explore articles on trading, economics, finance, business, and more. Financial literacy made simple."
+>
+  <Container>
+    <div class="py-8">
+      <Breadcrumbs items={breadcrumbs} />
+    </div>
+
+    <header class="mb-10">
+      <h1 class="font-serif text-4xl lg:text-5xl font-semibold text-text-primary mb-3">
+        All Articles
+      </h1>
+      <p class="text-text-secondary text-lg max-w-2xl">
+        Your guide to money, business, and economics — one article at a time.
+      </p>
+    </header>
+
+    <!-- Featured post -->
+    {featuredPost && (
+      <div class="mb-12">
+        <PostCardFeatured post={featuredPost} />
+      </div>
+    )}
+
+    <!-- Post grid -->
+    {regularPosts.length > 0 ? (
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+        {regularPosts.map((post) => (
+          <PostCard post={post} />
+        ))}
+      </div>
+    ) : (
+      <p class="text-text-secondary text-center py-16">
+        No articles yet. Check back soon!
+      </p>
+    )}
+  </Container>
+</BaseLayout>

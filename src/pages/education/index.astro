@@ -1,0 +1,23 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Container from '../../components/ui/Container.astro';
+import CategoryHeader from '../../components/category/CategoryHeader.astro';
+import CategoryGrid from '../../components/category/CategoryGrid.astro';
+import Breadcrumbs from '../../components/common/Breadcrumbs.astro';
+import { CATEGORIES } from '../../lib/constants';
+import { getCollection } from 'astro:content';
+
+const category = CATEGORIES.education;
+const posts = (await getCollection('posts', ({ data }) => !data.draft && data.categories.includes('education')))
+  .sort((a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf());
+---
+
+<BaseLayout title={`${category.label} | Econopedia 101`} description={category.description}>
+  <Container>
+    <div class="py-8">
+      <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: category.label }]} />
+    </div>
+    <CategoryHeader title={category.label} description={category.description} color={category.color} postCount={posts.length} />
+    <CategoryGrid posts={posts} />
+  </Container>
+</BaseLayout>

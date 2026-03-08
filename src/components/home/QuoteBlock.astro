@@ -1,0 +1,33 @@
+---
+import Container from '../ui/Container.astro';
+
+interface Props {
+  quote: string;
+  attribution?: string;
+}
+
+const { quote, attribution } = Astro.props;
+---
+
+<section class="py-10 lg:py-14">
+  <Container>
+    <blockquote class="relative border-l-2 border-accent/40 pl-6 md:pl-10 py-2 max-w-3xl mx-auto">
+      <!-- Subtle decorative quotation mark -->
+      <span
+        class="absolute top-0 left-4 md:left-6 text-5xl leading-none text-border font-serif select-none -translate-y-4"
+        aria-hidden="true"
+      >
+        &ldquo;
+      </span>
+      <p class="font-serif text-xl md:text-2xl lg:text-3xl italic leading-relaxed text-text-primary">
+        {quote}
+      </p>
+      {attribution && (
+        <footer class="mt-4 text-sm text-text-muted font-sans not-italic">
+          <span aria-hidden="true">&mdash;&nbsp;</span>
+          <cite class="not-italic font-medium text-text-secondary">{attribution}</cite>
+        </footer>
+      )}
+    </blockquote>
+  </Container>
+</section>

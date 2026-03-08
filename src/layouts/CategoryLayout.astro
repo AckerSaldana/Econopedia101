@@ -1,0 +1,29 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Container from '../components/ui/Container.astro';
+import Breadcrumbs from '../components/common/Breadcrumbs.astro';
+
+interface Props {
+  category: string;
+  title: string;
+  description: string;
+  color: string;
+}
+
+const { category, title, description, color } = Astro.props;
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: title },
+];
+---
+
+<BaseLayout title={`${title} | Econopedia 101`} description={description}>
+  <div class="border-b-2" style={`border-color: ${color}`}></div>
+  <Container>
+    <div class="py-8">
+      <Breadcrumbs items={breadcrumbs} />
+    </div>
+    <slot />
+  </Container>
+</BaseLayout>

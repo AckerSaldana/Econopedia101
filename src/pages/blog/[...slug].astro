@@ -1,0 +1,59 @@
+---
+import { getCollection, getEntry } from 'astro:content';
+import PostLayout from '../../layouts/PostLayout.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts', ({ data }) => !data.draft);
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content, headings } = await post.render();
+
+// Get author data
+const authorEntry = await getEntry('authors', post.data.author.id);
+const authorData = authorEntry
+  ? {
+      name: authorEntry.data.name,
+      role: authorEntry.data.role,
+      bio: authorEntry.data.bio,
+      avatar: authorEntry.data.avatar,
+      socials: authorEntry.data.socials,
+    }
+  : {
+      name: post.data.author.id.replace(/-/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase()),
+      role: 'Author',
+      bio: '',
+      avatar: undefined as any,
+      socials: undefined,
+    };
+
+// Calculate reading time from rendered content body
+const wordCount = post.body ? post.body.split(/\s+/).length : 0;
+const minutes = Math.max(1, Math.ceil(wordCount / 200));
+const readingTime = `${minutes} min read`;
+
+// Get related posts (same category, excluding current)
+const allPosts = await getCollection('posts', ({ data }) => !data.draft);
+const relatedPosts = allPosts
+  .filter(
+    (p) =>
+      p.slug !== post.slug &&
+      p.data.categories.some((cat: string) => post.data.categories.includes(cat)),
+  )
+  .sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime())
+  .slice(0, 3);
+---
+
+<PostLayout
+  frontmatter={post.data}
+  author={authorData}
+  headings={headings}
+  readingTime={readingTime}
+  relatedPosts={relatedPosts}
+>
+  <Content />
+</PostLayout>

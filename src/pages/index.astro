@@ -1,0 +1,49 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import HeroSection from '../components/home/HeroSection.astro';
+import ContentPillars from '../components/home/ContentPillars.astro';
+import FeaturedPost from '../components/home/FeaturedPost.astro';
+import PostGrid from '../components/home/PostGrid.astro';
+import RecentPosts from '../components/home/RecentPosts.astro';
+import NewsletterCTA from '../components/home/NewsletterCTA.astro';
+import ToolsPreview from '../components/home/ToolsPreview.astro';
+import QuoteBlock from '../components/home/QuoteBlock.astro';
+import SidebarWidget from '../components/home/SidebarWidget.astro';
+import PostCardCompact from '../components/blog/PostCardCompact.astro';
+import { SITE } from '../lib/constants';
+import { getCollection } from 'astro:content';
+
+const allPosts = (await getCollection('posts', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf());
+
+const featuredPost = allPosts.find(p => p.data.featured) || allPosts[0];
+const topStories = allPosts.filter(p => p !== featuredPost).slice(0, 4);
+const recentPosts = allPosts.filter(p => p !== featuredPost && !topStories.includes(p)).slice(0, 6);
+const editorialPicks = allPosts.slice(0, 3);
+---
+
+<BaseLayout title={SITE.title} description={SITE.description}>
+  <ContentPillars />
+
+  <HeroSection>
+    <FeaturedPost slot="featured" post={featuredPost} />
+    <SidebarWidget slot="sidebar" title="Editor's Picks">
+      {editorialPicks.map(post => (
+        <PostCardCompact post={post} />
+      ))}
+    </SidebarWidget>
+  </HeroSection>
+
+  <PostGrid posts={topStories} title="Top Stories" />
+
+  <QuoteBlock
+    quote="An investment in knowledge pays the best interest."
+    attribution="Benjamin Franklin"
+  />
+
+  <RecentPosts posts={recentPosts} title="More Stories" />
+
+  <ToolsPreview />
+
+  <NewsletterCTA />
+</BaseLayout>

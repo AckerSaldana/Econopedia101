@@ -1,0 +1,174 @@
+/* View Transition Animations */
+
+/* Root view transitions */
+::view-transition-old(root) {
+  animation:
+    fade-out 0.2s ease-in forwards,
+    slide-to-left 0.3s ease-in-out forwards;
+}
+
+::view-transition-new(root) {
+  animation:
+    fade-in 0.3s ease-out forwards,
+    slide-from-right 0.3s ease-in-out forwards;
+}
+
+/* Fade keyframes */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* Slide keyframes */
+@keyframes slide-from-right {
+  from {
+    transform: translateX(30px);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-to-left {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-30px);
+  }
+}
+
+/* Respect prefers-reduced-motion for view transitions */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root) {
+    animation:
+      fade-out 0.01ms ease-in forwards;
+  }
+
+  ::view-transition-new(root) {
+    animation:
+      fade-in 0.01ms ease-out forwards;
+  }
+}
+
+/* Page header transitions */
+.page-header {
+  view-transition-name: page-header;
+}
+
+::view-transition-old(page-header) {
+  animation: fade-out 0.2s ease-in forwards;
+}
+
+::view-transition-new(page-header) {
+  animation: fade-in 0.3s ease-out 0.1s forwards;
+  opacity: 0;
+}
+
+/* Card hover transitions */
+.card-hover {
+  transition:
+    transform 0.2s ease-out,
+    box-shadow 0.2s ease-out,
+    border-color 0.2s ease-out;
+  will-change: transform;
+}
+
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--color-border);
+}
+
+.card-hover:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Card image zoom on hover */
+.card-hover .card-image {
+  transition: transform 0.3s ease-out;
+  overflow: hidden;
+}
+
+.card-hover:hover .card-image {
+  transform: scale(1.03);
+}
+
+/* Link hover transition */
+.link-transition {
+  transition:
+    color 0.15s ease,
+    opacity 0.15s ease;
+}
+
+/* Smooth content reveal */
+@keyframes content-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.content-reveal {
+  animation: content-reveal 0.4s ease-out forwards;
+  opacity: 0;
+}
+
+/* Staggered reveal for lists and grids */
+.stagger-reveal > * {
+  animation: content-reveal 0.4s ease-out forwards;
+  opacity: 0;
+}
+
+.stagger-reveal > *:nth-child(1) { animation-delay: 0.05s; }
+.stagger-reveal > *:nth-child(2) { animation-delay: 0.1s; }
+.stagger-reveal > *:nth-child(3) { animation-delay: 0.15s; }
+.stagger-reveal > *:nth-child(4) { animation-delay: 0.2s; }
+.stagger-reveal > *:nth-child(5) { animation-delay: 0.25s; }
+.stagger-reveal > *:nth-child(6) { animation-delay: 0.3s; }
+.stagger-reveal > *:nth-child(7) { animation-delay: 0.35s; }
+.stagger-reveal > *:nth-child(8) { animation-delay: 0.4s; }
+.stagger-reveal > *:nth-child(9) { animation-delay: 0.45s; }
+
+/* Disable staggered reveals for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .content-reveal,
+  .stagger-reveal > * {
+    animation: none;
+    opacity: 1;
+  }
+
+  .card-hover {
+    transition: none;
+  }
+
+  .card-hover:hover {
+    transform: none;
+  }
+
+  .card-hover .card-image {
+    transition: none;
+  }
+
+  .card-hover:hover .card-image {
+    transform: none;
+  }
+}

@@ -1,0 +1,21 @@
+---
+import { getCategoryColor, getCategoryLabel } from '../../lib/utils';
+
+interface Props {
+  category: string;
+  size?: 'sm' | 'md';
+}
+
+const { category, size = 'sm' } = Astro.props;
+
+const color = getCategoryColor(category);
+const label = getCategoryLabel(category);
+const textSize = size === 'sm' ? 'text-[11px]' : 'text-xs';
+---
+
+<span
+  class:list={['font-semibold uppercase tracking-widest inline-block', textSize]}
+  style={`color: ${color};`}
+>
+  {label}
+</span>

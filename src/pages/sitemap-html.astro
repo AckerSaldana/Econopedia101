@@ -1,0 +1,117 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Container from '../components/ui/Container.astro';
+import Breadcrumbs from '../components/common/Breadcrumbs.astro';
+import { CATEGORIES } from '../lib/constants';
+import { getCollection } from 'astro:content';
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Sitemap' },
+];
+
+const allPosts = (await getCollection('posts', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf());
+
+const categories = Object.entries(CATEGORIES);
+---
+
+<BaseLayout title="Sitemap | Econopedia 101" description="Browse all pages on Econopedia 101. Find articles by category, explore tools, and navigate the site.">
+  <Container>
+    <div class="py-8">
+      <Breadcrumbs items={breadcrumbs} />
+    </div>
+
+    <article class="max-w-3xl pb-16">
+      <h1 class="font-serif text-4xl lg:text-5xl font-semibold text-text-primary mb-10">
+        Sitemap
+      </h1>
+
+      <!-- Main Pages -->
+      <section class="mb-10">
+        <h2 class="font-serif text-2xl font-semibold text-text-primary mb-4">
+          Main Pages
+        </h2>
+        <ul class="space-y-2">
+          <li>
+            <a href="/" class="text-accent hover:underline">Home</a>
+          </li>
+          <li>
+            <a href="/blog" class="text-accent hover:underline">Blog</a>
+          </li>
+          <li>
+            <a href="/about" class="text-accent hover:underline">About</a>
+          </li>
+          <li>
+            <a href="/contact" class="text-accent hover:underline">Contact</a>
+          </li>
+          <li>
+            <a href="/privacy" class="text-accent hover:underline">Privacy Policy</a>
+          </li>
+        </ul>
+      </section>
+
+      <!-- Categories -->
+      <section class="mb-10">
+        <h2 class="font-serif text-2xl font-semibold text-text-primary mb-4">
+          Categories
+        </h2>
+        <ul class="space-y-2">
+          {categories.map(([key, cat]) => (
+            <li>
+              <a href={`/${cat.slug}`} class="text-accent hover:underline">{cat.label}</a>
+              <span class="text-text-muted text-sm ml-2">-- {cat.description}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <!-- Tools -->
+      <section class="mb-10">
+        <h2 class="font-serif text-2xl font-semibold text-text-primary mb-4">
+          Tools
+        </h2>
+        <ul class="space-y-2">
+          <li>
+            <a href="/tools" class="text-accent hover:underline">Tools Hub</a>
+          </li>
+          <li>
+            <a href="/tools/profit-loss-calculator" class="text-accent hover:underline">Profit & Loss Calculator</a>
+          </li>
+          <li>
+            <a href="/tools/compound-interest-calculator" class="text-accent hover:underline">Compound Interest Calculator</a>
+          </li>
+          <li>
+            <a href="/tools/roi-calculator" class="text-accent hover:underline">ROI Calculator</a>
+          </li>
+          <li>
+            <a href="/tools/inflation-calculator" class="text-accent hover:underline">Inflation Calculator</a>
+          </li>
+        </ul>
+      </section>
+
+      <!-- All Blog Posts -->
+      <section class="mb-10">
+        <h2 class="font-serif text-2xl font-semibold text-text-primary mb-4">
+          All Articles ({allPosts.length})
+        </h2>
+        {allPosts.length > 0 ? (
+          <ul class="space-y-2">
+            {allPosts.map((post) => (
+              <li class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+                <a href={`/blog/${post.slug}`} class="text-accent hover:underline">
+                  {post.data.title}
+                </a>
+                <span class="text-text-muted text-xs">
+                  {post.data.publishedAt.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                </span>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p class="text-text-secondary">No articles published yet.</p>
+        )}
+      </section>
+    </article>
+  </Container>
+</BaseLayout>

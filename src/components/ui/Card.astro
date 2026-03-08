@@ -1,0 +1,25 @@
+---
+interface Props {
+  class?: string;
+  href?: string;
+}
+
+const { class: className, href } = Astro.props;
+
+const baseClasses = 'bg-surface border-b border-border overflow-hidden';
+const hoverClasses = href ? 'hover:border-text-muted transition-colors duration-200' : '';
+
+const classes = [baseClasses, hoverClasses, className]
+  .filter(Boolean)
+  .join(' ');
+---
+
+{href ? (
+  <a href={href} class={classes}>
+    <slot />
+  </a>
+) : (
+  <div class={classes}>
+    <slot />
+  </div>
+)}

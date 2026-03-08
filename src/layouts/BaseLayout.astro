@@ -1,0 +1,78 @@
+---
+import '@fontsource-variable/newsreader';
+import '@fontsource-variable/jetbrains-mono';
+import '../styles/global.css';
+import '../styles/prose.css';
+import '../styles/transitions.css';
+
+import SEOHead from '../components/common/SEOHead.astro';
+import SkipLink from '../components/common/SkipLink.astro';
+import Header from '../components/common/Header.astro';
+import Footer from '../components/common/Footer.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  image?: string;
+  canonicalUrl?: string;
+  type?: 'website' | 'article';
+  publishedAt?: string;
+  updatedAt?: string;
+  author?: string;
+  section?: string;
+  tags?: string[];
+}
+
+const {
+  title,
+  description,
+  image,
+  canonicalUrl,
+  type = 'website',
+  publishedAt,
+  updatedAt,
+  author,
+  section,
+  tags,
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="generator" content={Astro.generator} />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="stylesheet" href="https://use.typekit.net/cad0vcl.css" />
+  <SEOHead
+    title={title}
+    description={description}
+    image={image}
+    canonicalUrl={canonicalUrl}
+    type={type}
+    publishedAt={publishedAt}
+    updatedAt={updatedAt}
+    author={author}
+    section={section}
+    tags={tags}
+  />
+  {import.meta.env.PROD && (
+    <script type="text/javascript">
+      {`(function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+      })(window,document,"clarity","script","YOUR_CLARITY_ID");`}
+    </script>
+  )}
+</head>
+<body class="min-h-screen flex flex-col bg-background text-text-primary font-sans antialiased">
+  <SkipLink />
+  <Header />
+  <main id="main-content" class="flex-1">
+    <slot />
+  </main>
+  <Footer />
+</body>
+</html>

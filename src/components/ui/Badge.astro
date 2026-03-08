@@ -1,0 +1,28 @@
+---
+interface Props {
+  variant?: 'default' | 'trading' | 'economics' | 'finance' | 'business' | 'banking' | 'education';
+  class?: string;
+}
+
+const { variant = 'default', class: className } = Astro.props;
+
+const variantClasses: Record<string, string> = {
+  default: 'bg-accent-light text-accent-dark',
+  trading: 'bg-[#EDE9FE] text-[#5B21B6] dark:bg-[#2E1065] dark:text-[#C4B5FD]',
+  economics: 'bg-[#DBEAFE] text-[#1E40AF] dark:bg-[#1E3A5F] dark:text-[#93C5FD]',
+  finance: 'bg-[#DCFCE7] text-[#166534] dark:bg-[#14532D] dark:text-[#86EFAC]',
+  business: 'bg-[#FFF7ED] text-[#9A3412] dark:bg-[#431407] dark:text-[#FDBA74]',
+  banking: 'bg-[#ECFEFF] text-[#155E75] dark:bg-[#164E63] dark:text-[#67E8F9]',
+  education: 'bg-[#FAE8FF] text-[#86198F] dark:bg-[#4A044E] dark:text-[#E879F9]',
+};
+
+const baseClasses = 'text-xs font-medium px-2.5 py-0.5 rounded-full';
+
+const classes = [baseClasses, variantClasses[variant], className]
+  .filter(Boolean)
+  .join(' ');
+---
+
+<span class={classes}>
+  <slot />
+</span>

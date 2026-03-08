@@ -1,0 +1,16 @@
+---
+interface Props {
+  class?: string;
+  id?: string;
+}
+
+const { class: className, id } = Astro.props;
+
+const classes = ['py-section', className]
+  .filter(Boolean)
+  .join(' ');
+---
+
+<section id={id} class={classes}>
+  <slot />
+</section>

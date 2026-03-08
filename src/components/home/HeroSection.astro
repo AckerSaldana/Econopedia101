@@ -1,0 +1,20 @@
+---
+import Container from '../ui/Container.astro';
+import { SITE } from '../../lib/constants';
+---
+
+<section class="py-6 lg:py-8">
+  <Container wide>
+    <div class="grid lg:grid-cols-3 gap-0">
+      <!-- Lead story: occupies 2 columns -->
+      <div class="lg:col-span-2 lg:pr-8">
+        <slot name="featured" />
+      </div>
+
+      <!-- Sidebar: editorial picks separated by a thin vertical rule -->
+      <div class="lg:col-span-1 lg:border-l lg:border-border lg:pl-8 mt-8 lg:mt-0 border-t lg:border-t-0 border-border pt-8 lg:pt-0">
+        <slot name="sidebar" />
+      </div>
+    </div>
+  </Container>
+</section>

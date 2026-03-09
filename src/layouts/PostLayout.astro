@@ -10,10 +10,13 @@ import RelatedPosts from '../components/blog/RelatedPosts.astro';
 import TableOfContents from '../components/blog/TableOfContents.astro';
 import ReadingProgress from '../components/blog/ReadingProgress';
 import LeadMagnetCTA from '../components/blog/LeadMagnetCTA.astro';
+import AffiliateDisclosure from '../components/blog/AffiliateDisclosure.astro';
+import AdSlot from '../components/common/AdSlot.astro';
 import LikeButton from '../components/blog/LikeButton';
 import CommentsSection from '../components/blog/CommentsSection';
 import { getCategoryLabel } from '../lib/utils';
 import { CATEGORIES } from '../lib/constants';
+import { articleSchema } from '../lib/seo';
 
 interface Props {
   slug: string;
@@ -72,6 +75,14 @@ const pageUrl = Astro.url.href;
   updatedAt={frontmatter.updatedAt?.toISOString()}
   author={author.name}
   section={getCategoryLabel(primaryCategory)}
+  jsonLd={articleSchema({
+    title: frontmatter.title,
+    description: frontmatter.description,
+    publishedAt: frontmatter.publishedAt,
+    updatedAt: frontmatter.updatedAt,
+    slug,
+    author: { name: author.name },
+  })}
 >
   <ReadingProgress client:load />
 
@@ -98,11 +109,10 @@ const pageUrl = Astro.url.href;
       </div>
 
       <!-- Affiliate disclosure -->
-      {frontmatter.affiliateDisclosure && (
-        <div class="mb-8 p-4 bg-surface-elevated border border-border rounded-lg text-sm text-text-secondary">
-          <strong>Disclosure:</strong> This article may contain affiliate links. We may earn a commission at no extra cost to you if you make a purchase through these links.
-        </div>
-      )}
+      {frontmatter.affiliateDisclosure && <AffiliateDisclosure />}
+
+      <!-- Ad slot: top leaderboard -->
+      <AdSlot slot="leaderboard" id="post-top" />
 
       <!-- Two-column layout: content + sidebar -->
       <div class="flex gap-10 lg:gap-12">
@@ -134,9 +144,9 @@ const pageUrl = Astro.url.href;
             <AuthorBio author={author} />
           </div>
 
-          <!-- Ad slot placeholder -->
-          <div class="mt-10" data-ad-slot="post-bottom" aria-hidden="true">
-            <!-- Ad placeholder -->
+          <!-- Ad slot: bottom leaderboard -->
+          <div class="mt-10">
+            <AdSlot slot="leaderboard" id="post-bottom" />
           </div>
 
           <!-- Comments -->

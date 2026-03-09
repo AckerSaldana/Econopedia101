@@ -1,5 +1,6 @@
 ---
 import Container from '../ui/Container.astro';
+import NewsletterForm from '../common/NewsletterForm';
 ---
 
 <section class="py-(--spacing-section) border-t border-border">
@@ -18,25 +19,10 @@ import Container from '../ui/Container.astro';
         Get free guides, cheat sheets, and study resources straight to your inbox. Built for students, self-learners, and the financially curious.
       </p>
 
-      <!-- Form -->
-      <form action="#" method="POST" class="mt-8 flex max-w-md mx-auto">
-        <label for="newsletter-email" class="sr-only">Email address</label>
-        <input
-          id="newsletter-email"
-          type="email"
-          name="email"
-          placeholder="your@email.com"
-          required
-          autocomplete="email"
-          class="flex-1 px-4 py-3 border border-border border-r-0 bg-background text-text-primary placeholder:text-text-muted text-sm focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-colors"
-        />
-        <button
-          type="submit"
-          class="inline-flex items-center justify-center gap-2 bg-accent text-white px-6 py-3 text-sm font-semibold uppercase tracking-wider hover:bg-accent-hover transition-colors whitespace-nowrap"
-        >
-          Join free
-        </button>
-      </form>
+      <!-- Interactive newsletter form -->
+      <div class="mt-8 relative">
+        <NewsletterForm client:visible />
+      </div>
 
       <p class="mt-3 text-xs text-text-muted">
         No spam, ever. Opt out anytime.

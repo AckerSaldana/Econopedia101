@@ -1,0 +1,35 @@
+name: Profit & Loss Calculator
+slug: profit-loss-calculator
+description: Calculate gross profit, net profit, margin percentage, and break-even point for your business or product line.
+longDescription: |
+  Understanding profit and loss is fundamental to running any business. This calculator helps you quickly determine whether a product or service is financially viable.
+
+  ## How It Works
+
+  The core formula is straightforward: Profit = Revenue - Costs. But there are important distinctions between gross profit (revenue minus variable costs) and net profit (gross profit minus fixed costs).
+
+  Your profit margin percentage tells you how much of each pound of revenue you actually keep as profit. A higher margin means more financial cushion and flexibility.
+
+  ## Break-Even Analysis
+
+  The break-even point tells you exactly how many units you need to sell to cover all your costs. It is calculated by dividing fixed costs by the contribution margin (revenue per unit minus cost per unit).
+
+  If your cost per unit exceeds your revenue per unit, you cannot break even — every additional sale increases your loss.
+
+  ## When to Use This Calculator
+
+  - Pricing new products or services
+  - Evaluating whether to launch a new product line
+  - Understanding the impact of cost changes on profitability
+  - Setting sales targets for your team
+icon: BarChart3
+category: finance
+keywords:
+  - profit and loss calculator
+  - profit margin calculator
+  - break even calculator
+  - business calculator
+  - gross profit calculator
+relatedPosts:
+  - 5-business-models-every-entrepreneur-should-know
+  - cleanliness-roi-outsourcing-vancouver-businesses

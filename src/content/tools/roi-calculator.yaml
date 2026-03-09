@@ -1,0 +1,37 @@
+name: ROI Calculator
+slug: roi-calculator
+description: Calculate your return on investment, annualized return, and absolute gain or loss from any investment.
+longDescription: |
+  Return on Investment (ROI) is one of the most widely used metrics in finance. It measures how much profit or loss an investment generates relative to its cost.
+
+  ## How It Works
+
+  The basic ROI formula is: ROI = ((Final Value - Initial Investment) / Initial Investment) x 100.
+
+  For investments held over multiple years, the annualized return gives a more meaningful comparison. This uses the formula: Annualized Return = (Final Value / Initial Investment)^(1/years) - 1.
+
+  ## Why Annualized Returns Matter
+
+  A 100% total return sounds impressive, but it matters whether that took 2 years or 20. Annualized returns let you compare investments with different time horizons on a level playing field.
+
+  ## When to Use This Calculator
+
+  - Evaluating the performance of stocks, property, or other investments
+  - Comparing different investment opportunities
+  - Calculating the real return after accounting for the time value of money
+  - Assessing business investment decisions (marketing spend, equipment purchases)
+
+  ## Important Considerations
+
+  ROI does not account for risk. A higher ROI does not necessarily mean a better investment — you should also consider volatility, liquidity, and the probability of achieving the projected return.
+icon: PiggyBank
+category: finance
+keywords:
+  - roi calculator
+  - return on investment calculator
+  - investment return calculator
+  - annualized return calculator
+  - investment performance calculator
+relatedPosts:
+  - how-to-value-and-compare-gold-equities
+  - cleanliness-roi-outsourcing-vancouver-businesses

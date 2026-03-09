@@ -3,113 +3,86 @@ import { SITE, FOOTER_LINKS, SOCIALS } from '../../lib/constants';
 import Container from '../ui/Container.astro';
 ---
 
-<footer class="bg-surface-elevated">
-  <!-- Top hairline -->
-  <div class="border-t border-border"></div>
+<footer class="footer-dark" style={`background-color: var(--footer-bg); color: var(--footer-text);`}>
+  <!-- Green accent bar -->
+  <div style="height: 3px; background-color: var(--footer-accent);"></div>
 
   <!-- Main footer content -->
   <Container>
     <div class="py-12 lg:py-16">
-      <div class="grid grid-cols-2 md:grid-cols-5 gap-8 lg:gap-12">
-        <!-- Brand column -->
-        <div class="col-span-2 md:col-span-1">
-          <a href="/" class="inline-flex items-baseline gap-0.5 no-underline mb-4">
-            <span class="font-sans text-lg font-bold uppercase tracking-wide text-text-primary leading-none">
-              Econopedia
-            </span>
-            <span class="font-sans text-lg font-bold uppercase tracking-wide text-text-secondary leading-none">
-              101
-            </span>
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-0">
+
+        <!-- Brand column — 5/12 -->
+        <div class="lg:col-span-5 lg:pr-10 lg:border-r" style={`border-color: var(--footer-border);`}>
+          <a href="/" class="inline-block no-underline mb-3">
+            <span class="font-serif text-3xl md:text-4xl whitespace-nowrap" style={`color: var(--footer-text);`}>Econopedia <span style={`color: var(--footer-accent);`}>101</span></span>
           </a>
-          <p class="text-sm text-text-muted leading-relaxed">
+          <p class="text-sm leading-relaxed max-w-xs" style={`color: var(--footer-text-muted);`}>
             {SITE.tagline}
           </p>
         </div>
 
-        <!-- Explore links -->
-        <div>
-          <h3 class="text-[11px] font-semibold uppercase tracking-widest text-text-muted mb-4">
-            Explore
-          </h3>
-          <ul class="space-y-2.5">
-            {FOOTER_LINKS.explore.map((link) => (
-              <li>
-                <a
-                  href={link.href}
-                  class="text-sm text-text-secondary hover:text-text-primary transition-colors"
-                >
-                  {link.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <!-- Link columns — 7/12 -->
+        <div class="lg:col-span-7 grid grid-cols-2 sm:grid-cols-4 gap-8 sm:gap-0">
 
-        <!-- Categories links -->
-        <div>
-          <h3 class="text-[11px] font-semibold uppercase tracking-widest text-text-muted mb-4">
-            Categories
-          </h3>
-          <ul class="space-y-2.5">
-            {FOOTER_LINKS.categories.map((link) => (
-              <li>
-                <a
-                  href={link.href}
-                  class="text-sm text-text-secondary hover:text-text-primary transition-colors"
-                >
-                  {link.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
+          <!-- Explore -->
+          <div class="sm:pl-6" style={`border-color: var(--footer-border);`}>
+            <h3 class="footer-heading">Explore</h3>
+            <ul class="space-y-2.5">
+              {FOOTER_LINKS.explore.map((link) => (
+                <li>
+                  <a href={link.href} class="footer-link">{link.label}</a>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-        <!-- Tools links -->
-        <div>
-          <h3 class="text-[11px] font-semibold uppercase tracking-widest text-text-muted mb-4">
-            Tools
-          </h3>
-          <ul class="space-y-2.5">
-            {FOOTER_LINKS.tools.map((link) => (
-              <li>
-                <a
-                  href={link.href}
-                  class="text-sm text-text-secondary hover:text-text-primary transition-colors"
-                >
-                  {link.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
+          <!-- Categories -->
+          <div class="sm:pl-6 sm:border-l" style={`border-color: var(--footer-border);`}>
+            <h3 class="footer-heading">Categories</h3>
+            <ul class="space-y-2.5">
+              {FOOTER_LINKS.categories.map((link) => (
+                <li>
+                  <a href={link.href} class="footer-link">{link.label}</a>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-        <!-- Legal links -->
-        <div>
-          <h3 class="text-[11px] font-semibold uppercase tracking-widest text-text-muted mb-4">
-            Legal
-          </h3>
-          <ul class="space-y-2.5">
-            {FOOTER_LINKS.legal.map((link) => (
-              <li>
-                <a
-                  href={link.href}
-                  class="text-sm text-text-secondary hover:text-text-primary transition-colors"
-                >
-                  {link.label}
-                </a>
-              </li>
-            ))}
-          </ul>
+          <!-- Tools -->
+          <div class="sm:pl-6 sm:border-l" style={`border-color: var(--footer-border);`}>
+            <h3 class="footer-heading">Tools</h3>
+            <ul class="space-y-2.5">
+              {FOOTER_LINKS.tools.map((link) => (
+                <li>
+                  <a href={link.href} class="footer-link">{link.label}</a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <!-- Legal -->
+          <div class="sm:pl-6 sm:border-l" style={`border-color: var(--footer-border);`}>
+            <h3 class="footer-heading">Legal</h3>
+            <ul class="space-y-2.5">
+              {FOOTER_LINKS.legal.map((link) => (
+                <li>
+                  <a href={link.href} class="footer-link">{link.label}</a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
         </div>
       </div>
     </div>
   </Container>
 
   <!-- Bottom bar -->
-  <div class="border-t border-border">
+  <div style={`border-top: 1px solid var(--footer-border);`}>
     <Container>
       <div class="flex flex-col sm:flex-row items-center justify-between py-6 gap-4">
-        <p class="text-xs text-text-muted">
+        <p class="text-xs" style={`color: var(--footer-text-muted);`}>
           &copy; {new Date().getFullYear()} {SITE.name}. All rights reserved.
         </p>
 
@@ -120,7 +93,7 @@ import Container from '../ui/Container.astro';
             href={SOCIALS.twitter}
             target="_blank"
             rel="noopener noreferrer"
-            class="text-text-muted hover:text-text-secondary transition-colors"
+            class="social-icon"
             aria-label="Follow us on Twitter"
           >
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
@@ -133,7 +106,7 @@ import Container from '../ui/Container.astro';
             href={SOCIALS.instagram}
             target="_blank"
             rel="noopener noreferrer"
-            class="text-text-muted hover:text-text-secondary transition-colors"
+            class="social-icon"
             aria-label="Follow us on Instagram"
           >
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -148,7 +121,7 @@ import Container from '../ui/Container.astro';
             href={SOCIALS.linkedin}
             target="_blank"
             rel="noopener noreferrer"
-            class="text-text-muted hover:text-text-secondary transition-colors"
+            class="social-icon"
             aria-label="Follow us on LinkedIn"
           >
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
@@ -160,3 +133,34 @@ import Container from '../ui/Container.astro';
     </Container>
   </div>
 </footer>
+
+<style>
+  .footer-heading {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--footer-text-muted);
+    margin-bottom: 1rem;
+  }
+
+  .footer-link {
+    font-size: 0.875rem;
+    color: var(--footer-text-secondary);
+    transition: color 0.15s ease;
+    text-decoration: none;
+  }
+
+  .footer-link:hover {
+    color: var(--footer-text);
+  }
+
+  .social-icon {
+    color: var(--footer-text-muted);
+    transition: color 0.15s ease;
+  }
+
+  .social-icon:hover {
+    color: var(--footer-accent-hover);
+  }
+</style>

@@ -1,0 +1,33 @@
+name: Compound Interest Calculator
+slug: compound-interest-calculator
+description: Calculate how your savings grow over time with compound interest. See yearly breakdowns and visualise your wealth building.
+longDescription: |
+  Compound interest is often called the eighth wonder of the world — and for good reason. Unlike simple interest, which only earns returns on your initial deposit, compound interest earns returns on your returns.
+
+  ## How It Works
+
+  The formula behind compound interest is A = P(1 + r/n)^(nt), where P is your principal, r is the annual rate, n is the compounding frequency, and t is time in years.
+
+  The more frequently your interest compounds, the faster your money grows. Monthly compounding outperforms annual compounding because each month's interest gets added to the balance before the next month's calculation.
+
+  ## When to Use This Calculator
+
+  - Planning long-term savings goals (retirement, house deposit, education)
+  - Comparing savings accounts with different compounding frequencies
+  - Understanding the true cost of delaying your investments
+  - Calculating the impact of regular monthly contributions
+
+  ## Tips for Maximising Returns
+
+  Start as early as possible — time is the most powerful variable in the compound interest formula. Even small monthly contributions can grow significantly over decades. A £100 monthly contribution at 7% annual return grows to over £120,000 in 30 years.
+icon: TrendingUp
+category: finance
+keywords:
+  - compound interest calculator
+  - savings calculator
+  - investment growth calculator
+  - interest rate calculator
+  - how compound interest works
+relatedPosts:
+  - how-to-build-an-emergency-fund-from-scratch
+  - how-to-value-and-compare-gold-equities

@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import { Image } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { personSchema } from '../../lib/seo';
 import Container from '../../components/ui/Container.astro';
 import PostCard from '../../components/blog/PostCard.astro';
 import Breadcrumbs from '../../components/common/Breadcrumbs.astro';
@@ -32,6 +33,12 @@ const breadcrumbs = [
 <BaseLayout
   title={author.name}
   description={author.shortBio}
+  jsonLd={personSchema({
+    name: author.name,
+    role: author.role,
+    bio: author.bio,
+    socials: author.socials,
+  })}
 >
   <Container>
     <div class="py-8">

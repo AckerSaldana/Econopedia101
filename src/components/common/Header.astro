@@ -2,6 +2,7 @@
 import Logo from './Logo.astro';
 import ThemeToggle from './ThemeToggle.astro';
 import MobileMenu from './MobileMenu.tsx';
+import SearchModal from './SearchModal';
 import MarketTicker from './MarketTicker.astro';
 import Container from '../ui/Container.astro';
 import { CATEGORIES } from '../../lib/constants';
@@ -68,9 +69,25 @@ const currentPath = Astro.url.pathname;
   <!-- Tier 2c: Masthead — Compact (shows on scroll) -->
   <div class="header-masthead-compact overflow-hidden transition-[max-height,opacity] duration-300 ease-in-out" style="max-height: 0; opacity: 0;">
     <Container>
-      <div class="flex items-center justify-between py-2">
+      <div class="grid grid-cols-[1fr_auto_1fr] items-center py-2">
+        <time
+          datetime={today.toISOString().split('T')[0]}
+          class="hidden lg:block text-[11px] uppercase tracking-wider text-text-muted"
+        >
+          {formattedDate}
+        </time>
         <Logo compact />
-        <div class="flex items-center gap-2">
+        <div class="flex items-center justify-end gap-2">
+          <button
+            type="button"
+            onclick="window.__openSearch?.()"
+            class="p-2 text-text-muted hover:text-text-primary transition-colors"
+            aria-label="Search (Cmd+K)"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+            </svg>
+          </button>
           <div class="hidden lg:block">
             <ThemeToggle />
           </div>
@@ -117,6 +134,8 @@ const currentPath = Astro.url.pathname;
     <MarketTicker />
   </div>
 </header>
+
+<SearchModal client:idle />
 
 <script>
   function initHeaderScroll() {

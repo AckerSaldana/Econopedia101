@@ -12,6 +12,7 @@ interface SEOProps {
   author?: string;
   section?: string;
   tags?: string[];
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
 }
 
 const {
@@ -25,7 +26,12 @@ const {
   author,
   section,
   tags = [],
+  jsonLd,
 } = Astro.props as SEOProps;
+
+const jsonLdItems = jsonLd
+  ? Array.isArray(jsonLd) ? jsonLd : [jsonLd]
+  : [];
 
 const formattedTitle = title.includes('Econopedia')
   ? title
@@ -38,6 +44,7 @@ const ogImage = image.startsWith('http') ? image : new URL(image, SITE.url).href
 <title>{formattedTitle}</title>
 <meta name="description" content={description} />
 <link rel="canonical" href={canonical} />
+<link rel="alternate" type="application/rss+xml" title={SITE.name} href={new URL('/rss.xml', SITE.url).href} />
 
 <!-- Open Graph -->
 <meta property="og:title" content={formattedTitle} />
@@ -69,4 +76,9 @@ const ogImage = image.startsWith('http') ? image : new URL(image, SITE.url).href
 )}
 {type === 'article' && tags.length > 0 && tags.map((tag) => (
   <meta property="article:tag" content={tag} />
+))}
+
+<!-- JSON-LD Structured Data -->
+{jsonLdItems.map((schema) => (
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} />
 ))}

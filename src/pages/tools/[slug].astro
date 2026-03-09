@@ -1,0 +1,138 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Container from '../../components/ui/Container.astro';
+import Breadcrumbs from '../../components/common/Breadcrumbs.astro';
+import PostCard from '../../components/blog/PostCard.astro';
+import CompoundInterestCalculator from '../../components/calculators/CompoundInterestCalculator';
+import ProfitLossCalculator from '../../components/calculators/ProfitLossCalculator';
+import ROICalculator from '../../components/calculators/ROICalculator';
+import InflationCalculator from '../../components/calculators/InflationCalculator';
+
+export async function getStaticPaths() {
+  const tools = await getCollection('tools');
+  return tools.map((tool) => ({
+    params: { slug: tool.data.slug },
+    props: { tool },
+  }));
+}
+
+const { tool } = Astro.props;
+const { name, slug, description, longDescription, icon, category, keywords, relatedPosts: relatedSlugs } = tool.data;
+
+// Get related posts
+const allPosts = await getCollection('posts', ({ data }) => !data.draft);
+const relatedPosts = relatedSlugs
+  .map((s: string) => allPosts.find((p) => p.slug === s))
+  .filter(Boolean)
+  .slice(0, 3);
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Tools', href: '/tools' },
+  { label: name },
+];
+
+const calculatorMap: Record<string, string> = {
+  'compound-interest-calculator': 'compound',
+  'profit-loss-calculator': 'profitloss',
+  'roi-calculator': 'roi',
+  'inflation-calculator': 'inflation',
+};
+
+const calculatorType = calculatorMap[slug] || '';
+
+// Split longDescription into paragraphs for rendering
+const descriptionParagraphs = longDescription.split('\n\n').filter((p: string) => p.trim());
+
+// JSON-LD SoftwareApplication schema
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name,
+  description,
+  applicationCategory: 'FinanceApplication',
+  operatingSystem: 'Web',
+  offers: {
+    '@type': 'Offer',
+    price: '0',
+    priceCurrency: 'GBP',
+  },
+  url: `https://econopedia101.com/tools/${slug}`,
+};
+---
+
+<BaseLayout
+  title={`${name} | Econopedia 101`}
+  description={description}
+>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  </Fragment>
+
+  <Container>
+    <div class="py-8">
+      <Breadcrumbs items={breadcrumbs} />
+    </div>
+
+    <header class="mb-10">
+      <h1 class="font-serif text-3xl lg:text-4xl font-semibold text-text-primary leading-tight">
+        {name}
+      </h1>
+      <p class="mt-2 text-text-secondary text-base leading-relaxed max-w-2xl">
+        {description}
+      </p>
+    </header>
+
+    <!-- Calculator island -->
+    <section class="mb-12">
+      {calculatorType === 'compound' && <CompoundInterestCalculator client:visible />}
+      {calculatorType === 'profitloss' && <ProfitLossCalculator client:visible />}
+      {calculatorType === 'roi' && <ROICalculator client:visible />}
+      {calculatorType === 'inflation' && <InflationCalculator client:visible />}
+    </section>
+
+    <!-- SEO prose content -->
+    <div class="border-t border-border pt-10 mb-12 max-w-2xl mx-auto">
+      <div class="prose-custom space-y-4">
+        {descriptionParagraphs.map((paragraph: string) => {
+          const trimmed = paragraph.trim();
+          if (trimmed.startsWith('## ')) {
+            return (
+              <h2 class="font-serif text-2xl font-semibold text-text-primary mt-8 mb-3">
+                {trimmed.replace('## ', '')}
+              </h2>
+            );
+          }
+          if (trimmed.startsWith('- ')) {
+            const items = trimmed.split('\n').filter((l: string) => l.startsWith('- '));
+            return (
+              <ul class="list-disc list-inside space-y-1 text-text-secondary text-base leading-relaxed">
+                {items.map((item: string) => <li>{item.replace('- ', '')}</li>)}
+              </ul>
+            );
+          }
+          return (
+            <p class="text-text-secondary text-base leading-relaxed">
+              {trimmed}
+            </p>
+          );
+        })}
+      </div>
+    </div>
+
+    <!-- Related articles -->
+    {relatedPosts.length > 0 && (
+      <div class="border-t border-border pt-10 pb-16">
+        <h2 class="font-serif text-2xl font-semibold text-text-primary mb-6">
+          Related Articles
+        </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {relatedPosts.map((post: any) => (
+            <PostCard post={post} />
+          ))}
+        </div>
+      </div>
+    )}
+  </Container>
+</BaseLayout>

@@ -1,0 +1,37 @@
+name: Inflation Calculator
+slug: inflation-calculator
+description: See how inflation erodes your purchasing power over time. Calculate future values and understand the real cost of rising prices.
+longDescription: |
+  Inflation is the silent tax on your savings. Even at modest rates of 2-3% per year, inflation significantly reduces what your money can buy over time.
+
+  ## How It Works
+
+  The calculator uses the formula FV = PV x (1 + r)^n to determine how much more things will cost in the future, and PV = FV / (1 + r)^n to show what your current savings will really be worth.
+
+  For example, at 3% annual inflation, £1,000 today will only have the purchasing power of roughly £744 in 10 years.
+
+  ## Why Inflation Matters for Your Finances
+
+  If your savings or investments are not growing faster than inflation, you are actually losing money in real terms. This is why understanding inflation is crucial for retirement planning, salary negotiations, and investment decisions.
+
+  ## When to Use This Calculator
+
+  - Planning for retirement and long-term savings goals
+  - Understanding the real return on savings accounts
+  - Evaluating whether a pay rise keeps up with the cost of living
+  - Comparing the real cost of large purchases you might delay
+
+  ## Historical Context
+
+  UK inflation has averaged around 2-3% in recent decades, but has seen periods of much higher rates. The Bank of England targets 2% annual inflation as optimal for economic stability.
+icon: TrendingDown
+category: economics
+keywords:
+  - inflation calculator
+  - purchasing power calculator
+  - cost of living calculator
+  - inflation rate calculator
+  - real value calculator
+relatedPosts:
+  - what-is-quantitative-easing-and-why-it-matters
+  - understanding-supply-and-demand-the-foundation-of-economics

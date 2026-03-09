@@ -10,7 +10,9 @@
     "deploy": "pnpm build && wrangler pages deploy ./dist",
     "check": "astro check && biome check .",
     "format": "biome format --write .",
-    "lint": "biome lint --write ."
+    "lint": "biome lint --write .",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
@@ -48,6 +50,7 @@
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
     "typescript": "^5.7.3",
+    "vitest": "^4.0.18",
     "wrangler": "^3.99.0"
   }
 }

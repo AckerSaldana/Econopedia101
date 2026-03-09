@@ -39,18 +39,18 @@ const { title, description, cover, coverAlt, categories, publishedAt, author } =
   </div>
 
   <!-- Content: typography-driven hierarchy, no card chrome -->
-  <div class="pt-4 pb-6">
+  <div class="pt-3 pb-3">
     {categories[0] && <CategoryBadge category={categories[0]} />}
 
     <h3 class="font-serif text-base lg:text-lg font-semibold leading-snug text-text-primary mt-2 group-hover:text-accent transition-colors duration-200">
       {title}
     </h3>
 
-    <p class="text-text-secondary text-sm mt-2 line-clamp-2 leading-relaxed">
+    <p class="text-text-secondary text-xs mt-2 line-clamp-2 leading-relaxed">
       {description}
     </p>
 
-    <div class="flex items-center gap-1.5 text-xs text-text-muted mt-3">
+    <div class="flex items-center gap-1.5 text-xs text-text-muted mt-2">
       <span>{author.id.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}</span>
       <span aria-hidden="true">&middot;</span>
       <time datetime={publishedAt.toISOString()}>

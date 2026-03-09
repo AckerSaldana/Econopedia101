@@ -23,7 +23,7 @@ const { title, cover, coverAlt, categories, publishedAt } = post.data;
 
 <a
   href={`/blog/${post.slug}`}
-  class="group flex gap-4 py-4 border-b border-border"
+  class="group flex gap-3 py-2.5"
 >
   <!-- Text content: left-aligned, minimal -->
   <div class="flex-1 min-w-0 flex flex-col justify-center">
@@ -33,7 +33,7 @@ const { title, cover, coverAlt, categories, publishedAt } = post.data;
       {title}
     </h3>
 
-    <div class="flex items-center gap-1.5 text-xs text-text-muted mt-1.5">
+    <div class="flex items-center gap-1.5 text-xs text-text-muted mt-1">
       <time datetime={publishedAt.toISOString()}>
         {formatDateShort(publishedAt)}
       </time>

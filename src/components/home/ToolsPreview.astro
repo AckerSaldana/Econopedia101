@@ -25,16 +25,13 @@ const tools = [
 ];
 ---
 
-<section class="py-10 lg:py-14">
+<section class="py-5 lg:py-6">
   <Container>
-    <!-- Section heading -->
-    <div class="flex items-end justify-between mb-8">
-      <div>
-        <div class="w-8 h-0.5 bg-accent mb-3" aria-hidden="true"></div>
-        <h2 class="font-serif text-2xl text-text-primary">Interactive Tools</h2>
-      </div>
-      <a href="/tools" class="text-xs text-text-muted hover:text-accent transition-colors">
-        View all <span aria-hidden="true">&rarr;</span>
+    <!-- Economist-style section heading -->
+    <div class="border-t-2 border-text-primary pt-3 mb-4 flex items-baseline justify-between">
+      <h2 class="text-xs font-bold uppercase tracking-[0.12em] text-text-primary">Interactive Tools</h2>
+      <a href="/tools" class="text-[10px] text-text-muted hover:text-accent transition-colors">
+        View all &rarr;
       </a>
     </div>
 
@@ -42,15 +39,15 @@ const tools = [
       {tools.map((tool) => (
         <a
           href={tool.href}
-          class="group block p-6 bg-background hover:bg-surface-elevated transition-colors"
+          class="group block p-4 bg-background hover:bg-surface-elevated transition-colors"
         >
-          <h3 class="font-semibold text-text-primary text-sm mb-2 group-hover:text-accent transition-colors">
+          <h3 class="font-bold text-text-primary text-xs mb-1 group-hover:text-accent transition-colors">
             {tool.name}
           </h3>
           <p class="text-xs text-text-muted leading-relaxed">
             {tool.description}
           </p>
-          <span class="inline-block mt-3 text-xs font-medium text-accent">
+          <span class="inline-block mt-2 text-xs font-medium text-accent">
             Try it <span aria-hidden="true">&rarr;</span>
           </span>
         </a>

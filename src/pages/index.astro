@@ -7,9 +7,9 @@ import PostGrid from '../components/home/PostGrid.astro';
 import RecentPosts from '../components/home/RecentPosts.astro';
 import NewsletterCTA from '../components/home/NewsletterCTA.astro';
 import ToolsPreview from '../components/home/ToolsPreview.astro';
-import QuoteBlock from '../components/home/QuoteBlock.astro';
 import SidebarWidget from '../components/home/SidebarWidget.astro';
 import PostCardCompact from '../components/blog/PostCardCompact.astro';
+import MarketTicker from '../components/common/MarketTicker.astro';
 import { SITE } from '../lib/constants';
 import { getCollection } from 'astro:content';
 
@@ -19,10 +19,11 @@ const allPosts = (await getCollection('posts', ({ data }) => !data.draft))
 const featuredPost = allPosts.find(p => p.data.featured) || allPosts[0];
 const topStories = allPosts.filter(p => p !== featuredPost).slice(0, 4);
 const recentPosts = allPosts.filter(p => p !== featuredPost && !topStories.includes(p)).slice(0, 6);
-const editorialPicks = allPosts.slice(0, 3);
+const editorialPicks = allPosts.slice(0, 5);
 ---
 
 <BaseLayout title={SITE.title} description={SITE.description}>
+  <MarketTicker />
   <ContentPillars />
 
   <HeroSection>
@@ -35,11 +36,6 @@ const editorialPicks = allPosts.slice(0, 3);
   </HeroSection>
 
   <PostGrid posts={topStories} title="Top Stories" />
-
-  <QuoteBlock
-    quote="An investment in knowledge pays the best interest."
-    attribution="Benjamin Franklin"
-  />
 
   <RecentPosts posts={recentPosts} title="More Stories" />
 

@@ -19,21 +19,36 @@ interface Props {
 const { posts, title } = Astro.props;
 ---
 
-<section class="py-10 lg:py-14 border-t border-border">
-  <Container>
-    <div class="flex items-end justify-between mb-8">
-      <div>
-        <div class="w-8 h-0.5 bg-accent mb-3" aria-hidden="true"></div>
-        <h2 class="font-serif text-2xl text-text-primary">{title}</h2>
+{posts.length > 0 && (
+  <section class="py-5 lg:py-6 border-t border-border">
+    <Container>
+      <!-- Economist-style section heading -->
+      <div class="border-t-2 border-text-primary pt-3 mb-4 flex items-baseline justify-between">
+        <h2 class="text-xs font-bold uppercase tracking-[0.12em] text-text-primary">{title}</h2>
+        <a href="/blog" class="text-[10px] text-text-muted hover:text-accent transition-colors">
+          View all &rarr;
+        </a>
       </div>
-      <a href="/blog" class="text-xs text-text-muted hover:text-accent transition-colors">
-        View all <span aria-hidden="true">&rarr;</span>
-      </a>
-    </div>
-    <div class="grid md:grid-cols-2 gap-4">
-      {posts.map((post) => (
-        <PostCardCompact post={post} />
-      ))}
-    </div>
-  </Container>
-</section>
+
+      <!-- Flat grid: rows stay aligned across columns -->
+      <div class="grid md:grid-cols-2 border-t border-border">
+        {posts.map((post, i) => (
+          <div class:list={[
+            'border-b border-border',
+            i % 2 === 0 ? 'md:pr-5 md:border-r md:border-border' : 'md:pl-5',
+          ]}>
+            <PostCardCompact post={post} />
+          </div>
+        ))}
+      </div>
+
+      <!-- Inline quote -->
+      <div class="mt-4 pt-3">
+        <p class="text-xs text-text-muted italic text-center">
+          &ldquo;An investment in knowledge pays the best interest.&rdquo;
+          <span class="not-italic font-medium text-text-secondary">&mdash; Benjamin Franklin</span>
+        </p>
+      </div>
+    </Container>
+  </section>
+)}

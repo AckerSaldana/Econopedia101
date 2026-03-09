@@ -1,0 +1,98 @@
+---
+const markets = [
+  { symbol: 'S&P 500', price: '5,234.18', change: '-14.52', pct: '-0.28', up: false },
+  { symbol: 'FTSE 100', price: '8,164.90', change: '+36.74', pct: '+0.45', up: true },
+  { symbol: 'EUR/USD', price: '1.08470', change: '-0.0055', pct: '-0.51', up: false },
+  { symbol: 'GBP/USD', price: '1.2634', change: '+0.0010', pct: '+0.08', up: true },
+  { symbol: 'Bitcoin', price: '67,432', change: '-128.00', pct: '-0.19', up: false },
+  { symbol: 'Ethereum', price: '3,521.4', change: '-36.20', pct: '-1.02', up: false },
+  { symbol: 'Gold', price: '2,342.50', change: '+15.70', pct: '+0.67', up: true },
+  { symbol: 'Solana', price: '142.30', change: '+3.45', pct: '+2.48', up: true },
+];
+
+// Duplicate for seamless loop
+const items = [...markets, ...markets];
+---
+
+<div class="overflow-hidden border-b border-border" aria-label="Market data ticker">
+  <div class="market-ticker-track flex items-center whitespace-nowrap py-1.5">
+    {items.map((item) => (
+      <span class="inline-flex items-center gap-1.5 px-4 border-r border-border text-[11px] leading-none">
+        <span class="font-semibold text-text-primary">{item.symbol}</span>
+        <span class="text-text-secondary" data-ticker-price={item.symbol}>{item.price}</span>
+        <span
+          class:list={['font-medium', item.up ? 'text-green-600' : 'text-red-600']}
+          data-ticker-change={item.symbol}
+        >
+          {item.change} ({item.pct}%)
+        </span>
+      </span>
+    ))}
+  </div>
+</div>
+
+<style>
+  @keyframes market-ticker-scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  .market-ticker-track {
+    width: max-content;
+    animation: market-ticker-scroll 45s linear infinite;
+  }
+
+  .market-ticker-track:hover {
+    animation-play-state: paused;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .market-ticker-track {
+      animation: none;
+      overflow-x: auto;
+    }
+  }
+</style>
+
+<script>
+  async function updateCryptoPrices() {
+    try {
+      const res = await fetch(
+        'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana&vs_currencies=usd&include_24hr_change=true'
+      );
+      if (!res.ok) return;
+      const data = await res.json();
+
+      const map: Record<string, { id: string; decimals: number }> = {
+        'Bitcoin': { id: 'bitcoin', decimals: 0 },
+        'Ethereum': { id: 'ethereum', decimals: 2 },
+        'Solana': { id: 'solana', decimals: 2 },
+      };
+
+      for (const [symbol, { id, decimals }] of Object.entries(map)) {
+        const coin = data[id];
+        if (!coin) continue;
+
+        const price = coin.usd;
+        const pct = coin.usd_24h_change;
+        const change = price * pct / 100;
+        const up = pct >= 0;
+        const sign = up ? '+' : '';
+
+        document.querySelectorAll(`[data-ticker-price="${symbol}"]`).forEach((el) => {
+          el.textContent = price.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+        });
+
+        document.querySelectorAll(`[data-ticker-change="${symbol}"]`).forEach((el) => {
+          el.textContent = `${sign}${change.toFixed(decimals)} (${sign}${pct.toFixed(2)}%)`;
+          el.className = `font-medium ${up ? 'text-green-600' : 'text-red-600'}`;
+        });
+      }
+    } catch {
+      // Keep fallback data
+    }
+  }
+
+  updateCryptoPrices();
+  setInterval(updateCryptoPrices, 60_000);
+</script>

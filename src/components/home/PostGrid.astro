@@ -21,22 +21,24 @@ interface Props {
 const { posts, title } = Astro.props;
 ---
 
-<section class="py-10 lg:py-14">
+<section class="py-5 lg:py-6">
   <Container>
-    <!-- Section heading with short accent-colored top rule -->
-    <div class="flex items-end justify-between mb-8">
-      <div>
-        <div class="w-8 h-0.5 bg-accent mb-3" aria-hidden="true"></div>
-        <h2 class="font-serif text-2xl text-text-primary">{title}</h2>
-      </div>
-      <a href="/blog" class="text-xs text-text-muted hover:text-accent transition-colors">
-        View all <span aria-hidden="true">&rarr;</span>
+    <!-- Economist-style section heading -->
+    <div class="border-t-2 border-text-primary pt-3 mb-4 flex items-baseline justify-between">
+      <h2 class="text-xs font-bold uppercase tracking-[0.12em] text-text-primary">{title}</h2>
+      <a href="/blog" class="text-[10px] text-text-muted hover:text-accent transition-colors">
+        View all &rarr;
       </a>
     </div>
 
-    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      {posts.slice(0, 4).map((post) => (
-        <PostCard post={post} />
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 divide-x divide-border">
+      {posts.slice(0, 4).map((post, i) => (
+        <div class:list={[
+          i === 0 ? 'pr-4' : i === posts.length - 1 || i === 3 ? 'pl-4' : 'px-4',
+          'max-sm:border-x-0 max-sm:px-0'
+        ]}>
+          <PostCard post={post} />
+        </div>
       ))}
     </div>
   </Container>

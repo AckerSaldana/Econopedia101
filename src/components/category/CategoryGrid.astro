@@ -1,5 +1,6 @@
 ---
 import PostCard from '../blog/PostCard.astro';
+import PostCardFeatured from '../blog/PostCardFeatured.astro';
 
 interface Props {
   posts: Array<{
@@ -17,13 +18,57 @@ interface Props {
 }
 
 const { posts } = Astro.props;
+const featured = posts[0];
+const remaining = posts.slice(1);
 ---
 
 {posts.length > 0 ? (
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-    {posts.map((post) => (
-      <PostCard post={post} />
-    ))}
+  <div class="mb-16">
+    <!-- Latest: featured lead story -->
+    <div class="border-t-2 border-text-primary pt-3 mb-4">
+      <h2 class="text-xs font-bold uppercase tracking-[0.12em] text-text-primary">Latest</h2>
+    </div>
+    <PostCardFeatured post={featured} label="Latest" />
+
+    <!-- More Articles: remaining posts grid -->
+    {remaining.length > 0 && (
+      <div class="mt-10">
+        <div class="border-t-2 border-text-primary pt-3 mb-4">
+          <h2 class="text-xs font-bold uppercase tracking-[0.12em] text-text-primary">More Articles</h2>
+        </div>
+
+        {/* Desktop: 3-col with vertical dividers */}
+        <div class="hidden lg:grid lg:grid-cols-3 lg:divide-x lg:divide-border">
+          {remaining.map((post, i) => (
+            <div class:list={[
+              i % 3 === 0 ? 'pr-5' : i % 3 === 2 ? 'pl-5' : 'px-5',
+            ]}>
+              <PostCard post={post} />
+            </div>
+          ))}
+        </div>
+
+        {/* Tablet: 2-col with vertical divider */}
+        <div class="hidden sm:grid sm:grid-cols-2 lg:hidden">
+          {remaining.map((post, i) => (
+            <div class:list={[
+              i % 2 === 0 ? 'border-r border-border pr-4' : 'pl-4',
+            ]}>
+              <PostCard post={post} />
+            </div>
+          ))}
+        </div>
+
+        {/* Mobile: stacked with bottom borders */}
+        <div class="sm:hidden">
+          {remaining.map((post) => (
+            <div class="border-b border-border last:border-b-0">
+              <PostCard post={post} />
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
   </div>
 ) : (
   <div class="text-center py-20">

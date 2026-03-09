@@ -9,19 +9,18 @@ interface Props {
 const { title, description, color, postCount } = Astro.props;
 ---
 
-<header class="relative mb-10 pl-6 border-l-4" style={`border-color: ${color}`}>
-  <div class="flex flex-wrap items-center gap-3 mb-3">
-    <h1 class="font-serif text-4xl lg:text-5xl font-semibold text-text-primary">
-      {title}
-    </h1>
-    <span
-      class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold text-white"
-      style={`background-color: ${color}`}
-    >
-      {postCount} {postCount === 1 ? 'article' : 'articles'}
-    </span>
-  </div>
-  <p class="text-text-secondary text-lg max-w-2xl leading-relaxed">
+<header class="mb-10">
+  <!-- Category accent line -->
+  <div class="h-[3px]" style={`background-color: ${color}`}></div>
+
+  <h1 class="font-serif text-4xl lg:text-6xl font-semibold text-text-primary leading-[1.1] mt-5">
+    {title}
+  </h1>
+
+  <p class="text-text-secondary text-lg lg:text-xl max-w-2xl leading-relaxed mt-3">
     {description}
   </p>
+
+  <!-- Bottom rule separator -->
+  <div class="border-t border-border mt-5"></div>
 </header>

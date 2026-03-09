@@ -17,9 +17,10 @@ interface Props {
     };
   };
   readingTime?: string;
+  label?: string;
 }
 
-const { post, readingTime } = Astro.props;
+const { post, readingTime, label = 'Featured' } = Astro.props;
 const { title, description, cover, coverAlt, categories, publishedAt, author } = post.data;
 ---
 
@@ -42,7 +43,7 @@ const { title, description, cover, coverAlt, categories, publishedAt, author } =
     <!-- Content: large serif headline drives hierarchy -->
     <div class="flex flex-col justify-center gap-3 md:gap-4">
       <div class="flex items-center gap-3">
-        <span class="text-xs font-semibold uppercase tracking-widest text-accent">Featured</span>
+        <span class="text-xs font-semibold uppercase tracking-widest text-accent">{label}</span>
         {categories[0] && (
           <>
             <span class="text-border" aria-hidden="true">&middot;</span>

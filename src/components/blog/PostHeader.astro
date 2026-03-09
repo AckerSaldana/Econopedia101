@@ -32,46 +32,42 @@ const {
 } = Astro.props;
 ---
 
-<header class="space-y-4">
+<header class="text-center">
   <!-- Categories -->
-  <div class="flex flex-wrap items-center gap-2">
+  <div class="flex flex-wrap items-center justify-center gap-2">
     {categories.map((cat) => (
       <CategoryBadge category={cat} size="md" />
     ))}
   </div>
 
   <!-- Title -->
-  <h1 class="text-4xl lg:text-5xl font-semibold text-text-primary leading-tight">
+  <h1 class="mt-3 text-4xl lg:text-5xl font-semibold text-text-primary leading-tight">
     {title}
   </h1>
 
   <!-- Description -->
-  <p class="text-lg text-text-secondary leading-relaxed max-w-prose">
+  <p class="mt-3 text-lg text-text-secondary leading-relaxed max-w-prose mx-auto">
     {description}
   </p>
 
-  <!-- Author & meta row -->
-  <div class="flex flex-wrap items-center gap-4 text-sm text-text-secondary pt-2">
-    <div class="flex items-center gap-3">
-      <Image
-        src={author.avatar}
-        alt={author.name}
-        width={40}
-        height={40}
-        class="rounded-full object-cover"
-      />
-      <div>
-        <span class="font-medium text-text-primary">{author.name}</span>
-        <span class="block text-xs text-text-muted">{author.role}</span>
-      </div>
-    </div>
+  <!-- Cover image -->
+  <div class="mt-6 overflow-hidden max-w-3xl mx-auto">
+    <Image
+      src={cover}
+      alt={coverAlt}
+      widths={[600, 900, 1200]}
+      sizes="(max-width: 768px) 100vw, 672px"
+      class="w-full aspect-[2/1] object-cover"
+    />
+  </div>
 
-    <span aria-hidden="true" class="hidden sm:inline">&middot;</span>
-
+  <!-- Meta line beneath image -->
+  <div class="mt-4 flex flex-wrap items-center justify-center gap-x-2 text-sm text-text-secondary">
+    <span class="font-medium text-text-primary">{author.name}</span>
+    <span aria-hidden="true">&middot;</span>
     <time datetime={publishedAt.toISOString()}>
       {formatDate(publishedAt)}
     </time>
-
     {updatedAt && (
       <>
         <span aria-hidden="true">&middot;</span>
@@ -80,19 +76,7 @@ const {
         </span>
       </>
     )}
-
     <span aria-hidden="true">&middot;</span>
     <span>{readingTime}</span>
-  </div>
-
-  <!-- Cover image -->
-  <div class="overflow-hidden pt-2">
-    <Image
-      src={cover}
-      alt={coverAlt}
-      widths={[600, 900, 1200, 1600]}
-      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
-      class="w-full aspect-[16/9] object-cover"
-    />
   </div>
 </header>

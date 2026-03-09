@@ -93,8 +93,14 @@ const pageUrl = Astro.url.href;
         <Breadcrumbs items={breadcrumbs} />
       </div>
 
-      <!-- Post header -->
-      <div class="mb-12">
+      <!-- Affiliate disclosure -->
+      {frontmatter.affiliateDisclosure && <AffiliateDisclosure />}
+
+      <!-- Ad slot: top leaderboard -->
+      <AdSlot slot="leaderboard" id="post-top" />
+
+      <!-- Post header — full container width, truly centered -->
+      <div class="mb-10">
         <PostHeader
           title={frontmatter.title}
           description={frontmatter.description}
@@ -108,11 +114,8 @@ const pageUrl = Astro.url.href;
         />
       </div>
 
-      <!-- Affiliate disclosure -->
-      {frontmatter.affiliateDisclosure && <AffiliateDisclosure />}
-
-      <!-- Ad slot: top leaderboard -->
-      <AdSlot slot="leaderboard" id="post-top" />
+      <!-- Editorial separator -->
+      <hr class="border-border mb-10" />
 
       <!-- Two-column layout: content + sidebar -->
       <div class="flex gap-10 lg:gap-12">

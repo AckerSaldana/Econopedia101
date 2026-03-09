@@ -1,7 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import HeroSection from '../components/home/HeroSection.astro';
-import ContentPillars from '../components/home/ContentPillars.astro';
 import FeaturedPost from '../components/home/FeaturedPost.astro';
 import PostGrid from '../components/home/PostGrid.astro';
 import RecentPosts from '../components/home/RecentPosts.astro';
@@ -9,7 +8,6 @@ import NewsletterCTA from '../components/home/NewsletterCTA.astro';
 import ToolsPreview from '../components/home/ToolsPreview.astro';
 import SidebarWidget from '../components/home/SidebarWidget.astro';
 import PostCardCompact from '../components/blog/PostCardCompact.astro';
-import MarketTicker from '../components/common/MarketTicker.astro';
 import { SITE } from '../lib/constants';
 import { getCollection } from 'astro:content';
 
@@ -23,9 +21,6 @@ const editorialPicks = allPosts.slice(0, 5);
 ---
 
 <BaseLayout title={SITE.title} description={SITE.description}>
-  <MarketTicker />
-  <ContentPillars />
-
   <HeroSection>
     <FeaturedPost slot="featured" post={featuredPost} />
     <SidebarWidget slot="sidebar" title="Editor's Picks">

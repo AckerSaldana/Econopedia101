@@ -32,7 +32,7 @@ const {
 } = Astro.props;
 ---
 
-<header class="space-y-8">
+<header class="space-y-4">
   <!-- Categories -->
   <div class="flex flex-wrap items-center gap-2">
     {categories.map((cat) => (
@@ -51,7 +51,7 @@ const {
   </p>
 
   <!-- Author & meta row -->
-  <div class="flex flex-wrap items-center gap-4 text-sm text-text-secondary">
+  <div class="flex flex-wrap items-center gap-4 text-sm text-text-secondary pt-2">
     <div class="flex items-center gap-3">
       <Image
         src={author.avatar}
@@ -86,7 +86,7 @@ const {
   </div>
 
   <!-- Cover image -->
-  <div class="overflow-hidden mt-2">
+  <div class="overflow-hidden pt-2">
     <Image
       src={cover}
       alt={coverAlt}

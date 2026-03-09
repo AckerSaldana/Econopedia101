@@ -2,7 +2,9 @@
 import Logo from './Logo.astro';
 import ThemeToggle from './ThemeToggle.astro';
 import MobileMenu from './MobileMenu.tsx';
+import MarketTicker from './MarketTicker.astro';
 import Container from '../ui/Container.astro';
+import { CATEGORIES } from '../../lib/constants';
 
 const today = new Date();
 const formattedDate = today.toLocaleDateString('en-GB', {
@@ -11,37 +13,168 @@ const formattedDate = today.toLocaleDateString('en-GB', {
   month: 'long',
   day: 'numeric',
 });
+
+const categories = [
+  { key: 'trading', ...CATEGORIES.trading },
+  { key: 'economics', ...CATEGORIES.economics },
+  { key: 'finance', ...CATEGORIES.finance },
+  { key: 'business', ...CATEGORIES.business },
+  { key: 'banking-insurance', ...CATEGORIES['banking-insurance'] },
+  { key: 'education', ...CATEGORIES.education },
+];
+
+const currentPath = Astro.url.pathname;
 ---
 
-<header class="sticky top-0 z-50 bg-background">
-  <Container>
-    <div class="grid grid-cols-[1fr_auto_1fr] items-center py-3.5">
-      <!-- Left: date -->
-      <div>
+<!-- Sentinel for IntersectionObserver (placed before header) -->
+<div id="header-sentinel" class="h-0 w-0" aria-hidden="true"></div>
+
+<header id="site-header" class="sticky top-0 z-50 bg-background">
+  <!-- Tier 1: Brand Stripe -->
+  <div class="h-[3px] bg-accent"></div>
+
+  <!-- Tier 2: Utility Bar (desktop only, hides on scroll) -->
+  <div class="header-utility hidden lg:block overflow-hidden transition-[max-height,opacity] duration-300 ease-in-out border-b border-border">
+    <Container>
+      <div class="flex items-center justify-between py-1">
         <time
           datetime={today.toISOString().split('T')[0]}
-          class="hidden lg:block text-[11px] tracking-wide text-text-muted"
+          class="text-[11px] uppercase tracking-wider text-text-muted"
         >
           {formattedDate}
         </time>
+        <div class="flex items-center gap-4">
+          <nav class="flex items-center gap-4">
+            <a href="/blog" class="text-[11px] uppercase tracking-wider text-text-muted hover:text-text-primary transition-colors">Blog</a>
+            <a href="/about" class="text-[11px] uppercase tracking-wider text-text-muted hover:text-text-primary transition-colors">About</a>
+            <a href="/tools" class="text-[11px] uppercase tracking-wider text-text-muted hover:text-text-primary transition-colors">Tools</a>
+          </nav>
+          <ThemeToggle />
+        </div>
       </div>
+    </Container>
+  </div>
 
-      <!-- Center: logo -->
-      <Logo />
-
-      <!-- Right: utility nav + actions -->
-      <div class="flex items-center justify-end gap-5">
-        <nav class="hidden lg:flex items-center gap-4">
-          <a href="/blog" class="text-xs text-text-secondary hover:text-text-primary transition-colors">Blog</a>
-          <a href="/about" class="text-xs text-text-secondary hover:text-text-primary transition-colors">About</a>
-          <a href="/tools" class="text-xs text-text-secondary hover:text-text-primary transition-colors">Tools</a>
-        </nav>
-        <ThemeToggle />
-        <MobileMenu client:idle />
+  <!-- Tier 2b: Masthead — Full (hides on scroll) -->
+  <div class="header-masthead-full overflow-hidden transition-[max-height,opacity] duration-300 ease-in-out">
+    <Container>
+      <div class="flex items-center justify-center py-3 lg:py-4">
+        <Logo />
       </div>
-    </div>
-  </Container>
+    </Container>
+    <div class="border-t border-border"></div>
+  </div>
 
-  <!-- Bottom hairline -->
-  <div class="border-t border-border"></div>
+  <!-- Tier 2c: Masthead — Compact (shows on scroll) -->
+  <div class="header-masthead-compact overflow-hidden transition-[max-height,opacity] duration-300 ease-in-out" style="max-height: 0; opacity: 0;">
+    <Container>
+      <div class="flex items-center justify-between py-2">
+        <Logo compact />
+        <div class="flex items-center gap-2">
+          <div class="hidden lg:block">
+            <ThemeToggle />
+          </div>
+          <MobileMenu client:idle />
+        </div>
+      </div>
+    </Container>
+    <div class="border-t border-border"></div>
+  </div>
+
+  <!-- Tier 3: Category Nav -->
+  <div class="border-b border-border">
+    <Container wide>
+      <nav class="header-category-nav flex items-center lg:justify-center gap-0 py-2 overflow-x-auto" aria-label="Content sections">
+        {categories.map((cat, index) => {
+          const isActive = currentPath.startsWith(`/${cat.slug}`);
+          return (
+            <>
+              {index > 0 && (
+                <span class="w-px h-4 bg-border flex-shrink-0" aria-hidden="true"></span>
+              )}
+              <a
+                href={`/${cat.slug}`}
+                class="relative flex-shrink-0 px-4 lg:px-6 py-1 text-xs font-bold uppercase tracking-wider text-text-secondary hover:text-accent transition-colors whitespace-nowrap group"
+                aria-current={isActive ? 'page' : undefined}
+              >
+                {cat.label}
+                <span
+                  class:list={[
+                    'absolute bottom-0 left-3 right-3 h-[2px] bg-accent transition-transform duration-200 origin-left',
+                    isActive ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100',
+                  ]}
+                ></span>
+              </a>
+            </>
+          );
+        })}
+      </nav>
+    </Container>
+  </div>
+
+  <!-- Tier 4: Market Ticker -->
+  <div class="bg-surface-elevated">
+    <MarketTicker />
+  </div>
 </header>
+
+<script>
+  function initHeaderScroll() {
+    const sentinel = document.getElementById('header-sentinel');
+    const header = document.getElementById('site-header');
+    if (!sentinel || !header) return;
+
+    const utilityBar = header.querySelector('.header-utility') as HTMLElement | null;
+    const mastheadFull = header.querySelector('.header-masthead-full') as HTMLElement | null;
+    const mastheadCompact = header.querySelector('.header-masthead-compact') as HTMLElement | null;
+
+    function collapse() {
+      if (utilityBar) {
+        utilityBar.style.maxHeight = '0';
+        utilityBar.style.opacity = '0';
+      }
+      if (mastheadFull) {
+        mastheadFull.style.maxHeight = '0';
+        mastheadFull.style.opacity = '0';
+      }
+      if (mastheadCompact) {
+        mastheadCompact.style.maxHeight = '60px';
+        mastheadCompact.style.opacity = '1';
+      }
+    }
+
+    function expand() {
+      if (utilityBar) {
+        utilityBar.style.maxHeight = '40px';
+        utilityBar.style.opacity = '1';
+      }
+      if (mastheadFull) {
+        mastheadFull.style.maxHeight = '120px';
+        mastheadFull.style.opacity = '1';
+      }
+      if (mastheadCompact) {
+        mastheadCompact.style.maxHeight = '0';
+        mastheadCompact.style.opacity = '0';
+      }
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          expand();
+        } else {
+          collapse();
+        }
+      },
+      { threshold: 0 }
+    );
+
+    observer.observe(sentinel);
+
+    // Cleanup on page swap (View Transitions)
+    document.addEventListener('astro:before-swap', () => observer.disconnect(), { once: true });
+  }
+
+  initHeaderScroll();
+  document.addEventListener('astro:after-swap', initHeaderScroll);
+</script>

@@ -3,8 +3,8 @@ import Container from '../ui/Container.astro';
 
 const tools = [
   {
-    name: 'Compound Interest Calculator',
-    description: 'See how your money grows over time with compound interest.',
+    name: 'Compound Interest',
+    description: 'See how your money grows over time with the power of compounding.',
     href: '/tools/compound-interest-calculator',
   },
   {
@@ -14,41 +14,73 @@ const tools = [
   },
   {
     name: 'Inflation Calculator',
-    description: 'Understand how inflation affects your purchasing power.',
+    description: 'Understand how inflation erodes your purchasing power over time.',
     href: '/tools/inflation-calculator',
   },
   {
-    name: 'Profit & Loss Calculator',
+    name: 'Profit & Loss',
     description: 'Track your trading profits and losses with precision.',
     href: '/tools/profit-loss-calculator',
   },
 ];
 ---
 
-<section class="py-5 lg:py-6">
+<section class="py-(--spacing-section) bg-surface-elevated border-y border-border">
   <Container>
-    <!-- Economist-style section heading -->
-    <div class="border-t-2 border-text-primary pt-3 mb-4 flex items-baseline justify-between">
+    <!-- Section heading -->
+    <div class="border-t-2 border-text-primary pt-3 mb-8 flex items-baseline justify-between">
       <h2 class="text-xs font-bold uppercase tracking-[0.12em] text-text-primary">Interactive Tools</h2>
       <a href="/tools" class="text-[10px] text-text-muted hover:text-accent transition-colors">
         View all &rarr;
       </a>
     </div>
 
-    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-px bg-border border border-border">
-      {tools.map((tool) => (
+    <!-- Tools grid -->
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      {tools.map((tool, i) => (
         <a
           href={tool.href}
-          class="group block p-4 bg-background hover:bg-surface-elevated transition-colors"
+          class="group block bg-background border border-border p-5 hover:border-accent transition-all duration-200"
         >
-          <h3 class="font-bold text-text-primary text-xs mb-1 group-hover:text-accent transition-colors">
+          <!-- Icon -->
+          <div class="w-10 h-10 flex items-center justify-center border border-border group-hover:border-accent group-hover:text-accent text-text-secondary transition-colors mb-4">
+            {i === 0 && (
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+              </svg>
+            )}
+            {i === 1 && (
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="1" x2="12" y2="23" />
+                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+              </svg>
+            )}
+            {i === 2 && (
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="20" x2="12" y2="10" />
+                <line x1="18" y1="20" x2="18" y2="4" />
+                <line x1="6" y1="20" x2="6" y2="16" />
+              </svg>
+            )}
+            {i === 3 && (
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="16" y1="13" x2="8" y2="13" />
+                <line x1="16" y1="17" x2="8" y2="17" />
+              </svg>
+            )}
+          </div>
+
+          <h3 class="font-serif text-lg font-semibold text-text-primary group-hover:text-accent transition-colors leading-snug">
             {tool.name}
           </h3>
-          <p class="text-xs text-text-muted leading-relaxed">
+          <p class="mt-2 text-sm text-text-secondary leading-relaxed">
             {tool.description}
           </p>
-          <span class="inline-block mt-2 text-xs font-medium text-accent">
-            Try it <span aria-hidden="true">&rarr;</span>
+          <span class="inline-flex items-center gap-1 mt-4 text-xs font-semibold uppercase tracking-wider text-accent opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0 transition-all duration-200">
+            Try it
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
           </span>
         </a>
       ))}

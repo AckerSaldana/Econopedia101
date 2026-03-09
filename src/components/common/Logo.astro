@@ -1,11 +1,32 @@
 ---
+interface Props {
+  compact?: boolean;
+}
+
+const { compact = false } = Astro.props;
 ---
 
-<a href="/" class="inline-flex items-baseline gap-0.5 no-underline group">
-  <span class="font-sans text-2xl font-bold uppercase tracking-wide text-text-primary leading-none">
-    Econopedia
-  </span>
-  <span class="font-sans text-2xl font-bold uppercase tracking-wide text-text-secondary leading-none">
-    101
-  </span>
-</a>
+{compact ? (
+  <a href="/" class="inline-flex items-baseline gap-0.5 no-underline">
+    <span class="font-serif text-xl font-semibold tracking-tight text-text-primary leading-none">
+      Econopedia
+    </span>
+    <span class="font-serif text-xl font-semibold tracking-tight text-accent leading-none">
+      101
+    </span>
+  </a>
+) : (
+  <a href="/" class="inline-flex flex-col items-center no-underline group">
+    <div class="flex items-baseline gap-1">
+      <span class="font-serif text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight text-text-primary leading-none">
+        Econopedia
+      </span>
+      <span class="font-serif text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight text-accent leading-none">
+        101
+      </span>
+    </div>
+    <span class="mt-1.5 text-[11px] uppercase tracking-[0.25em] text-text-muted font-sans leading-none">
+      Where Money, Business & Economics Connect
+    </span>
+  </a>
+)}

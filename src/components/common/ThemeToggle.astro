@@ -2,15 +2,13 @@
 ---
 
 <button
-  id="theme-toggle"
   type="button"
-  class="p-2 text-text-secondary hover:text-text-primary hover:bg-surface-elevated transition-colors"
+  class="theme-toggle p-1.5 text-text-secondary hover:text-text-primary transition-colors"
   aria-label="Toggle dark mode"
 >
   <!-- Sun icon (shown in dark mode) -->
   <svg
-    id="theme-icon-sun"
-    class="hidden w-5 h-5"
+    class="theme-icon-sun hidden w-5 h-5"
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 24 24"
     fill="none"
@@ -32,8 +30,7 @@
 
   <!-- Moon icon (shown in light mode) -->
   <svg
-    id="theme-icon-moon"
-    class="w-5 h-5"
+    class="theme-icon-moon w-5 h-5"
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 24 24"
     fill="none"
@@ -48,16 +45,16 @@
 
 <script>
   function initThemeToggle() {
-    const toggle = document.getElementById('theme-toggle');
-    const sunIcon = document.getElementById('theme-icon-sun');
-    const moonIcon = document.getElementById('theme-icon-moon');
+    const toggles = document.querySelectorAll('.theme-toggle');
+    const sunIcons = document.querySelectorAll('.theme-icon-sun');
+    const moonIcons = document.querySelectorAll('.theme-icon-moon');
 
-    if (!toggle || !sunIcon || !moonIcon) return;
+    if (!toggles.length) return;
 
     function updateIcons() {
       const isDark = document.documentElement.classList.contains('dark');
-      sunIcon!.classList.toggle('hidden', !isDark);
-      moonIcon!.classList.toggle('hidden', isDark);
+      sunIcons.forEach((el) => el.classList.toggle('hidden', !isDark));
+      moonIcons.forEach((el) => el.classList.toggle('hidden', isDark));
     }
 
     // Default to light mode; only go dark if explicitly saved
@@ -69,10 +66,12 @@
     }
     updateIcons();
 
-    toggle.addEventListener('click', () => {
-      const isDark = document.documentElement.classList.toggle('dark');
-      localStorage.setItem('theme', isDark ? 'dark' : 'light');
-      updateIcons();
+    toggles.forEach((toggle) => {
+      toggle.addEventListener('click', () => {
+        const isDark = document.documentElement.classList.toggle('dark');
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        updateIcons();
+      });
     });
   }
 

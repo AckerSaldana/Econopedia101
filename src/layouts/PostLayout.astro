@@ -26,8 +26,9 @@ interface Props {
     categories: string[];
     publishedAt: Date;
     updatedAt?: Date;
-    cover: ImageMetadata;
+    cover?: ImageMetadata | string;
     coverAlt: string;
+    coverIsUrl?: boolean;
     leadMagnet?: {
       title: string;
       description: string;
@@ -39,7 +40,7 @@ interface Props {
     name: string;
     role: string;
     bio: string;
-    avatar: ImageMetadata;
+    avatar?: ImageMetadata;
     socials?: {
       twitter?: string;
       linkedin?: string;
@@ -50,6 +51,7 @@ interface Props {
   headings: { depth: number; slug: string; text: string }[];
   readingTime: string;
   relatedPosts?: any[];
+  blocks?: any[];
 }
 
 const { frontmatter, slug, author, headings, readingTime, relatedPosts = [] } = Astro.props;
@@ -111,6 +113,7 @@ const pageUrl = Astro.url.href;
           readingTime={readingTime}
           cover={frontmatter.cover}
           coverAlt={frontmatter.coverAlt}
+          coverIsUrl={frontmatter.coverIsUrl}
         />
       </div>
 
@@ -118,7 +121,7 @@ const pageUrl = Astro.url.href;
       <hr class="border-border mb-10" />
 
       <!-- Two-column layout: content + sidebar -->
-      <div class="flex gap-10 lg:gap-12">
+      <div class="max-w-4xl mx-auto flex gap-10 lg:gap-12">
         <!-- Main content -->
         <div class="flex-1 min-w-0">
           <PostBody>

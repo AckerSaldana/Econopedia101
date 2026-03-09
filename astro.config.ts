@@ -8,7 +8,7 @@ import pagefind from 'astro-pagefind';
 
 export default defineConfig({
   site: 'https://econopedia101.com',
-  output: 'static',
+  output: 'server',
   adapter: cloudflare({
     platformProxy: { enabled: true },
     imageService: 'passthrough',
@@ -25,7 +25,7 @@ export default defineConfig({
     plugins: [tailwindcss()],
   },
   image: {
-    domains: ['econopedia101.com'],
+    domains: ['econopedia101.com', 'xldmpzwqrqoirccvklcn.supabase.co'],
   },
   prefetch: {
     prefetchAll: true,

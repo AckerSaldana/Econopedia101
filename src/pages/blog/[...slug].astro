@@ -1,60 +1,134 @@
 ---
 import { getCollection, getEntry } from 'astro:content';
 import PostLayout from '../../layouts/PostLayout.astro';
+import BlockRenderer from '../../components/blog/BlockRenderer';
+import { supabase } from '../../lib/supabase';
+import type { SupabasePost } from '../../types/post';
 
-export async function getStaticPaths() {
-  const posts = await getCollection('posts', ({ data }) => !data.draft);
-  return posts.map((post) => ({
-    params: { slug: post.slug },
-    props: { post },
-  }));
-}
+const { slug } = Astro.params;
+if (!slug) return Astro.redirect('/404');
 
-const { post } = Astro.props;
-const { Content, headings } = await post.render();
-
-// Get author data
-const authorEntry = await getEntry('authors', post.data.author.id);
-const authorData = authorEntry
-  ? {
-      name: authorEntry.data.name,
-      role: authorEntry.data.role,
-      bio: authorEntry.data.bio,
-      avatar: authorEntry.data.avatar,
-      socials: authorEntry.data.socials,
-    }
-  : {
-      name: post.data.author.id.replace(/-/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase()),
-      role: 'Author',
-      bio: '',
-      avatar: undefined as any,
-      socials: undefined,
-    };
-
-// Calculate reading time from rendered content body
-const wordCount = post.body ? post.body.split(/\s+/).length : 0;
-const minutes = Math.max(1, Math.ceil(wordCount / 200));
-const readingTime = `${minutes} min read`;
-
-// Get related posts (same category, excluding current)
+// 1. Try content collection (MDX posts)
 const allPosts = await getCollection('posts', ({ data }) => !data.draft);
-const relatedPosts = allPosts
-  .filter(
-    (p) =>
-      p.slug !== post.slug &&
-      p.data.categories.some((cat: string) => post.data.categories.includes(cat)),
-  )
-  .sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime())
-  .slice(0, 3);
+const mdxPost = allPosts.find((p) => p.slug === slug);
+
+let Content: any = null;
+let frontmatter: any;
+let authorData: any;
+let headings: any[] = [];
+let readingTime = '';
+let relatedPosts: any[] = [];
+let blocks: any[] | null = null;
+
+if (mdxPost) {
+  const rendered = await mdxPost.render();
+  Content = rendered.Content;
+  headings = rendered.headings;
+
+  const authorEntry = await getEntry('authors', mdxPost.data.author.id);
+  authorData = authorEntry
+    ? {
+        name: authorEntry.data.name,
+        role: authorEntry.data.role,
+        bio: authorEntry.data.bio,
+        avatar: authorEntry.data.avatar,
+        socials: authorEntry.data.socials,
+      }
+    : {
+        name: mdxPost.data.author.id
+          .replace(/-/g, ' ')
+          .replace(/\b\w/g, (c: string) => c.toUpperCase()),
+        role: 'Author',
+        bio: '',
+        avatar: undefined as any,
+        socials: undefined,
+      };
+
+  const wordCount = mdxPost.body ? mdxPost.body.split(/\s+/).length : 0;
+  readingTime = `${Math.max(1, Math.ceil(wordCount / 200))} min read`;
+
+  relatedPosts = allPosts
+    .filter(
+      (p) =>
+        p.slug !== mdxPost.slug &&
+        p.data.categories.some((cat: string) => mdxPost.data.categories.includes(cat)),
+    )
+    .sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime())
+    .slice(0, 3);
+
+  frontmatter = mdxPost.data;
+} else {
+  // 2. Try Supabase
+  const { data } = await supabase
+    .from('posts')
+    .select('*')
+    .eq('slug', slug)
+    .eq('draft', false)
+    .lte('published_at', new Date().toISOString())
+    .single();
+
+  const dbPost = data as SupabasePost | null;
+  if (!dbPost) return Astro.redirect('/404');
+
+  blocks = dbPost.blocks || [];
+
+  headings = blocks
+    .filter((b: any) => b.type === 'heading')
+    .map((b: any) => ({
+      depth: b.level,
+      slug: b.text
+        .toLowerCase()
+        .replace(/[^\w\s-]/g, '')
+        .replace(/[\s_]+/g, '-')
+        .replace(/^-+|-+$/g, ''),
+      text: b.text,
+    }));
+
+  readingTime = `${Math.max(1, Math.ceil((dbPost.word_count || 0) / 200))} min read`;
+
+  authorData = {
+    name: dbPost.author_name,
+    role: 'Author',
+    bio: '',
+    avatar: undefined as any,
+    socials: undefined,
+  };
+
+  try {
+    const authorEntry = await getEntry('authors', dbPost.author_slug);
+    if (authorEntry) {
+      authorData = {
+        name: authorEntry.data.name,
+        role: authorEntry.data.role,
+        bio: authorEntry.data.bio,
+        avatar: authorEntry.data.avatar,
+        socials: authorEntry.data.socials,
+      };
+    }
+  } catch {}
+
+  frontmatter = {
+    title: dbPost.title,
+    description: dbPost.description || '',
+    categories: dbPost.categories,
+    publishedAt: new Date(dbPost.published_at!),
+    updatedAt: dbPost.updated_at ? new Date(dbPost.updated_at) : undefined,
+    cover: dbPost.cover_url || undefined,
+    coverAlt: dbPost.cover_alt || dbPost.title,
+    coverIsUrl: true,
+    leadMagnet: dbPost.lead_magnet || undefined,
+    affiliateDisclosure: dbPost.affiliate_disclosure,
+  };
+}
 ---
 
 <PostLayout
-  frontmatter={post.data}
-  slug={post.slug}
+  frontmatter={frontmatter}
+  slug={slug}
   author={authorData}
   headings={headings}
   readingTime={readingTime}
   relatedPosts={relatedPosts}
 >
-  <Content />
+  {Content ? <Content /> : <BlockRenderer blocks={blocks!} client:load />}
 </PostLayout>

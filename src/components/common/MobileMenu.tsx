@@ -129,7 +129,7 @@ export default function MobileMenu() {
                   className="text-xl font-semibold tracking-tight"
                   style={{
                     color: 'var(--color-text-primary)',
-                    fontFamily: 'var(--font-serif)',
+                    fontFamily: 'var(--font-sans)',
                   }}
                 >
                   Econopedia
@@ -138,7 +138,7 @@ export default function MobileMenu() {
                   className="text-xl font-semibold tracking-tight"
                   style={{
                     color: 'var(--color-accent)',
-                    fontFamily: 'var(--font-serif)',
+                    fontFamily: 'var(--font-sans)',
                   }}
                 >
                   101

@@ -16,23 +16,23 @@
   --color-border: #E5E5E5;
   --color-border-subtle: #F5F5F4;
 
-  --color-accent: #16A34A;
-  --color-accent-hover: #15803D;
-  --color-accent-light: #DCFCE7;
-  --color-accent-dark: #14532D;
-  --color-accent-muted: #BBF7D0;
+  --color-accent: #19155C;
+  --color-accent-hover: #080035;
+  --color-accent-light: #E8E7F0;
+  --color-accent-dark: #080035;
+  --color-accent-muted: #C8C5E0;
 
   --color-secondary: #171717;
   --color-secondary-hover: #262626;
 
-  --color-success: #16A34A;
+  --color-success: #16A34A; /* keep green for semantic success */
   --color-warning: #D97706;
   --color-error: #DC2626;
   --color-info: #2563EB;
 
   --color-cat-trading: #7C3AED;
   --color-cat-economics: #2563EB;
-  --color-cat-finance: #16A34A;
+  --color-cat-finance: #19155C;
   --color-cat-business: #EA580C;
   --color-cat-banking: #0891B2;
   --color-cat-education: #D946EF;
@@ -61,41 +61,48 @@
   --max-w-wide: 80rem;
 }
 
-/* Dark mode via .dark class only (explicit opt-in) */
+/* Dark mode via .dark class only (explicit opt-in)
+ * Warm charcoal base — editorial, not app-like.
+ * Inspired by FT / Bloomberg dark reading modes. */
 .dark {
-  --color-background: #0A0A0A;
-  --color-surface: #171717;
-  --color-surface-elevated: #1C1C1C;
-  --color-text-primary: #FAFAFA;
-  --color-text-secondary: #B0B0B0;
-  --color-text-muted: #737373;
-  --color-border: #262626;
-  --color-border-subtle: #1C1C1C;
-  --color-accent: #34D399;
-  --color-accent-hover: #6EE7B7;
-  --color-accent-light: #14532D;
-  --color-accent-dark: #DCFCE7;
-  --color-accent-muted: #065F46;
-  --color-secondary: #FAFAFA;
-  --color-secondary-hover: #E5E5E5;
+  --color-background: #141413;
+  --color-surface: #1C1C1A;
+  --color-surface-elevated: #262624;
+  --color-text-primary: #E8E6E1;
+  --color-text-secondary: #9D9A93;
+  --color-text-muted: #64615A;
+  --color-border: #302E2A;
+  --color-border-subtle: #242320;
+  --color-accent: #8B86C9;
+  --color-accent-hover: #A9A5D8;
+  --color-accent-light: #1C1A3A;
+  --color-accent-dark: #C8C5E0;
+  --color-accent-muted: #2E2A5C;
+  --color-secondary: #E8E6E1;
+  --color-secondary-hover: #D4D1CB;
 
-  --color-cat-trading: #A78BFA;
-  --color-cat-economics: #60A5FA;
-  --color-cat-finance: #34D399;
-  --color-cat-business: #FB923C;
-  --color-cat-banking: #22D3EE;
-  --color-cat-education: #E879F9;
+  --color-success: #22C55E;
+  --color-warning: #F59E0B;
+  --color-error: #EF4444;
+  --color-info: #3B82F6;
+
+  --color-cat-trading: #9B8ADB;
+  --color-cat-economics: #6B9FE0;
+  --color-cat-finance: #8B86C9;
+  --color-cat-business: #E89040;
+  --color-cat-banking: #3CB8CC;
+  --color-cat-education: #CC7DE0;
 }
 
 /* Footer — always-dark scoped tokens (prevents .dark double-inversion) */
 .footer-dark {
-  --footer-bg: #0A0A0A;
-  --footer-text: #E5E5E5;
-  --footer-text-secondary: #A3A3A3;
-  --footer-text-muted: #737373;
-  --footer-border: #262626;
-  --footer-accent: #16A34A;
-  --footer-accent-hover: #22C55E;
+  --footer-bg: #141413;
+  --footer-text: #E8E6E1;
+  --footer-text-secondary: #9D9A93;
+  --footer-text-muted: #64615A;
+  --footer-border: #302E2A;
+  --footer-accent: #19155C;
+  --footer-accent-hover: #8B86C9;
 }
 
 /* Override font-display to prevent FOUT on page navigations */
@@ -129,6 +136,11 @@ body {
 ::selection {
   background-color: var(--color-accent);
   color: #FFFFFF;
+}
+
+.dark ::selection {
+  background-color: #19155C;
+  color: #E8E6E1;
 }
 
 /* Focus-visible ring for accessibility */

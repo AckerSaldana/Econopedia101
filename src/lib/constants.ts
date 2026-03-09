@@ -28,7 +28,7 @@ export const NAV_ITEMS = [
 export const CATEGORIES = {
   trading: { label: 'Trading', color: '#7C3AED', slug: 'trading', description: 'Forex, crypto, stocks, derivatives — learn to trade with confidence.' },
   economics: { label: 'Economics', color: '#2563EB', slug: 'economics', description: 'Micro & macro concepts simplified for students and curious minds.' },
-  finance: { label: 'Finance', color: '#16A34A', slug: 'finance', description: 'Budgeting, investing, personal finance — manage your money smarter.' },
+  finance: { label: 'Finance', color: '#19155C', slug: 'finance', description: 'Budgeting, investing, personal finance — manage your money smarter.' },
   business: { label: 'Business', color: '#EA580C', slug: 'business', description: 'Entrepreneurship, strategy, and financial management for startups.' },
   'banking-insurance': { label: 'Banking & Insurance', color: '#0891B2', slug: 'banking', description: 'Banking systems, insurance, and the financial sector explained.' },
   education: { label: 'Education', color: '#D946EF', slug: 'education', description: 'GCSE & A-Level resources, study guides, and concept explainers.' },

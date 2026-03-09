@@ -1,6 +1,6 @@
 /* Article typography styles */
 .prose {
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   max-width: var(--max-w-prose);
   line-height: 1.8;
   font-size: 1.125rem;

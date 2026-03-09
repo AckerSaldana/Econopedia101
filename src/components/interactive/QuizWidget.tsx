@@ -60,7 +60,7 @@ export default function QuizWidget({
     return (
       <div className="border p-6" style={{ borderColor: 'var(--color-border)' }}>
         <h3
-          className="font-serif text-xl font-semibold mb-4"
+          className="text-xl font-semibold mb-4"
           style={{ color: 'var(--color-text-primary)' }}
         >
           Quiz Complete
@@ -106,7 +106,7 @@ export default function QuizWidget({
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <h3
-          className="font-serif text-lg font-semibold"
+          className="text-lg font-semibold"
           style={{ color: 'var(--color-text-primary)' }}
         >
           {title}
@@ -132,7 +132,7 @@ export default function QuizWidget({
 
       {/* Question */}
       <p
-        className="font-serif text-base font-medium mb-4 leading-relaxed"
+        className="text-base font-medium mb-4 leading-relaxed"
         style={{ color: 'var(--color-text-primary)' }}
       >
         {current.question}

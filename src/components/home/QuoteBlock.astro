@@ -14,12 +14,12 @@ const { quote, attribution } = Astro.props;
     <blockquote class="relative border-l-2 border-accent/40 pl-6 md:pl-10 py-2 max-w-3xl mx-auto">
       <!-- Subtle decorative quotation mark -->
       <span
-        class="absolute top-0 left-4 md:left-6 text-5xl leading-none text-border font-serif select-none -translate-y-4"
+        class="absolute top-0 left-4 md:left-6 text-5xl leading-none text-border select-none -translate-y-4"
         aria-hidden="true"
       >
         &ldquo;
       </span>
-      <p class="font-serif text-xl md:text-2xl lg:text-3xl italic leading-relaxed text-text-primary">
+      <p class="text-xl md:text-2xl lg:text-3xl italic leading-relaxed text-text-primary">
         {quote}
       </p>
       {attribution && (

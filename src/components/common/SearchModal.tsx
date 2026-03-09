@@ -41,7 +41,7 @@ function extractCategory(url: string): string | null {
 const CATEGORY_COLORS: Record<string, string> = {
   trading: '#7C3AED',
   economics: '#2563EB',
-  finance: '#16A34A',
+  finance: '#19155C',
   business: '#EA580C',
   banking: '#0891B2',
   education: '#D946EF',
@@ -454,7 +454,7 @@ export default function SearchModal() {
         }
 
         .search-header-label {
-          font-family: var(--font-serif);
+          font-family: var(--font-sans);
           font-size: 13px;
           font-weight: 500;
           letter-spacing: 0.02em;
@@ -539,7 +539,7 @@ export default function SearchModal() {
 
         .search-input {
           flex: 1;
-          font-family: var(--font-serif);
+          font-family: var(--font-sans);
           font-size: 20px;
           font-weight: 400;
           line-height: 1.3;
@@ -665,7 +665,7 @@ export default function SearchModal() {
         }
 
         .search-empty-title {
-          font-family: var(--font-serif);
+          font-family: var(--font-sans);
           font-size: 16px;
           font-weight: 400;
           font-style: italic;
@@ -707,8 +707,8 @@ export default function SearchModal() {
           display: flex;
           align-items: center;
           gap: 0;
-          padding: 14px 20px 14px 0;
-          margin: 0 20px;
+          padding: 14px 20px;
+          margin: 0;
           text-decoration: none;
           border-bottom: 1px solid var(--color-border-subtle);
           transition: background-color 0.1s ease;
@@ -721,14 +721,7 @@ export default function SearchModal() {
         }
 
         .search-result-item--selected {
-          margin: 0;
-          padding-left: 20px;
-          padding-right: 20px;
           background: var(--color-surface-elevated);
-        }
-
-        .search-result-item--selected:last-child {
-          border-bottom: none;
         }
 
         /* -- Left accent bar -- */
@@ -745,10 +738,6 @@ export default function SearchModal() {
         .search-result-content {
           flex: 1;
           min-width: 0;
-          padding-left: 0;
-        }
-
-        .search-result-item--selected .search-result-content {
           padding-left: 12px;
         }
 
@@ -770,7 +759,7 @@ export default function SearchModal() {
         }
 
         .search-result-title {
-          font-family: var(--font-serif);
+          font-family: var(--font-sans);
           font-size: 15px;
           font-weight: 500;
           line-height: 1.35;
@@ -834,7 +823,7 @@ export default function SearchModal() {
         }
 
         .search-footer-brand {
-          font-family: var(--font-serif);
+          font-family: var(--font-sans);
           font-size: 11px;
           font-weight: 500;
           color: var(--color-text-muted);

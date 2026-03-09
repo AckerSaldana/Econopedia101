@@ -30,12 +30,12 @@ export function getCategoryColor(category: string): string {
   const colors: Record<string, string> = {
     trading: '#7C3AED',
     economics: '#2563EB',
-    finance: '#16A34A',
+    finance: '#19155C',
     business: '#EA580C',
     'banking-insurance': '#0891B2',
     education: '#D946EF',
   };
-  return colors[category] || '#16A34A';
+  return colors[category] || '#19155C';
 }
 
 export function getCategoryLabel(category: string): string {

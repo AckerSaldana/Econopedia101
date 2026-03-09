@@ -19,7 +19,7 @@ export default function CalculatorShell({
     <div className="max-w-2xl mx-auto">
       <div className="border-t-2 border-[var(--color-accent)] pt-6 mb-8">
         <h2
-          className="font-serif text-2xl font-semibold mb-2"
+          className="text-2xl font-semibold mb-2"
           style={{ color: 'var(--color-text-primary)' }}
         >
           {title}

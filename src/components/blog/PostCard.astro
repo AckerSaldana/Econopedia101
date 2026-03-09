@@ -28,13 +28,13 @@ const { title, description, cover, coverAlt, categories, publishedAt, author } =
   class="group block border-b border-border last:border-b-0"
 >
   <!-- Image: no rounded corners, no hover scale, subtle opacity shift -->
-  <div class="aspect-[3/2] overflow-hidden">
+  <div class="aspect-[3/2] overflow-hidden relative">
     <Image
       src={cover}
       alt={coverAlt}
       widths={[400, 600, 800]}
       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-      class="w-full h-full object-cover group-hover:opacity-90 transition-opacity duration-300"
+      class="absolute inset-0 w-full h-full object-cover group-hover:opacity-90 transition-opacity duration-300"
     />
   </div>
 
@@ -42,7 +42,7 @@ const { title, description, cover, coverAlt, categories, publishedAt, author } =
   <div class="pt-3 pb-3">
     {categories[0] && <CategoryBadge category={categories[0]} />}
 
-    <h3 class="font-serif text-base lg:text-lg font-semibold leading-snug text-text-primary mt-2 group-hover:text-accent transition-colors duration-200">
+    <h3 class="text-base lg:text-lg font-semibold leading-snug text-text-primary mt-2 group-hover:text-accent transition-colors duration-200">
       {title}
     </h3>
 

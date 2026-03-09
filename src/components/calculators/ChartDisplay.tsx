@@ -24,8 +24,8 @@ interface ChartDisplayProps {
   formatY?: (value: number) => string;
 }
 
-const ACCENT = '#16A34A';
-const ACCENT_LIGHT = '#DCFCE7';
+const ACCENT = '#19155C';
+const ACCENT_LIGHT = '#E8E7F0';
 
 function CustomTooltip({
   active,

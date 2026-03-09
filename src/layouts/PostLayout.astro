@@ -10,10 +10,13 @@ import RelatedPosts from '../components/blog/RelatedPosts.astro';
 import TableOfContents from '../components/blog/TableOfContents.astro';
 import ReadingProgress from '../components/blog/ReadingProgress';
 import LeadMagnetCTA from '../components/blog/LeadMagnetCTA.astro';
+import LikeButton from '../components/blog/LikeButton';
+import CommentsSection from '../components/blog/CommentsSection';
 import { getCategoryLabel } from '../lib/utils';
 import { CATEGORIES } from '../lib/constants';
 
 interface Props {
+  slug: string;
   frontmatter: {
     title: string;
     description: string;
@@ -46,7 +49,7 @@ interface Props {
   relatedPosts?: any[];
 }
 
-const { frontmatter, author, headings, readingTime, relatedPosts = [] } = Astro.props;
+const { frontmatter, slug, author, headings, readingTime, relatedPosts = [] } = Astro.props;
 
 const primaryCategory = frontmatter.categories[0];
 const categoryMeta = CATEGORIES[primaryCategory as keyof typeof CATEGORIES];
@@ -120,9 +123,10 @@ const pageUrl = Astro.url.href;
             </div>
           )}
 
-          <!-- Share buttons -->
-          <div class="mt-10 pt-8 border-t border-border">
+          <!-- Share buttons + Like -->
+          <div class="mt-10 pt-8 border-t border-border flex items-center justify-between flex-wrap gap-4">
             <ShareButtons url={pageUrl} title={frontmatter.title} />
+            <LikeButton slug={slug} client:idle />
           </div>
 
           <!-- Author bio -->
@@ -133,6 +137,11 @@ const pageUrl = Astro.url.href;
           <!-- Ad slot placeholder -->
           <div class="mt-10" data-ad-slot="post-bottom" aria-hidden="true">
             <!-- Ad placeholder -->
+          </div>
+
+          <!-- Comments -->
+          <div class="mt-10 pt-8 pb-16 border-t border-border">
+            <CommentsSection slug={slug} client:idle />
           </div>
         </div>
 
@@ -146,7 +155,7 @@ const pageUrl = Astro.url.href;
 
       <!-- Related posts -->
       {relatedPosts.length > 0 && (
-        <div class="mt-16 pt-10 border-t border-border">
+        <div class="mt-16 pt-10 pb-16 border-t border-border">
           <RelatedPosts posts={relatedPosts} />
         </div>
       )}

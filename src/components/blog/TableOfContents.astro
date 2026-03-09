@@ -15,8 +15,8 @@ const filteredHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
 if (filteredHeadings.length === 0) return;
 ---
 
-<nav class="bg-surface-elevated rounded-xl p-6" aria-label="Table of contents">
-  <h2 class="text-sm font-semibold text-text-primary uppercase tracking-wider mb-4">
+<nav class="border-l-2 border-border pl-5" aria-label="Table of contents" data-toc>
+  <h2 class="text-sm font-semibold text-text-primary uppercase tracking-wider mb-3">
     On this page
   </h2>
 
@@ -25,6 +25,7 @@ if (filteredHeadings.length === 0) return;
       <li class={heading.depth === 3 ? 'pl-4' : ''}>
         <a
           href={`#${heading.slug}`}
+          data-toc-link={heading.slug}
           class="text-sm text-text-secondary hover:text-accent transition-colors leading-snug block py-0.5"
         >
           {heading.text}
@@ -33,3 +34,72 @@ if (filteredHeadings.length === 0) return;
     ))}
   </ul>
 </nav>
+
+<script>
+  function initTocHighlight() {
+    const toc = document.querySelector('[data-toc]');
+    if (!toc) return;
+
+    const links = toc.querySelectorAll<HTMLAnchorElement>('[data-toc-link]');
+    if (links.length === 0) return;
+
+    const headings = Array.from(
+      document.querySelectorAll<HTMLElement>('.prose h2, .prose h3')
+    ).filter((h) => h.id);
+
+    if (headings.length === 0) return;
+
+    let currentId = '';
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        // Find the topmost visible heading
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            currentId = entry.target.id;
+            break;
+          }
+        }
+
+        // If no heading is intersecting, find the last one scrolled past
+        const anyIntersecting = entries.some((e) => e.isIntersecting);
+        if (!anyIntersecting) {
+          const scrollY = window.scrollY;
+          for (let i = headings.length - 1; i >= 0; i--) {
+            if (headings[i].offsetTop <= scrollY + 160) {
+              currentId = headings[i].id;
+              break;
+            }
+          }
+        }
+
+        // Update active states
+        links.forEach((link) => {
+          const slug = link.getAttribute('data-toc-link');
+          if (slug === currentId) {
+            link.classList.add('text-accent', 'font-medium');
+            link.classList.remove('text-text-secondary');
+          } else {
+            link.classList.remove('text-accent', 'font-medium');
+            link.classList.add('text-text-secondary');
+          }
+        });
+      },
+      {
+        rootMargin: '-128px 0px -60% 0px',
+        threshold: 0,
+      }
+    );
+
+    headings.forEach((h) => observer.observe(h));
+
+    // Cleanup on page swap
+    document.addEventListener('astro:before-swap', () => observer.disconnect(), {
+      once: true,
+    });
+  }
+
+  // Initialize on first load and after Astro page transitions
+  initTocHighlight();
+  document.addEventListener('astro:after-swap', initTocHighlight);
+</script>

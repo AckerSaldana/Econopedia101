@@ -19,6 +19,7 @@
   line-height: 1.25;
   color: var(--color-text-primary);
   letter-spacing: -0.02em;
+  scroll-margin-top: 8rem;
 }
 
 .prose h1 {

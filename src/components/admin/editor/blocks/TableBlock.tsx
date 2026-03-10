@@ -1,4 +1,4 @@
-import { Plus, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import type { TableBlock as TableBlockType } from '../../../../types/blocks';
 
 interface TableBlockProps {
@@ -42,34 +42,20 @@ export default function TableBlock({ block, onChange }: TableBlockProps) {
     onChange({ ...block, rows });
   };
 
-  const cellStyle: React.CSSProperties = {
-    backgroundColor: 'var(--color-background)',
-    color: 'var(--color-text-primary)',
-    borderColor: 'var(--color-border)',
-  };
-
   return (
     <div className="w-full">
-      <label
-        className="block text-xs font-medium uppercase tracking-wider mb-2"
-        style={{ color: 'var(--color-text-muted)' }}
-      >
-        Table
-      </label>
-
       <div className="overflow-x-auto">
-        <table
-          className="w-full border-collapse border"
-          style={{ borderColor: 'var(--color-border)' }}
-        >
-          {/* Header row */}
+        <table className="w-full" style={{ borderCollapse: 'collapse', border: '1px solid var(--color-border)' }}>
           <thead>
             <tr>
               {block.headers.map((header, colIndex) => (
                 <th
                   key={colIndex}
-                  className="relative border p-0"
-                  style={{ borderColor: 'var(--color-border)' }}
+                  className="relative p-0"
+                  style={{
+                    backgroundColor: 'var(--color-surface-elevated)',
+                    borderBottom: '1px solid var(--color-border)',
+                  }}
                 >
                   <div className="flex items-center">
                     <input
@@ -77,10 +63,16 @@ export default function TableBlock({ block, onChange }: TableBlockProps) {
                       value={header}
                       onChange={(e) => updateHeader(colIndex, e.target.value)}
                       placeholder={`Header ${colIndex + 1}`}
-                      className="w-full px-2.5 py-2 text-xs font-semibold uppercase tracking-wider border-0 focus:outline-none"
+                      className="w-full outline-none"
                       style={{
-                        backgroundColor: 'var(--color-surface-elevated, var(--color-background))',
+                        padding: '8px 10px',
+                        fontSize: '11px',
+                        fontWeight: 600,
+                        textTransform: 'uppercase' as const,
+                        letterSpacing: '0.05em',
+                        backgroundColor: 'transparent',
                         color: 'var(--color-text-secondary)',
+                        border: 'none',
                         minWidth: '100px',
                       }}
                     />
@@ -88,9 +80,8 @@ export default function TableBlock({ block, onChange }: TableBlockProps) {
                       <button
                         type="button"
                         onClick={() => removeColumn(colIndex)}
-                        className="flex-shrink-0 p-1 mr-1 transition-opacity hover:opacity-70"
-                        style={{ color: 'var(--color-text-muted)' }}
-                        title="Remove column"
+                        className="flex-shrink-0 p-1 mr-1"
+                        style={{ color: 'var(--color-text-muted)', background: 'none', border: 'none', cursor: 'pointer', opacity: 0.5 }}
                       >
                         <X size={10} />
                       </button>
@@ -98,42 +89,36 @@ export default function TableBlock({ block, onChange }: TableBlockProps) {
                   </div>
                 </th>
               ))}
-              <th className="w-8 border p-0" style={{ borderColor: 'var(--color-border)' }} />
+              <th className="w-8 p-0" style={{ backgroundColor: 'var(--color-surface-elevated)', borderBottom: '1px solid var(--color-border)' }} />
             </tr>
           </thead>
-
-          {/* Data rows */}
           <tbody>
             {block.rows.map((row, rowIndex) => (
-              <tr key={rowIndex}>
+              <tr key={rowIndex} style={{ borderBottom: '1px solid var(--color-border)' }}>
                 {row.map((cell, colIndex) => (
-                  <td
-                    key={colIndex}
-                    className="border p-0"
-                    style={{ borderColor: 'var(--color-border)' }}
-                  >
+                  <td key={colIndex} className="p-0">
                     <input
                       type="text"
                       value={cell}
-                      onChange={(e) =>
-                        updateCell(rowIndex, colIndex, e.target.value)
-                      }
+                      onChange={(e) => updateCell(rowIndex, colIndex, e.target.value)}
                       placeholder="..."
-                      className="w-full px-2.5 py-2 text-sm border-0 focus:outline-none"
-                      style={cellStyle}
+                      className="w-full outline-none"
+                      style={{
+                        padding: '10px 12px',
+                        fontSize: '14px',
+                        backgroundColor: 'var(--color-background)',
+                        color: 'var(--color-text-primary)',
+                        border: 'none',
+                      }}
                     />
                   </td>
                 ))}
-                <td
-                  className="w-8 border p-0 text-center"
-                  style={{ borderColor: 'var(--color-border)' }}
-                >
+                <td className="w-8 p-0 text-center">
                   <button
                     type="button"
                     onClick={() => removeRow(rowIndex)}
-                    className="p-1 transition-opacity hover:opacity-70"
-                    style={{ color: 'var(--color-text-muted)' }}
-                    title="Remove row"
+                    className="p-1"
+                    style={{ color: 'var(--color-text-muted)', background: 'none', border: 'none', cursor: 'pointer', opacity: 0.5 }}
                   >
                     <X size={12} />
                   </button>
@@ -144,33 +129,36 @@ export default function TableBlock({ block, onChange }: TableBlockProps) {
         </table>
       </div>
 
-      {/* Add row / column buttons */}
       <div className="flex items-center gap-3 mt-2">
         <button
           type="button"
           onClick={addRow}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium border transition-colors hover:opacity-80"
           style={{
+            background: 'none',
+            border: 'none',
+            padding: 0,
+            cursor: 'pointer',
+            fontSize: '13px',
+            fontWeight: 500,
             color: 'var(--color-accent)',
-            borderColor: 'var(--color-border)',
-            backgroundColor: 'transparent',
           }}
         >
-          <Plus size={12} />
-          Add row
+          + Add row
         </button>
         <button
           type="button"
           onClick={addColumn}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium border transition-colors hover:opacity-80"
           style={{
+            background: 'none',
+            border: 'none',
+            padding: 0,
+            cursor: 'pointer',
+            fontSize: '13px',
+            fontWeight: 500,
             color: 'var(--color-accent)',
-            borderColor: 'var(--color-border)',
-            backgroundColor: 'transparent',
           }}
         >
-          <Plus size={12} />
-          Add column
+          + Add column
         </button>
       </div>
     </div>

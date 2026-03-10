@@ -9,8 +9,9 @@ interface Props {
     data: {
       title: string;
       description: string;
-      cover: ImageMetadata;
+      cover: ImageMetadata | string;
       coverAlt: string;
+      coverIsUrl?: boolean;
       categories: string[];
       publishedAt: Date;
       author: { id: string };
@@ -20,7 +21,7 @@ interface Props {
 }
 
 const { post, readingTime } = Astro.props;
-const { title, description, cover, coverAlt, categories, publishedAt, author } = post.data;
+const { title, description, cover, coverAlt, coverIsUrl, categories, publishedAt, author } = post.data;
 
 const authorName = author.id.replace(/-/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase());
 ---
@@ -28,13 +29,25 @@ const authorName = author.id.replace(/-/g, ' ').replace(/\b\w/g, (c: string) => 
 <a href={`/blog/${post.slug}`} class="group block">
   <!-- Featured image — 2:1 aspect ratio for compact hero -->
   <div class="aspect-[2/1] overflow-hidden mb-3">
-    <Image
-      src={cover}
-      alt={coverAlt}
-      widths={[400, 600, 800]}
-      sizes="(max-width: 1024px) 100vw, 66vw"
-      class="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500"
-    />
+    {coverIsUrl ? (
+      <Image
+        src={cover as string}
+        alt={coverAlt}
+        width={1200}
+        height={600}
+        loading="eager"
+        class="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500"
+      />
+    ) : (
+      <Image
+        src={cover as ImageMetadata}
+        alt={coverAlt}
+        loading="eager"
+        widths={[400, 600, 800]}
+        sizes="(max-width: 1024px) 100vw, 66vw"
+        class="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500"
+      />
+    )}
   </div>
 
   <!-- Category label -->

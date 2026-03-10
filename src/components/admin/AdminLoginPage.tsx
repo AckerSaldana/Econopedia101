@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { inputBase, labelBase, btnPrimary } from './adminStyles';
 
 interface AdminLoginPageProps {
   signInWithGoogle: () => void;
@@ -21,28 +22,61 @@ export default function AdminLoginPage({ signInWithGoogle, signInWithEmail }: Ad
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
+    <div
+      className="min-h-screen flex items-center justify-center p-4"
+      style={{ backgroundColor: 'var(--color-background)' }}
+    >
       <div
-        className="w-full max-w-sm border p-8"
-        style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-surface)' }}
+        className="w-full max-w-[400px] p-10"
+        style={{
+          borderTop: '2px solid var(--color-accent)',
+          border: '1px solid var(--color-border)',
+          borderTopWidth: '2px',
+          borderTopColor: 'var(--color-accent)',
+          backgroundColor: 'var(--color-surface)',
+        }}
       >
+        <p
+          className="text-[15px] font-semibold uppercase mb-1"
+          style={{
+            fontFamily: 'var(--font-serif)',
+            letterSpacing: '0.08em',
+            color: 'var(--color-accent)',
+          }}
+        >
+          Econopedia 101
+        </p>
         <h1
-          className="text-2xl font-semibold mb-1"
-          style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-text-primary)' }}
+          className="mb-1"
+          style={{
+            fontFamily: 'var(--font-serif)',
+            fontSize: '28px',
+            fontWeight: 600,
+            letterSpacing: '-0.01em',
+            color: 'var(--color-text-primary)',
+          }}
         >
           Admin Login
         </h1>
-        <p className="text-sm mb-6" style={{ color: 'var(--color-text-muted)' }}>
+        <p className="text-sm mb-8" style={{ color: 'var(--color-text-muted)' }}>
           Sign in to manage Econopedia 101
         </p>
 
         <button
           onClick={signInWithGoogle}
-          className="w-full border px-4 py-2.5 text-sm font-semibold mb-6 hover:opacity-80 transition-opacity"
+          className="w-full px-4 py-2.5 text-sm font-semibold mb-6"
           style={{
-            borderColor: 'var(--color-border)',
+            border: '1px solid var(--color-border)',
             color: 'var(--color-text-primary)',
             backgroundColor: 'var(--color-background)',
+            cursor: 'pointer',
+            transition: 'border-color 150ms ease',
+          }}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--color-accent)';
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--color-border)';
           }}
         >
           Continue with Google
@@ -57,49 +91,44 @@ export default function AdminLoginPage({ signInWithGoogle, signInWithEmail }: Ad
         </div>
 
         <form onSubmit={handleEmailLogin}>
-          <label className="block text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: 'var(--color-text-muted)' }}>
-            Email
-          </label>
+          <label style={labelBase}>Email</label>
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full border px-3 py-2 text-sm mb-3 outline-none"
-            style={{
-              borderColor: 'var(--color-border)',
-              backgroundColor: 'var(--color-background)',
-              color: 'var(--color-text-primary)',
-            }}
+            className="mb-4"
+            style={inputBase}
             required
           />
 
-          <label className="block text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: 'var(--color-text-muted)' }}>
-            Password
-          </label>
+          <label style={labelBase}>Password</label>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full border px-3 py-2 text-sm mb-4 outline-none"
-            style={{
-              borderColor: 'var(--color-border)',
-              backgroundColor: 'var(--color-background)',
-              color: 'var(--color-text-primary)',
-            }}
+            className="mb-4"
+            style={inputBase}
             required
           />
 
           {error && (
-            <p className="text-xs mb-3" style={{ color: '#DC2626' }}>
+            <div
+              className="mb-4 px-3 py-2.5 text-xs"
+              style={{
+                borderLeft: '3px solid var(--color-error)',
+                backgroundColor: 'rgba(220, 38, 38, 0.06)',
+                color: 'var(--color-error)',
+              }}
+            >
               {error}
-            </p>
+            </div>
           )}
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
-            style={{ backgroundColor: 'var(--color-accent)' }}
+            className="w-full py-3 disabled:opacity-50"
+            style={btnPrimary}
           >
             {loading ? 'Signing in...' : 'Sign In'}
           </button>

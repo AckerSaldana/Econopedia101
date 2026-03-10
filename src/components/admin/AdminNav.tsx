@@ -20,14 +20,22 @@ export default function AdminNav({ path, navigate, signOut }: AdminNavProps) {
 
   return (
     <nav
-      className="w-[220px] flex-shrink-0 border-r flex flex-col h-screen sticky top-0"
+      className="w-[240px] flex-shrink-0 border-r flex flex-col"
       style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-surface)' }}
     >
-      <div className="p-5 border-b" style={{ borderColor: 'var(--color-border)' }}>
+      <div
+        className="p-6"
+        style={{ borderBottom: '2px solid var(--color-accent)' }}
+      >
         <a
           href="/"
-          className="text-sm font-semibold uppercase tracking-wider"
-          style={{ color: 'var(--color-accent)' }}
+          className="text-[15px] font-semibold uppercase"
+          style={{
+            fontFamily: 'var(--font-serif)',
+            letterSpacing: '0.08em',
+            color: 'var(--color-accent)',
+            textDecoration: 'none',
+          }}
         >
           Econopedia 101
         </a>
@@ -44,14 +52,31 @@ export default function AdminNav({ path, navigate, signOut }: AdminNavProps) {
             <button
               key={item.href}
               onClick={() => navigate(item.href)}
-              className="w-full flex items-center gap-2.5 px-5 py-2.5 text-sm text-left transition-colors"
+              className="w-full flex items-center gap-2.5 px-5 py-2.5 text-sm text-left"
               style={{
-                backgroundColor: active ? 'var(--color-accent-light)' : 'transparent',
+                backgroundColor: 'transparent',
                 color: active ? 'var(--color-accent)' : 'var(--color-text-secondary)',
-                fontWeight: active ? 600 : 400,
+                fontWeight: 500,
+                borderLeft: active ? '3px solid var(--color-accent)' : '3px solid transparent',
+                transition: 'all 150ms ease',
+                cursor: 'pointer',
+                border: 'none',
+                borderLeftWidth: '3px',
+                borderLeftStyle: 'solid',
+                borderLeftColor: active ? 'var(--color-accent)' : 'transparent',
+              }}
+              onMouseEnter={(e) => {
+                if (!active) {
+                  (e.currentTarget as HTMLButtonElement).style.color = 'var(--color-text-primary)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!active) {
+                  (e.currentTarget as HTMLButtonElement).style.color = 'var(--color-text-secondary)';
+                }
               }}
             >
-              <Icon size={16} />
+              <Icon size={16} strokeWidth={1.5} />
               {item.label}
             </button>
           );
@@ -61,10 +86,22 @@ export default function AdminNav({ path, navigate, signOut }: AdminNavProps) {
       <div className="p-3 border-t" style={{ borderColor: 'var(--color-border)' }}>
         <button
           onClick={signOut}
-          className="w-full flex items-center gap-2.5 px-3 py-2 text-sm transition-opacity hover:opacity-70"
-          style={{ color: 'var(--color-text-muted)' }}
+          className="w-full flex items-center gap-2.5 px-3 py-2 text-sm"
+          style={{
+            color: 'var(--color-text-muted)',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            transition: 'color 150ms ease',
+          }}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.color = 'var(--color-error)';
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.color = 'var(--color-text-muted)';
+          }}
         >
-          <LogOut size={16} />
+          <LogOut size={16} strokeWidth={1.5} />
           Sign Out
         </button>
       </div>

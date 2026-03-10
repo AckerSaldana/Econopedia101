@@ -132,6 +132,11 @@ body {
   min-height: 100dvh;
 }
 
+/* Ensure form elements inherit the font */
+button, input, select, textarea {
+  font-family: inherit;
+}
+
 /* Selection highlight */
 ::selection {
   background-color: var(--color-accent);

@@ -4,7 +4,9 @@ import type { Block } from '../../../types/blocks';
 import type { SupabasePost } from '../../../types/post';
 import BlockEditor from '../editor/BlockEditor';
 import MetadataSidebar from '../editor/MetadataSidebar';
-import { ArrowLeft, Save, Eye, Loader2 } from 'lucide-react';
+import BlockRenderer from '../../../components/blog/BlockRenderer';
+import { ArrowLeft, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { btnPrimary, btnSecondary } from '../adminStyles';
 
 function slugify(text: string): string {
   return text
@@ -57,6 +59,7 @@ export default function PostEditor({ postId, navigate }: PostEditorProps) {
   const [saving, setSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
   const [currentId, setCurrentId] = useState<string | null>(postId || null);
+  const [previewing, setPreviewing] = useState(false);
 
   // Metadata
   const [title, setTitle] = useState('');
@@ -110,7 +113,8 @@ export default function PostEditor({ postId, navigate }: PostEditorProps) {
         setAuthorName(post.author_name);
         setAuthorSlug(post.author_slug);
         setLeadMagnet(post.lead_magnet);
-        setBlocks(post.blocks.length > 0 ? post.blocks : [{ id: crypto.randomUUID(), type: 'paragraph', content: '' }]);
+        const parsedBlocks = typeof post.blocks === 'string' ? JSON.parse(post.blocks) : post.blocks;
+        setBlocks(parsedBlocks.length > 0 ? parsedBlocks : [{ id: crypto.randomUUID(), type: 'paragraph', content: '' }]);
         slugManuallyEdited.current = true;
         setLoading(false);
       });
@@ -188,16 +192,45 @@ export default function PostEditor({ postId, navigate }: PostEditorProps) {
   };
 
   const handlePublish = async () => {
+    const pubDate = publishedAt || new Date().toISOString().slice(0, 16);
+    const finalAuthorName = authorSlug === 'econopedia-ai' ? 'Tasmin Angelina Houssein' : authorName;
+    const finalAuthorSlug = authorSlug === 'econopedia-ai' ? 'tasmin-angelina-houssein' : authorSlug;
+
+    // Update UI state
     setDraft(false);
-    if (!publishedAt) {
-      setPublishedAt(new Date().toISOString().slice(0, 16));
+    setPublishedAt(pubDate);
+    setAuthorName(finalAuthorName);
+    setAuthorSlug(finalAuthorSlug);
+
+    // Save directly with correct values (don't rely on state update timing)
+    setSaving(true);
+    setSaveStatus('saving');
+
+    const data = {
+      ...buildPostData(),
+      draft: false,
+      published_at: new Date(pubDate).toISOString(),
+      author_name: finalAuthorName,
+      author_slug: finalAuthorSlug,
+    };
+
+    if (currentId) {
+      await supabase.from('posts').update(data).eq('id', currentId);
+    } else {
+      const { data: inserted } = await supabase.from('posts').insert(data).select('id').single();
+      if (inserted) {
+        setCurrentId(inserted.id);
+        window.history.replaceState(null, '', `/admin/posts/${inserted.id}`);
+      }
     }
-    // Need to wait a tick for state to update
-    setTimeout(() => doSave(), 0);
+
+    setSaveStatus('saved');
+    setSaving(false);
+    setTimeout(() => setSaveStatus('idle'), 2000);
   };
 
   const handlePreview = () => {
-    if (slug) window.open(`/blog/${slug}`, '_blank');
+    setPreviewing((prev) => !prev);
   };
 
   if (loading) {
@@ -209,58 +242,101 @@ export default function PostEditor({ postId, navigate }: PostEditorProps) {
   }
 
   return (
-    <div className="h-screen flex flex-col">
+    <div className="h-full flex flex-col">
       {/* Top bar */}
       <div
-        className="flex items-center justify-between px-6 py-3 border-b flex-shrink-0"
+        className="flex items-center justify-between px-8 py-4 border-b flex-shrink-0"
         style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-surface)' }}
       >
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate('/admin/posts')}
-            className="p-1 hover:opacity-70 transition-opacity"
-            style={{ color: 'var(--color-text-muted)' }}
+            className="p-1"
+            style={{
+              color: 'var(--color-text-muted)',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              transition: 'color 150ms ease',
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.color = 'var(--color-accent)';
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.color = 'var(--color-text-muted)';
+            }}
           >
-            <ArrowLeft size={18} />
+            <ArrowLeft size={20} />
           </button>
-          <h1 className="text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>
+          <h1
+            className="text-sm"
+            style={{
+              fontFamily: 'var(--font-serif)',
+              fontWeight: 600,
+              color: 'var(--color-text-primary)',
+            }}
+          >
             {postId ? 'Edit Post' : 'New Post'}
           </h1>
+          {/* Save status dot */}
           {saveStatus === 'saving' && (
-            <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
+            <span className="flex items-center gap-1.5 text-xs" style={{ color: 'var(--color-text-muted)' }}>
+              <span
+                className="inline-block w-2 h-2"
+                style={{
+                  backgroundColor: 'var(--color-accent)',
+                  borderRadius: '50%',
+                  animation: 'admin-pulse 1.2s ease-in-out infinite',
+                }}
+              />
               Saving...
             </span>
           )}
           {saveStatus === 'saved' && (
-            <span className="text-xs" style={{ color: '#10B981' }}>
+            <span className="flex items-center gap-1.5 text-xs" style={{ color: 'var(--color-success)' }}>
+              <span
+                className="inline-block w-2 h-2"
+                style={{
+                  backgroundColor: 'var(--color-success)',
+                  borderRadius: '50%',
+                }}
+              />
               Saved
             </span>
           )}
+          <style>{`
+            @keyframes admin-pulse {
+              0%, 100% { opacity: 1; }
+              50% { opacity: 0.3; }
+            }
+          `}</style>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <button
             onClick={handlePreview}
-            disabled={!slug}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold border transition-opacity hover:opacity-80 disabled:opacity-40"
-            style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-secondary)' }}
+            className="disabled:opacity-40"
+            style={{
+              ...(previewing ? btnPrimary : btnSecondary),
+              padding: '8px 16px',
+              fontSize: '12px',
+            }}
           >
-            <Eye size={14} />
-            Preview
+            {previewing ? <EyeOff size={14} /> : <Eye size={14} />}
+            {previewing ? 'Edit' : 'Preview'}
           </button>
           <button
             onClick={handleSaveDraft}
             disabled={saving || !title}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold border transition-opacity hover:opacity-80 disabled:opacity-40"
-            style={{ borderColor: 'var(--color-border)', color: 'var(--color-text-secondary)' }}
+            className="disabled:opacity-40"
+            style={{ ...btnSecondary, padding: '8px 16px', fontSize: '12px' }}
           >
-            <Save size={14} />
             Save Draft
           </button>
           <button
             onClick={handlePublish}
             disabled={saving || !title}
-            className="flex items-center gap-1.5 px-4 py-1.5 text-xs font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
-            style={{ backgroundColor: 'var(--color-accent)' }}
+            className="disabled:opacity-50"
+            style={{ ...btnPrimary, padding: '8px 16px', fontSize: '12px' }}
           >
             Publish
           </button>
@@ -269,21 +345,46 @@ export default function PostEditor({ postId, navigate }: PostEditorProps) {
 
       {/* Editor area */}
       <div className="flex flex-1 min-h-0">
-        {/* Block editor */}
-        <div className="flex-1 overflow-y-auto p-6">
+        {/* Block editor / Preview */}
+        <div className="flex-1 overflow-y-auto p-8">
           <div className="max-w-3xl mx-auto">
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Post title"
-              className="w-full text-3xl font-semibold mb-6 border-none outline-none bg-transparent"
-              style={{
-                fontFamily: 'var(--font-serif)',
-                color: 'var(--color-text-primary)',
-              }}
-            />
-            <BlockEditor blocks={blocks} onChange={setBlocks} />
+            {previewing ? (
+              <>
+                <h1
+                  style={{
+                    fontFamily: 'var(--font-serif)',
+                    fontSize: '36px',
+                    fontWeight: 600,
+                    letterSpacing: '-0.02em',
+                    color: 'var(--color-text-primary)',
+                    lineHeight: 1.2,
+                    marginBottom: '2rem',
+                  }}
+                >
+                  {title || 'Untitled'}
+                </h1>
+                <BlockRenderer blocks={blocks} />
+              </>
+            ) : (
+              <>
+                <input
+                  type="text"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="Post title"
+                  className="w-full mb-8 border-none outline-none bg-transparent"
+                  style={{
+                    fontFamily: 'var(--font-serif)',
+                    fontSize: '36px',
+                    fontWeight: 600,
+                    letterSpacing: '-0.02em',
+                    color: 'var(--color-text-primary)',
+                    lineHeight: 1.2,
+                  }}
+                />
+                <BlockEditor blocks={blocks} onChange={setBlocks} categories={categories} />
+              </>
+            )}
           </div>
         </div>
 

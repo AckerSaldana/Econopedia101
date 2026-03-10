@@ -1,0 +1,6 @@
+name: Econopedia AI
+slug: econopedia-ai
+role: AI Content Assistant
+bio: "AI-powered content assistant for Econopedia 101. Generates draft articles from current finance and economics news for human review and editing before publication."
+shortBio: "AI-generated drafts reviewed by the Econopedia team."
+avatar: ./avatar-econopedia-ai.png

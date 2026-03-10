@@ -59,18 +59,19 @@ if (mdxPost) {
   frontmatter = mdxPost.data;
 } else {
   // 2. Try Supabase
-  const { data } = await supabase
-    .from('posts')
-    .select('*')
-    .eq('slug', slug)
-    .eq('draft', false)
-    .lte('published_at', new Date().toISOString())
-    .single();
+  const isPreview = Astro.url.searchParams.has('preview');
+
+  let query = supabase.from('posts').select('*').eq('slug', slug);
+  if (!isPreview) {
+    query = query.eq('draft', false).lte('published_at', new Date().toISOString());
+  }
+  const { data } = await query.single();
 
   const dbPost = data as SupabasePost | null;
   if (!dbPost) return Astro.redirect('/404');
 
-  blocks = dbPost.blocks || [];
+  const rawBlocks = dbPost.blocks || [];
+  blocks = typeof rawBlocks === 'string' ? JSON.parse(rawBlocks) : rawBlocks;
 
   headings = blocks
     .filter((b: any) => b.type === 'heading')
@@ -111,7 +112,7 @@ if (mdxPost) {
     title: dbPost.title,
     description: dbPost.description || '',
     categories: dbPost.categories,
-    publishedAt: new Date(dbPost.published_at!),
+    publishedAt: dbPost.published_at ? new Date(dbPost.published_at) : new Date(),
     updatedAt: dbPost.updated_at ? new Date(dbPost.updated_at) : undefined,
     cover: dbPost.cover_url || undefined,
     coverAlt: dbPost.cover_alt || dbPost.title,

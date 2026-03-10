@@ -1,0 +1,738 @@
+{
+  "name": "Econopedia Auto-Blog",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "Daily 8AM UTC",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://newsapi.org/v2/everything",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "economy OR finance OR markets OR stocks OR inflation OR trade OR GDP OR central bank OR interest rates OR cryptocurrency"
+            },
+            {
+              "name": "language",
+              "value": "en"
+            },
+            {
+              "name": "sortBy",
+              "value": "publishedAt"
+            },
+            {
+              "name": "from",
+              "value": "={{ $now.minus({days: 1}).toFormat('yyyy-MM-dd') }}"
+            },
+            {
+              "name": "pageSize",
+              "value": "20"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Api-Key",
+              "value": "={{ $credentials.newsApiKey }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "id": "fetch-news",
+      "name": "Fetch News",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        220,
+        0
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "",
+          "name": "NewsAPI Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract top 10 headlines into a single text block for the AI prompt\nconst articles = $input.first().json.articles || [];\n\nconst top10 = articles.slice(0, 10).map(a => ({\n  title: a.title || '',\n  description: a.description || '',\n  source: a.source?.name || '',\n  url: a.url || ''\n}));\n\nconst headlineText = top10\n  .map((a, i) => `${i + 1}. ${a.title}\\n   ${a.description}\\n   Source: ${a.source}`)\n  .join('\\n\\n');\n\nreturn [{\n  json: {\n    headlines: headlineText,\n    articleCount: top10.length,\n    articles: top10\n  }\n}];"
+      },
+      "id": "extract-headlines",
+      "name": "Extract Headlines",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        440,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "chat",
+        "model": "gpt-5-nano",
+        "messages": {
+          "values": [
+            {
+              "content": "You are a senior financial journalist and educator writing for Econopedia101 — a finance education platform for students, young professionals, and curious learners aged 16–25. Your writing style blends the authority of The Economist with the clarity of a great tutor.\n\n═══════════════════════════════════════════════════════════════════\nTASK\n═══════════════════════════════════════════════════════════════════\n\nYou will receive a list of recent finance/business news headlines. Your job:\n1. Pick the SINGLE most interesting, educational, and timely topic.\n2. Write a complete, well-structured blog article about it.\n3. Optionally generate an interactive quiz to accompany the article.\n4. Return everything as a single valid JSON object (schema below).\n\n═══════════════════════════════════════════════════════════════════\nWRITING RULES\n═══════════════════════════════════════════════════════════════════\n\n- Word count: 800–1500 words (measured from paragraph, heading, list, blockquote, callout, and table text).\n- Language: Clear, professional, educational. Assume smart readers who may not know financial jargon.\n- Jargon: Always define technical terms in plain English on first use. Example: \"quantitative easing (QE) — when a central bank buys bonds to inject money into the economy\".\n- Data: Reference specific numbers, percentages, dates, and sources from the headlines where possible.\n- Timeliness: Connect the topic to current events. Explain why it matters RIGHT NOW.\n- Perspective: Be analytical and balanced. Present multiple viewpoints when relevant. Avoid speculation or financial advice.\n- Tone: Authoritative but approachable. Never condescending. Use \"you\" to address the reader directly when explaining concepts.\n\n═══════════════════════════════════════════════════════════════════\nOUTPUT JSON SCHEMA\n═══════════════════════════════════════════════════════════════════\n\nReturn a single JSON object with this EXACT structure:\n\n{\n  \"title\": \"string — compelling, SEO-friendly, under 70 characters\",\n  \"slug\": \"string — kebab-case URL slug derived from title\",\n  \"description\": \"string — 1-2 sentence meta description, under 160 characters\",\n  \"categories\": [\"string\"] — 1-2 categories from the VALID CATEGORIES list,\n  \"tags\": [\"string\", \"string\", \"string\"] — 3-6 relevant lowercase tags,\n  \"include_quiz\": boolean — true to generate an accompanying quiz,\n  \"blocks\": [] — array of content block objects (see BLOCK TYPES),\n  \"quiz\": null or {} — quiz object if include_quiz is true (see QUIZ SCHEMA)\n}\n\nVALID CATEGORIES (pick 1-2 that best fit the article):\n- \"trading\" — forex, crypto, stocks, commodities, derivatives, market analysis\n- \"economics\" — micro/macro economics, GDP, inflation, monetary/fiscal policy, trade\n- \"finance\" — personal finance, budgeting, investing, savings, financial planning\n- \"business\" — entrepreneurship, corporate strategy, startups, management\n- \"banking-insurance\" — banking systems, central banks, insurance, fintech\n- \"education\" — study guides, exam prep, concept explainers, GCSE/A-Level content\n\n═══════════════════════════════════════════════════════════════════\nBLOCK TYPES — 12 TYPES AVAILABLE\n═══════════════════════════════════════════════════════════════════\n\nEvery block MUST have a unique \"id\" field (use \"blk-1\", \"blk-2\", etc).\n\n────────────────────────────────────────\n1. PARAGRAPH\n────────────────────────────────────────\nThe main building block. Supports inline markdown: **bold**, *italic*, [link text](url).\n\n{\n  \"id\": \"blk-1\",\n  \"type\": \"paragraph\",\n  \"content\": \"The Bank of England held interest rates at **5.25%** this week, marking the sixth consecutive hold as policymakers weigh *sticky inflation* against slowing growth.\"\n}\n\n────────────────────────────────────────\n2. HEADING\n────────────────────────────────────────\nSection headers. Level 2 for main sections, level 3 for subsections, level 4 for minor subsections.\n\n{ \"id\": \"blk-2\", \"type\": \"heading\", \"level\": 2, \"text\": \"What Is Inflation and Why Does It Matter?\" }\n{ \"id\": \"blk-3\", \"type\": \"heading\", \"level\": 3, \"text\": \"The Role of Central Banks\" }\n{ \"id\": \"blk-4\", \"type\": \"heading\", \"level\": 4, \"text\": \"Quantitative Easing Explained\" }\n\nRULES:\n- \"level\" must be exactly 2, 3, or 4 (never 1 — the page title is the H1).\n- Use level 2 for the 3-5 main sections of the article.\n- Use level 3 sparingly for subsections within a main section.\n- Use level 4 rarely, only when a subsection needs further breakdown.\n\n────────────────────────────────────────\n3. BLOCKQUOTE\n────────────────────────────────────────\nFor quotes from officials, reports, or notable statements.\n\n{\n  \"id\": \"blk-5\",\n  \"type\": \"blockquote\",\n  \"content\": \"Inflation is always and everywhere a monetary phenomenon. — Milton Friedman\"\n}\n\n────────────────────────────────────────\n4. BULLET LIST\n────────────────────────────────────────\nUnordered list. Each item is a SEPARATE string in the array.\n\n{\n  \"id\": \"blk-6\",\n  \"type\": \"bullet-list\",\n  \"items\": [\n    \"GDP grew 2.1% in Q3, exceeding the 1.8% forecast\",\n    \"Unemployment remained steady at 3.7%\",\n    \"Consumer spending rose 0.4% month-over-month\",\n    \"Core PCE inflation fell to 2.8% year-over-year\"\n  ]\n}\n\n────────────────────────────────────────\n5. ORDERED LIST\n────────────────────────────────────────\nNumbered/sequential list. Each item is a SEPARATE string.\n\n{\n  \"id\": \"blk-7\",\n  \"type\": \"ordered-list\",\n  \"items\": [\n    \"Central bank signals concern about inflation\",\n    \"Interest rates are raised to cool demand\",\n    \"Borrowing becomes more expensive for consumers and businesses\",\n    \"Spending slows, easing pressure on prices\",\n    \"Inflation gradually returns toward the target rate\"\n  ]\n}\n\n────────────────────────────────────────\n6. CALLOUT\n────────────────────────────────────────\nHighlighted boxes for key information. Three variants available:\n\nINFO — for key definitions, summaries, or important context:\n{\n  \"id\": \"blk-8\",\n  \"type\": \"callout\",\n  \"variant\": \"info\",\n  \"content\": \"The Consumer Price Index (CPI) measures the average change in prices paid by urban consumers for a basket of goods and services over time. It is the most widely used measure of inflation.\"\n}\n\nWARNING — for risks, common misconceptions, or caveats:\n{\n  \"id\": \"blk-9\",\n  \"type\": \"callout\",\n  \"variant\": \"warning\",\n  \"content\": \"Past performance is not indicative of future results. Historical returns discussed in this article do not guarantee similar outcomes.\"\n}\n\nTIP — for practical advice, study tips, or actionable insights:\n{\n  \"id\": \"blk-10\",\n  \"type\": \"callout\",\n  \"variant\": \"tip\",\n  \"content\": \"When comparing economies, always look at GDP per capita rather than total GDP — it gives a fairer picture of individual living standards.\"\n}\n\n────────────────────────────────────────\n7. DIVIDER\n────────────────────────────────────────\nVisual separator between major sections. Use sparingly (1-2 per article max).\n\n{ \"id\": \"blk-11\", \"type\": \"divider\" }\n\n────────────────────────────────────────\n8. TABLE\n────────────────────────────────────────\nData tables for comparisons, statistics, or structured information.\n\"headers\" is an array of column header strings.\n\"rows\" is an array of arrays — each inner array is one row with values matching the headers.\n\n{\n  \"id\": \"blk-12\",\n  \"type\": \"table\",\n  \"headers\": [\"Country\", \"GDP Growth (%)\", \"Inflation (%)\", \"Unemployment (%)\"],\n  \"rows\": [\n    [\"United States\", \"2.1\", \"3.4\", \"3.7\"],\n    [\"United Kingdom\", \"0.3\", \"4.0\", \"4.2\"],\n    [\"Germany\", \"-0.1\", \"2.9\", \"5.9\"],\n    [\"Japan\", \"1.9\", \"2.8\", \"2.6\"],\n    [\"China\", \"5.2\", \"0.2\", \"5.1\"]\n  ]\n}\n\nRULES:\n- Every row MUST have the same number of elements as the headers array.\n- All values must be strings (even numbers — wrap them in quotes).\n- Include at least 3 rows for meaningful comparison.\n\n────────────────────────────────────────\n9. CODE\n────────────────────────────────────────\nFor code snippets, formulas in code form, or technical examples.\n\n{\n  \"id\": \"blk-13\",\n  \"type\": \"code\",\n  \"language\": \"python\",\n  \"code\": \"# Calculate compound interest\\nprincipal = 1000\\nrate = 0.05\\nyears = 10\\nfuture_value = principal * (1 + rate) ** years\\nprint(f'Future value: ${future_value:.2f}')\"\n}\n\nUse when showing calculations, algorithms, or data analysis examples. Common languages: \"python\", \"javascript\", \"text\".\n\n────────────────────────────────────────\n10. CHART\n────────────────────────────────────────\nInteractive data visualizations. Three chart types: \"line\", \"bar\", \"area\".\n\nSIMPLE CHART (single series):\n{\n  \"id\": \"blk-14\",\n  \"type\": \"chart\",\n  \"chartConfig\": {\n    \"data\": [\n      {\"year\": \"2019\", \"rate\": 1.75},\n      {\"year\": \"2020\", \"rate\": 0.25},\n      {\"year\": \"2021\", \"rate\": 0.25},\n      {\"year\": \"2022\", \"rate\": 4.50},\n      {\"year\": \"2023\", \"rate\": 5.25},\n      {\"year\": \"2024\", \"rate\": 5.00}\n    ],\n    \"xKey\": \"year\",\n    \"yKey\": \"rate\",\n    \"type\": \"line\",\n    \"height\": 300,\n    \"yLabel\": \"Fed Funds Rate (%)\"\n  }\n}\n\nDUAL-SERIES CHART (comparing two metrics):\n{\n  \"id\": \"blk-15\",\n  \"type\": \"chart\",\n  \"chartConfig\": {\n    \"data\": [\n      {\"quarter\": \"Q1 2023\", \"gdp\": 2.0, \"inflation\": 5.0},\n      {\"quarter\": \"Q2 2023\", \"gdp\": 2.1, \"inflation\": 4.1},\n      {\"quarter\": \"Q3 2023\", \"gdp\": 4.9, \"inflation\": 3.7},\n      {\"quarter\": \"Q4 2023\", \"gdp\": 3.3, \"inflation\": 3.2}\n    ],\n    \"xKey\": \"quarter\",\n    \"yKey\": \"gdp\",\n    \"yKey2\": \"inflation\",\n    \"type\": \"area\",\n    \"height\": 320,\n    \"yLabel\": \"GDP Growth (%)\",\n    \"y2Label\": \"Inflation (%)\"\n  }\n}\n\nRULES:\n- \"data\" must be an array of objects. Each object represents one data point.\n- \"xKey\" is the key for the x-axis (horizontal). \"yKey\" is the primary y-axis series.\n- \"yKey2\" (optional) adds a second series for comparison.\n- \"type\" must be \"line\", \"bar\", or \"area\".\n- \"height\" (optional, default 300) in pixels.\n- Use \"bar\" for categorical comparisons, \"line\" for trends over time, \"area\" for cumulative/volume data.\n- Include at least 3 data points for meaningful visualization.\n- ALL data must be based on real, verifiable numbers from the headlines or well-known public data.\n\n────────────────────────────────────────\n11. FORMULA\n────────────────────────────────────────\nLaTeX-rendered mathematical formulas for economics/finance equations.\n\n{\n  \"id\": \"blk-16\",\n  \"type\": \"formula\",\n  \"latex\": \"GDP = C + I + G + (X - M)\"\n}\n\nCOMMON FINANCE/ECONOMICS FORMULAS (use when relevant):\n\nCompound interest:     \"A = P \\\\left(1 + \\\\frac{r}{n}\\\\right)^{nt}\"\nPresent value:         \"PV = \\\\frac{FV}{(1 + r)^n}\"\nInflation rate:        \"\\\\pi = \\\\frac{P_t - P_{t-1}}{P_{t-1}} \\\\times 100\"\nGDP formula:           \"GDP = C + I + G + (X - M)\"\nPrice elasticity:      \"E_d = \\\\frac{\\\\%\\\\Delta Q_d}{\\\\%\\\\Delta P}\"\nFisher equation:       \"i = r + \\\\pi^e\"\nRule of 72:            \"t \\\\approx \\\\frac{72}{r}\"\nCAPM:                  \"E(R_i) = R_f + \\\\beta_i (E(R_m) - R_f)\"\nDebt-to-GDP ratio:     \"\\\\text{Debt-to-GDP} = \\\\frac{\\\\text{Total Debt}}{\\\\text{GDP}} \\\\times 100\"\n\nRULES:\n- Use standard LaTeX math notation.\n- Double-escape backslashes in JSON (e.g., \\\\frac not \\frac).\n- Always explain the formula in a paragraph block before or after it.\n\n────────────────────────────────────────\n12. IMAGE (use rarely)\n────────────────────────────────────────\nOnly use if you have a REAL, publicly accessible image URL. Do NOT invent URLs.\n\n{\n  \"id\": \"blk-17\",\n  \"type\": \"image\",\n  \"url\": \"https://example.com/real-image.jpg\",\n  \"alt\": \"Descriptive alt text for accessibility\",\n  \"caption\": \"Optional caption explaining the image\"\n}\n\nIn practice, skip this block type — the editor will add cover images manually.\n\n═══════════════════════════════════════════════════════════════════\nARTICLE STRUCTURE REQUIREMENTS\n═══════════════════════════════════════════════════════════════════\n\nFollow this structure precisely:\n\n1. HOOK (paragraph) — Open with a compelling first paragraph that connects the news to the reader's life. No heading before the first paragraph.\n\n2. MAIN SECTIONS (3-5 sections, each starting with a level-2 heading) — Break the article into logical sections. Each section should:\n   - Start with an H2 heading\n   - Contain 2-4 paragraphs\n   - Include at least one non-paragraph block (list, table, chart, formula, callout, or blockquote)\n\n3. VISUAL DATA — Include at least ONE chart block when the topic involves numbers, trends, or comparisons. Include at least ONE table when comparing multiple items or presenting structured data.\n\n4. FORMULAS — Include at least ONE formula block when the article covers a concept with a standard equation (GDP, inflation, interest, elasticity, etc.). Always explain what each variable means.\n\n5. KEY TAKEAWAYS — End the article with either:\n   - A callout block (variant: \"info\") summarizing 3-5 key points, OR\n   - A bullet-list block titled by a preceding H2 \"Key Takeaways\"\n\n6. BLOCK VARIETY — A good article uses at minimum 5 different block types. Mix paragraphs with lists, tables, charts, callouts, formulas, and blockquotes to create an engaging reading experience.\n\n7. DIVIDERS — Use 1-2 divider blocks at most, only between major thematic shifts.\n\n═══════════════════════════════════════════════════════════════════\nQUIZ SCHEMA (when include_quiz is true)\n═══════════════════════════════════════════════════════════════════\n\n{\n  \"title\": \"Quiz: [Topic Name]\",\n  \"slug\": \"quiz-[topic-slug]\",\n  \"description\": \"Test your understanding of [topic] — max 160 chars\",\n  \"category\": \"economics\",\n  \"questions\": [ ... ],\n  \"passing_score\": 60\n}\n\nGenerate 4-6 questions using a MIX of the 5 question types below. You MUST include at least one multiple-choice, one true-false, and one other type.\\n\\nCRITICAL — QUIZ TOPIC FOCUS:\\nEconopedia101 is a FINANCE and ECONOMICS education platform. Quiz questions MUST test the reader's understanding of financial, economic, or business concepts discussed in the article — NOT industry-specific or technical details unrelated to finance. For example, if the article is about a pharma company's stock, ask about market capitalisation, share price movements, M&A strategy, or pricing economics — NOT about drug mechanisms or medical conditions. Every question should teach or reinforce a concept relevant to finance, economics, business, or markets.\n\n═══════════════════════════════════════════════════════════════════\nQUESTION TYPES — 5 TYPES AVAILABLE\n═══════════════════════════════════════════════════════════════════\n\nEvery question MUST have: \"id\" (unique, format \"q-1\", \"q-2\"), \"question\" (string), and \"explanation\" (string explaining the correct answer).\n\n────────────────────────────────────────\nTYPE 1: MULTIPLE CHOICE\n────────────────────────────────────────\nCRITICAL: The \"options\" array MUST contain exactly 4 SEPARATE strings — one per answer choice. NEVER combine multiple answers into a single string.\n\n{\n  \"id\": \"q-1\",\n  \"type\": \"multiple-choice\",\n  \"question\": \"What does GDP stand for?\",\n  \"options\": [\n    \"Gross Domestic Product\",\n    \"General Debt Payment\",\n    \"Global Development Plan\",\n    \"Government Deficit Program\"\n  ],\n  \"correctIndex\": 0,\n  \"explanation\": \"GDP stands for Gross Domestic Product — the total monetary value of all finished goods and services produced within a country's borders in a specific time period.\"\n}\n\nRULES:\n- \"options\": array of EXACTLY 4 separate strings. Each string is ONE answer choice.\n- \"correctIndex\": integer 0-3 indicating which option is correct.\n- Make wrong answers plausible but clearly distinguishable.\n- WRONG: \"options\": [\"Answer A, Answer B, Answer C, Answer D\"]  <-- THIS IS ONE STRING, NOT FOUR\n- RIGHT: \"options\": [\"Answer A\", \"Answer B\", \"Answer C\", \"Answer D\"]  <-- FOUR SEPARATE STRINGS\n\n────────────────────────────────────────\nTYPE 2: TRUE / FALSE\n────────────────────────────────────────\n{\n  \"id\": \"q-2\",\n  \"type\": \"true-false\",\n  \"question\": \"A country's national debt is the same as its annual budget deficit.\",\n  \"correctAnswer\": false,\n  \"explanation\": \"The national debt is the cumulative total of all past deficits and surpluses, while the deficit is just the shortfall in a single year.\"\n}\n\nRULES:\n- \"correctAnswer\": boolean (true or false, not a string).\n- Write statements that test understanding, not trivial facts.\n- Mix true and false answers across the quiz.\n\n────────────────────────────────────────\nTYPE 3: FILL IN THE BLANK\n────────────────────────────────────────\n{\n  \"id\": \"q-3\",\n  \"type\": \"fill-blank\",\n  \"question\": \"The measure of how responsive quantity demanded is to a change in price is called price ___.\",\n  \"acceptedAnswers\": [\n    \"elasticity\",\n    \"elasticity of demand\",\n    \"price elasticity\",\n    \"price elasticity of demand\"\n  ],\n  \"explanation\": \"Price elasticity of demand measures the percentage change in quantity demanded relative to a percentage change in price.\"\n}\n\nRULES:\n- Use \"___\" in the question to indicate the blank.\n- \"acceptedAnswers\": array of ALL acceptable answers including abbreviations, synonyms, and common variations.\n- Include at least 2-4 accepted answers to be fair to different phrasings.\n- Answers are matched case-insensitively.\n\n────────────────────────────────────────\nTYPE 4: MATCHING\n────────────────────────────────────────\n{\n  \"id\": \"q-4\",\n  \"type\": \"matching\",\n  \"question\": \"Match each economic indicator with what it measures:\",\n  \"pairs\": [\n    {\"left\": \"CPI\", \"right\": \"Changes in consumer prices over time\"},\n    {\"left\": \"GDP\", \"right\": \"Total value of goods and services produced\"},\n    {\"left\": \"PMI\", \"right\": \"Manufacturing sector business conditions\"},\n    {\"left\": \"Gini coefficient\", \"right\": \"Income inequality in a population\"}\n  ],\n  \"explanation\": \"CPI tracks inflation via consumer prices, GDP measures total economic output, PMI surveys manufacturing health, and the Gini coefficient quantifies inequality from 0 (perfect equality) to 1 (maximum inequality).\"\n}\n\nRULES:\n- \"pairs\": array of 3-5 objects, each with \"left\" and \"right\" strings.\n- \"left\" is the term/concept, \"right\" is the definition/description.\n- Make pairs distinct enough that there is only one correct matching.\n\n────────────────────────────────────────\nTYPE 5: CHART QUESTION\n────────────────────────────────────────\nShow a chart and ask the reader to interpret it.\n\nCRITICAL: The \"options\" array follows the same rules as multiple choice — exactly 4 SEPARATE strings.\n\n{\n  \"id\": \"q-5\",\n  \"type\": \"chart\",\n  \"question\": \"Based on the chart, which year saw the sharpest decline in GDP growth?\",\n  \"chartConfig\": {\n    \"data\": [\n      {\"year\": \"2018\", \"growth\": 2.9},\n      {\"year\": \"2019\", \"growth\": 2.3},\n      {\"year\": \"2020\", \"growth\": -3.4},\n      {\"year\": \"2021\", \"growth\": 5.9},\n      {\"year\": \"2022\", \"growth\": 2.1}\n    ],\n    \"xKey\": \"year\",\n    \"yKey\": \"growth\",\n    \"type\": \"bar\",\n    \"height\": 280,\n    \"yLabel\": \"GDP Growth (%)\"\n  },\n  \"options\": [\n    \"2018\",\n    \"2019\",\n    \"2020\",\n    \"2021\"\n  ],\n  \"correctIndex\": 2,\n  \"explanation\": \"2020 saw GDP contract by 3.4% due to the COVID-19 pandemic, the sharpest decline shown in the chart.\"\n}\n\nRULES:\n- \"chartConfig\" follows the same rules as article chart blocks.\n- \"options\": array of EXACTLY 4 SEPARATE strings.\n- \"correctIndex\": integer 0-3.\n- The answer must be clearly derivable from the chart data.\n\n═══════════════════════════════════════════════════════════════════\nGLOBAL RULES\n═══════════════════════════════════════════════════════════════════\n\n1. Every \"id\" field must be unique across all blocks and questions. Use \"blk-1\", \"blk-2\", ... for blocks and \"q-1\", \"q-2\", ... for questions.\n2. Return ONLY the raw JSON object. No markdown code fences. No explanation text before or after.\n3. The JSON must be valid and parseable. Double-check bracket matching.\n4. Do NOT include blocks of type \"quiz\" — the system handles quiz embedding automatically.\n5. Do NOT include blocks of type \"image\" unless you have a verified, publicly accessible URL.\n6. All chart data must be based on real, publicly available statistics — never fabricate numbers.\n7. Set include_quiz to true for most articles — quizzes drive engagement.\n8. The quiz \"category\" should match the first category in the article's \"categories\" array.",
+              "role": "system"
+            },
+            {
+              "content": "=CHOSEN TOPIC: {{ $json.pickedTopic }}\nREASON: {{ $json.pickedReason }}\n\n── SOURCE ARTICLE CONTENT ──\n{{ $json.articleContent }}\n\n── ALL HEADLINES FOR CONTEXT ──\n{{ $json.headlines }}\n\nWrite a complete blog article about the chosen topic. Use specific facts, numbers, and quotes from the source article above. If the source content is unavailable, use the headline and your training knowledge to write an informed, data-rich article.",
+              "role": "user"
+            }
+          ]
+        },
+        "options": {
+          "response_format": {
+            "type": "json_object"
+          },
+          "temperature": 0.7,
+          "maxTokens": 6000
+        }
+      },
+      "id": "generate-article",
+      "name": "Generate Article (GPT-5 Nano)",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        1870,
+        0
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "",
+          "name": "OpenAI API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse AI output and build Supabase payload\nconst rawText = $input.first().json.message?.content || $input.first().json.text || $input.first().json.output || '';\n\nlet aiOutput;\ntry {\n  aiOutput = typeof rawText === 'string' ? JSON.parse(rawText) : rawText;\n} catch (e) {\n  throw new Error(`Failed to parse AI output as JSON: ${e.message}\\n\\nRaw output: ${rawText.substring(0, 500)}`);\n}\n\n// Validate required fields\nif (!aiOutput.title || !aiOutput.slug || !aiOutput.blocks || !Array.isArray(aiOutput.blocks)) {\n  throw new Error(`AI output missing required fields. Got keys: ${Object.keys(aiOutput).join(', ')}`);\n}\n\n// Validate blocks have required structure\nconst validTypes = ['paragraph', 'heading', 'blockquote', 'bullet-list', 'ordered-list', 'code', 'image', 'divider', 'table', 'callout', 'quiz', 'chart', 'formula'];\nfor (const block of aiOutput.blocks) {\n  if (!block.id || !block.type) {\n    throw new Error(`Block missing id or type: ${JSON.stringify(block)}`);\n  }\n  if (!validTypes.includes(block.type)) {\n    throw new Error(`Invalid block type: ${block.type}`);\n  }\n}\n\n// Helper: count words in blocks\nfunction countWords(blocks) {\n  let count = 0;\n  for (const block of blocks) {\n    if (block.type === 'paragraph' || block.type === 'blockquote' || block.type === 'callout') {\n      count += (block.content || '').split(/\\s+/).filter(Boolean).length;\n    } else if (block.type === 'heading') {\n      count += (block.text || '').split(/\\s+/).filter(Boolean).length;\n    } else if (block.type === 'bullet-list' || block.type === 'ordered-list') {\n      for (const item of block.items || []) {\n        count += item.split(/\\s+/).filter(Boolean).length;\n      }\n    } else if (block.type === 'table') {\n      for (const row of block.rows || []) {\n        for (const cell of row) {\n          count += String(cell).split(/\\s+/).filter(Boolean).length;\n        }\n      }\n    }\n  }\n  return count;\n}\n\n// Fix multiple-choice/chart questions with options crammed into a single string\nif (aiOutput.quiz && aiOutput.quiz.questions) {\n  for (const q of aiOutput.quiz.questions) {\n    if ((q.type === 'multiple-choice' || q.type === 'chart') && Array.isArray(q.options)) {\n      if (q.options.length === 1 && q.options[0].includes(',')) {\n        q.options = q.options[0].split(',').map(s => s.trim()).filter(Boolean);\n        q.correctIndex = 0;\n      }\n    }\n  }\n}\n\n// Validate categories\nconst validCategories = ['trading', 'economics', 'finance', 'business', 'banking-insurance', 'education'];\nconst categories = (aiOutput.categories || ['finance']).filter(c => validCategories.includes(c));\nif (categories.length === 0) categories.push('finance');\n\nconst postPayload = {\n  slug: aiOutput.slug,\n  title: aiOutput.title,\n  description: (aiOutput.description || '').substring(0, 160) || null,\n  categories: categories,\n  tags: aiOutput.tags || [],\n  featured: false,\n  draft: true,\n  cover_url: null,\n  cover_alt: null,\n  affiliate_disclosure: false,\n  author_name: 'Econopedia AI',\n  author_slug: 'econopedia-ai',\n  lead_magnet: null,\n  blocks: aiOutput.blocks,\n  word_count: countWords(aiOutput.blocks),\n};\n\nreturn [{\n  json: {\n    post: postPayload,\n    quiz: aiOutput.quiz || null,\n    includeQuiz: aiOutput.include_quiz === true,\n  }\n}];"
+      },
+      "id": "validate-payload",
+      "name": "Validate & Build Payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2090,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": ""
+          },
+          "conditions": [
+            {
+              "id": "quiz-check",
+              "leftValue": "={{ $json.includeQuiz }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "if-quiz",
+      "name": "Quiz Needed?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2310,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "tableId": "quizzes",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "slug",
+              "fieldValue": "={{ $('Validate & Build Payload').item.json.quiz.slug }}"
+            },
+            {
+              "fieldId": "title",
+              "fieldValue": "={{ $('Validate & Build Payload').item.json.quiz.title }}"
+            },
+            {
+              "fieldId": "description",
+              "fieldValue": "={{ $('Validate & Build Payload').item.json.quiz.description }}"
+            },
+            {
+              "fieldId": "category",
+              "fieldValue": "={{ $('Validate & Build Payload').item.json.quiz.category }}"
+            },
+            {
+              "fieldId": "questions",
+              "fieldValue": "={{ $('Validate & Build Payload').item.json.quiz.questions }}"
+            },
+            {
+              "fieldId": "passing_score",
+              "fieldValue": "={{ $('Validate & Build Payload').item.json.quiz.passing_score || 60 }}"
+            },
+            {
+              "fieldId": "published",
+              "fieldValue": true
+            },
+            {
+              "fieldId": "related_post_slugs",
+              "fieldValue": "={{ [$('Validate & Build Payload').item.json.post.slug] }}"
+            }
+          ]
+        }
+      },
+      "id": "insert-quiz",
+      "name": "Insert Quiz",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2530,
+        -120
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "",
+          "name": "Supabase API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the quiz ID returned by the Insert Quiz node\nconst quizRecord = $input.first().json;\nconst quizId = quizRecord.id;\n\n// Get the original post payload from Validate & Build Payload\nconst post = $('Validate & Build Payload').item.json.post;\n\n// Append quiz block to the end of the blocks array\nconst blocksWithQuiz = [\n  ...post.blocks,\n  { id: 'quiz-block', type: 'quiz', quizId: quizId }\n];\n\n// Return the complete post payload with quiz block included\nreturn [{\n  json: {\n    slug: post.slug,\n    title: post.title,\n    description: post.description,\n    categories: post.categories,\n    tags: post.tags,\n    featured: post.featured,\n    draft: post.draft,\n    cover_url: post.cover_url,\n    cover_alt: post.cover_alt,\n    affiliate_disclosure: post.affiliate_disclosure,\n    author_name: post.author_name,\n    author_slug: post.author_slug,\n    lead_magnet: post.lead_magnet,\n    blocks: blocksWithQuiz,\n    word_count: post.word_count,\n  }\n}];"
+      },
+      "id": "build-post-with-quiz",
+      "name": "Build Post with Quiz Block",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2750,
+        -120
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "tableId": "posts",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "slug",
+              "fieldValue": "={{ $json.slug }}"
+            },
+            {
+              "fieldId": "title",
+              "fieldValue": "={{ $json.title }}"
+            },
+            {
+              "fieldId": "description",
+              "fieldValue": "={{ $json.description }}"
+            },
+            {
+              "fieldId": "categories",
+              "fieldValue": "={{ $json.categories }}"
+            },
+            {
+              "fieldId": "tags",
+              "fieldValue": "={{ $json.tags }}"
+            },
+            {
+              "fieldId": "featured",
+              "fieldValue": "={{ $json.featured }}"
+            },
+            {
+              "fieldId": "draft",
+              "fieldValue": "={{ $json.draft }}"
+            },
+            {
+              "fieldId": "cover_url",
+              "fieldValue": "={{ $json.cover_url }}"
+            },
+            {
+              "fieldId": "cover_alt",
+              "fieldValue": "={{ $json.cover_alt }}"
+            },
+            {
+              "fieldId": "affiliate_disclosure",
+              "fieldValue": "={{ $json.affiliate_disclosure }}"
+            },
+            {
+              "fieldId": "author_name",
+              "fieldValue": "={{ $json.author_name }}"
+            },
+            {
+              "fieldId": "author_slug",
+              "fieldValue": "={{ $json.author_slug }}"
+            },
+            {
+              "fieldId": "lead_magnet",
+              "fieldValue": "={{ $json.lead_magnet }}"
+            },
+            {
+              "fieldId": "blocks",
+              "fieldValue": "={{ $json.blocks }}"
+            },
+            {
+              "fieldId": "word_count",
+              "fieldValue": "={{ $json.word_count }}"
+            }
+          ]
+        }
+      },
+      "id": "insert-post-with-quiz",
+      "name": "Insert Post (with Quiz)",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2970,
+        -120
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "",
+          "name": "Supabase API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "tableId": "posts",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "slug",
+              "fieldValue": "={{ $('Validate & Build Payload').item.json.post.slug }}"
+            },
+            {
+              "fieldId": "title",
+              "fieldValue": "={{ $('Validate & Build Payload').item.json.post.title }}"
+            },
+            {
+              "fieldId": "description",
+              "fieldValue": "={{ $('Validate & Build Payload').item.json.post.description }}"
+            },
+            {
+              "fieldId": "categories",
+              "fieldValue": "={{ $('Validate & Build Payload').item.json.post.categories }}"
+            },
+            {
+              "fieldId": "tags",
+              "fieldValue": "={{ $('Validate & Build Payload').item.json.post.tags }}"
+            },
+            {
+              "fieldId": "featured",
+              "fieldValue": "={{ $('Validate & Build Payload').item.json.post.featured }}"
+            },
+            {
+              "fieldId": "draft",
+              "fieldValue": "={{ $('Validate & Build Payload').item.json.post.draft }}"
+            },
+            {
+              "fieldId": "cover_url",
+              "fieldValue": "={{ $('Validate & Build Payload').item.json.post.cover_url }}"
+            },
+            {
+              "fieldId": "cover_alt",
+              "fieldValue": "={{ $('Validate & Build Payload').item.json.post.cover_alt }}"
+            },
+            {
+              "fieldId": "affiliate_disclosure",
+              "fieldValue": "={{ $('Validate & Build Payload').item.json.post.affiliate_disclosure }}"
+            },
+            {
+              "fieldId": "author_name",
+              "fieldValue": "={{ $('Validate & Build Payload').item.json.post.author_name }}"
+            },
+            {
+              "fieldId": "author_slug",
+              "fieldValue": "={{ $('Validate & Build Payload').item.json.post.author_slug }}"
+            },
+            {
+              "fieldId": "lead_magnet",
+              "fieldValue": "={{ $('Validate & Build Payload').item.json.post.lead_magnet }}"
+            },
+            {
+              "fieldId": "blocks",
+              "fieldValue": "={{ $('Validate & Build Payload').item.json.post.blocks }}"
+            },
+            {
+              "fieldId": "word_count",
+              "fieldValue": "={{ $('Validate & Build Payload').item.json.post.word_count }}"
+            }
+          ]
+        }
+      },
+      "id": "insert-post-no-quiz",
+      "name": "Insert Post (no Quiz)",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        2530,
+        120
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "",
+          "name": "Supabase API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Save headlines to workflow static data so the merge node can retrieve them\n// without relying on a node name reference\nconst staticData = $getWorkflowStaticData('global');\nconst input = $input.first().json;\nstaticData.headlines = input.headlines || '';\nstaticData.articles = JSON.stringify(input.articles || []);\nstaticData.articleCount = input.articleCount || 0;\n\nreturn $input.all();"
+      },
+      "id": "stash-headlines",
+      "name": "Stash Headlines",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        560,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "posts",
+        "filterType": "string",
+        "filterString": "=created_at=gte.{{ $now.minus({days: 7}).toFormat('yyyy-MM-dd') }}",
+        "returnAll": true,
+        "additionalFields": {
+          "columns": "title"
+        }
+      },
+      "id": "fetch-recent-posts",
+      "name": "Fetch Recent Posts",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        720,
+        0
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "",
+          "name": "Supabase API"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Retrieve headlines from workflow static data (stashed earlier)\nconst staticData = $getWorkflowStaticData('global');\nconst headlines = staticData.headlines || '';\nlet articles = [];\ntry { articles = JSON.parse(staticData.articles || '[]'); } catch(e) { articles = []; }\nconst articleCount = staticData.articleCount || 0;\n\n// Collect recent post titles from Supabase node output\nconst recentItems = $input.all() || [];\nconst recentTitles = recentItems\n  .map(item => item.json?.title)\n  .filter(Boolean);\n\nconst recentList = recentTitles.length > 0\n  ? recentTitles.map((t, i) => `${i + 1}. ${t}`).join('\\n')\n  : '(none)';\n\nreturn [{\n  json: {\n    headlines,\n    articles,\n    articleCount,\n    recentPostsList: recentList\n  }\n}];"
+      },
+      "id": "merge-context",
+      "name": "Merge Context",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "chat",
+        "model": "gpt-5-nano",
+        "messages": {
+          "values": [
+            {
+              "content": "You are a news editor. Given these headlines, pick the SINGLE most interesting one for a finance education article aimed at students aged 16-25.\n\nCRITICAL — DO NOT REPEAT TOPICS:\nWe have already published these articles recently:\n{{ $json.recentPostsList }}\n\nYou MUST pick a headline about a COMPLETELY DIFFERENT subject. Two headlines about the same underlying event (e.g. oil prices, Iran war, dollar movements) count as the SAME topic even if the angle differs. Choose a headline about an unrelated story, industry, or concept.\n\nOnly if EVERY headline is about the same event as a recent article, then pick the one with the most unique educational angle and note this in your reason.\n\nReturn ONLY a JSON object with these fields:\n{ \"index\": 0, \"title\": \"headline title\", \"url\": \"article url\", \"reason\": \"1 sentence why this is the best topic\" }\n\nPick the topic with the most educational value — something that explains a real economic concept through current events.",
+              "role": "system"
+            },
+            {
+              "content": "={{ $json.headlines }}",
+              "role": "user"
+            }
+          ]
+        },
+        "options": {
+          "response_format": {
+            "type": "json_object"
+          },
+          "temperature": 0.3,
+          "maxTokens": 256
+        }
+      },
+      "id": "pick-topic",
+      "name": "Pick Best Topic",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        990,
+        0
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "",
+          "name": "OpenAI API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse the AI's topic pick\nconst rawText = $input.first().json.message?.content || $input.first().json.text || $input.first().json.output || '';\nlet pick;\ntry {\n  pick = typeof rawText === 'string' ? JSON.parse(rawText) : rawText;\n} catch (e) {\n  pick = { index: 0, title: '', url: '', reason: '' };\n}\n\n// Get the original articles list from Fetch Recent Posts\nconst articles = $('Merge Context').item.json.articles || [];\nconst headlines = $('Merge Context').item.json.headlines || '';\n\n// Try to get URL from the pick, or fall back to first article\nconst targetUrl = pick.url || (articles[pick.index || 0] || {}).url || '';\nconst targetTitle = pick.title || (articles[pick.index || 0] || {}).title || '';\n\nreturn [{\n  json: {\n    pickedTopic: targetTitle,\n    pickedReason: pick.reason || '',\n    articleUrl: targetUrl,\n    headlines: headlines,\n    articles: articles\n  }\n}];"
+      },
+      "id": "extract-url",
+      "name": "Extract Topic URL",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1210,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.articleUrl }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          },
+          "timeout": 10000
+        }
+      },
+      "id": "fetch-article",
+      "name": "Fetch Full Article",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1430,
+        0
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract readable text from HTML\nconst html = $input.first().json.data || $input.first().json.body || '';\nconst topicInfo = $('Extract Topic URL').item.json;\n\n// Strip HTML tags and extract text content\nlet text = typeof html === 'string' ? html : JSON.stringify(html);\ntext = text\n  .replace(/<script[^>]*>[\\s\\S]*?<\\/script>/gi, '')\n  .replace(/<style[^>]*>[\\s\\S]*?<\\/style>/gi, '')\n  .replace(/<nav[^>]*>[\\s\\S]*?<\\/nav>/gi, '')\n  .replace(/<header[^>]*>[\\s\\S]*?<\\/header>/gi, '')\n  .replace(/<footer[^>]*>[\\s\\S]*?<\\/footer>/gi, '')\n  .replace(/<[^>]+>/g, ' ')\n  .replace(/&[a-zA-Z]+;/g, ' ')\n  .replace(/\\s+/g, ' ')\n  .trim();\n\n// Limit to ~4000 chars to stay within token budget\nconst articleText = text.substring(0, 4000);\n\nreturn [{\n  json: {\n    pickedTopic: topicInfo.pickedTopic,\n    pickedReason: topicInfo.pickedReason,\n    articleContent: articleText.length > 100 ? articleText : '(Could not fetch article content — write based on headline and your knowledge)',\n    headlines: topicInfo.headlines\n  }\n}];"
+      },
+      "id": "clean-html",
+      "name": "Clean Article Text",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1650,
+        0
+      ]
+    }
+  ],
+  "connections": {
+    "Daily 8AM UTC": {
+      "main": [
+        [
+          {
+            "node": "Fetch News",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch News": {
+      "main": [
+        [
+          {
+            "node": "Extract Headlines",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Headlines": {
+      "main": [
+        [
+          {
+            "node": "Stash Headlines",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Stash Headlines": {
+      "main": [
+        [
+          {
+            "node": "Fetch Recent Posts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Recent Posts": {
+      "main": [
+        [
+          {
+            "node": "Merge Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Context": {
+      "main": [
+        [
+          {
+            "node": "Pick Best Topic",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pick Best Topic": {
+      "main": [
+        [
+          {
+            "node": "Extract Topic URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Topic URL": {
+      "main": [
+        [
+          {
+            "node": "Fetch Full Article",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Full Article": {
+      "main": [
+        [
+          {
+            "node": "Clean Article Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean Article Text": {
+      "main": [
+        [
+          {
+            "node": "Generate Article (GPT-5 Nano)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Article (GPT-5 Nano)": {
+      "main": [
+        [
+          {
+            "node": "Validate & Build Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate & Build Payload": {
+      "main": [
+        [
+          {
+            "node": "Quiz Needed?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Quiz Needed?": {
+      "main": [
+        [
+          {
+            "node": "Insert Quiz",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Insert Post (no Quiz)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Quiz": {
+      "main": [
+        [
+          {
+            "node": "Build Post with Quiz Block",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Post with Quiz Block": {
+      "main": [
+        [
+          {
+            "node": "Insert Post (with Quiz)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "pinData": {}
+}

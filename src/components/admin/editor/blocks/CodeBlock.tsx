@@ -32,30 +32,31 @@ export default function CodeBlock({ block, onChange }: CodeBlockProps) {
   }, [block.code]);
 
   return (
-    <div className="w-full">
-      <label
-        className="block text-xs font-medium uppercase tracking-wider mb-2"
-        style={{ color: 'var(--color-text-muted)' }}
-      >
-        Code
-      </label>
-
-      <div className="mb-2">
+    <div
+      className="w-full"
+      style={{
+        borderLeft: '3px solid var(--color-accent-muted)',
+        backgroundColor: 'var(--color-surface-elevated)',
+      }}
+    >
+      <div style={{ padding: '8px 12px', borderBottom: '1px solid var(--color-border)' }}>
         <select
           value={block.language}
           onChange={(e) => onChange({ ...block, language: e.target.value })}
-          className="px-3 py-1.5 text-xs border focus:outline-none focus:border-current transition-colors appearance-none cursor-pointer"
           style={{
-            backgroundColor: 'var(--color-background)',
+            padding: '4px 8px',
+            fontSize: '12px',
+            fontFamily: 'var(--font-mono)',
+            backgroundColor: 'transparent',
             color: 'var(--color-text-secondary)',
-            borderColor: 'var(--color-border)',
+            border: '1px solid var(--color-border)',
+            outline: 'none',
+            cursor: 'pointer',
           }}
         >
           <option value="">Select language</option>
           {LANGUAGES.map((lang) => (
-            <option key={lang.value} value={lang.value}>
-              {lang.label}
-            </option>
+            <option key={lang.value} value={lang.value}>{lang.label}</option>
           ))}
         </select>
       </div>
@@ -68,11 +69,14 @@ export default function CodeBlock({ block, onChange }: CodeBlockProps) {
         placeholder="Paste or write code here..."
         rows={6}
         spellCheck={false}
-        className="w-full px-4 py-3 text-sm leading-relaxed resize-none border focus:outline-none focus:border-current transition-colors"
+        className="w-full resize-none outline-none"
         style={{
-          backgroundColor: 'var(--color-surface-elevated, var(--color-background))',
+          padding: '12px 14px',
+          fontSize: '14px',
+          lineHeight: 1.6,
+          backgroundColor: 'transparent',
           color: 'var(--color-text-primary)',
-          borderColor: 'var(--color-border)',
+          border: 'none',
           fontFamily: 'var(--font-mono)',
           tabSize: 2,
         }}

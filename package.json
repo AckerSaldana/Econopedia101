@@ -23,6 +23,7 @@
     "@astrojs/sitemap": "^3.7.0",
     "@fontsource-variable/jetbrains-mono": "^5.1.2",
     "@fontsource-variable/newsreader": "^5.1.0",
+    "@sentry/browser": "^9.47.1",
     "@supabase/supabase-js": "^2.98.0",
     "@tailwindcss/vite": "^4.2.1",
     "@types/react": "^19.1.2",

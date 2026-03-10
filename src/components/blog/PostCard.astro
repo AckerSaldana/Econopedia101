@@ -9,8 +9,9 @@ interface Props {
     data: {
       title: string;
       description: string;
-      cover: ImageMetadata;
+      cover: ImageMetadata | string;
       coverAlt: string;
+      coverIsUrl?: boolean;
       categories: string[];
       publishedAt: Date;
       author: { id: string };
@@ -20,7 +21,7 @@ interface Props {
 }
 
 const { post, readingTime } = Astro.props;
-const { title, description, cover, coverAlt, categories, publishedAt, author } = post.data;
+const { title, description, cover, coverAlt, coverIsUrl, categories, publishedAt, author } = post.data;
 ---
 
 <a
@@ -29,13 +30,25 @@ const { title, description, cover, coverAlt, categories, publishedAt, author } =
 >
   <!-- Image: no rounded corners, no hover scale, subtle opacity shift -->
   <div class="aspect-[3/2] overflow-hidden relative">
-    <Image
-      src={cover}
-      alt={coverAlt}
-      widths={[400, 600, 800]}
-      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-      class="absolute inset-0 w-full h-full object-cover group-hover:opacity-90 transition-opacity duration-300"
-    />
+    {coverIsUrl ? (
+      <Image
+        src={cover as string}
+        alt={coverAlt}
+        width={800}
+        height={533}
+        loading="eager"
+        class="absolute inset-0 w-full h-full object-cover group-hover:opacity-90 transition-opacity duration-300"
+      />
+    ) : (
+      <Image
+        src={cover as ImageMetadata}
+        alt={coverAlt}
+        loading="eager"
+        widths={[400, 600, 800]}
+        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+        class="absolute inset-0 w-full h-full object-cover group-hover:opacity-90 transition-opacity duration-300"
+      />
+    )}
   </div>
 
   <!-- Content: typography-driven hierarchy, no card chrome -->

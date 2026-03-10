@@ -1,17 +1,12 @@
 ---
-export const prerender = true;
-
-import { getCollection } from 'astro:content';
+import { getAllPosts } from '../../lib/posts';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Container from '../../components/ui/Container.astro';
 import PostCard from '../../components/blog/PostCard.astro';
 import PostCardFeatured from '../../components/blog/PostCardFeatured.astro';
 import Breadcrumbs from '../../components/common/Breadcrumbs.astro';
 
-const allPosts = await getCollection('posts', ({ data }) => !data.draft);
-const sortedPosts = allPosts.sort(
-  (a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime(),
-);
+const sortedPosts = await getAllPosts();
 
 const featuredPost = sortedPosts.find((p) => p.data.featured);
 const regularPosts = sortedPosts.filter((p) => p !== featuredPost);

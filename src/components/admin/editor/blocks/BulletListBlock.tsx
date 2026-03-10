@@ -1,4 +1,4 @@
-import { Plus, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import type { BulletListBlock as BulletListBlockType } from '../../../../types/blocks';
 
 interface BulletListBlockProps {
@@ -24,38 +24,40 @@ export default function BulletListBlock({ block, onChange }: BulletListBlockProp
 
   return (
     <div className="w-full">
-      <label
-        className="block text-xs font-medium uppercase tracking-wider mb-2"
-        style={{ color: 'var(--color-text-muted)' }}
-      >
-        Bullet List
-      </label>
-
       <div className="flex flex-col gap-1.5">
         {block.items.map((item, index) => (
           <div key={index} className="flex items-center gap-2">
             <span
-              className="w-1.5 h-1.5 flex-shrink-0"
-              style={{ backgroundColor: 'var(--color-text-muted)' }}
+              className="flex-shrink-0"
+              style={{
+                width: '5px',
+                height: '5px',
+                borderRadius: '50%',
+                backgroundColor: 'var(--color-text-muted)',
+              }}
             />
             <input
               type="text"
               value={item}
               onChange={(e) => updateItem(index, e.target.value)}
               placeholder={`List item ${index + 1}...`}
-              className="flex-1 px-3 py-2 text-sm border focus:outline-none focus:border-current transition-colors"
+              className="flex-1 outline-none"
               style={{
+                padding: '10px 12px',
+                fontSize: '14px',
                 backgroundColor: 'var(--color-background)',
                 color: 'var(--color-text-primary)',
-                borderColor: 'var(--color-border)',
+                border: '1px solid var(--color-border)',
+                transition: 'border-color 150ms ease',
               }}
+              onFocus={(e) => { (e.target as HTMLInputElement).style.borderColor = 'var(--color-accent)'; }}
+              onBlur={(e) => { (e.target as HTMLInputElement).style.borderColor = 'var(--color-border)'; }}
             />
             <button
               type="button"
               onClick={() => removeItem(index)}
-              className="flex-shrink-0 p-1.5 transition-opacity hover:opacity-70"
-              style={{ color: 'var(--color-text-muted)' }}
-              title="Remove item"
+              className="flex-shrink-0 p-1.5"
+              style={{ color: 'var(--color-text-muted)', background: 'none', border: 'none', cursor: 'pointer', transition: 'opacity 150ms ease' }}
             >
               <X size={14} />
             </button>
@@ -66,15 +68,19 @@ export default function BulletListBlock({ block, onChange }: BulletListBlockProp
       <button
         type="button"
         onClick={addItem}
-        className="mt-2 flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium border transition-colors hover:opacity-80"
         style={{
+          marginTop: '8px',
+          background: 'none',
+          border: 'none',
+          padding: 0,
+          cursor: 'pointer',
+          fontSize: '13px',
+          fontWeight: 500,
           color: 'var(--color-accent)',
-          borderColor: 'var(--color-border)',
-          backgroundColor: 'transparent',
+          transition: 'opacity 150ms ease',
         }}
       >
-        <Plus size={12} />
-        Add item
+        + Add item
       </button>
     </div>
   );

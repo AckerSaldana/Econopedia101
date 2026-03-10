@@ -13,21 +13,24 @@ const VARIANTS: { value: CalloutBlockType['variant']; label: string; icon: typeo
   { value: 'tip', label: 'Tip', icon: Lightbulb },
 ];
 
-const VARIANT_COLORS: Record<CalloutBlockType['variant'], { bg: string; border: string; text: string }> = {
+const VARIANT_STYLES: Record<CalloutBlockType['variant'], { bg: string; activeBg: string; border: string; activeColor: string }> = {
   info: {
-    bg: 'var(--color-info)',
+    bg: 'rgba(37, 99, 235, 0.06)',
+    activeBg: 'var(--color-info)',
     border: 'var(--color-info)',
-    text: '#fff',
+    activeColor: '#fff',
   },
   warning: {
-    bg: 'var(--color-warning)',
+    bg: 'rgba(217, 119, 6, 0.06)',
+    activeBg: 'var(--color-warning)',
     border: 'var(--color-warning)',
-    text: '#fff',
+    activeColor: '#fff',
   },
   tip: {
-    bg: 'var(--color-success)',
+    bg: 'rgba(22, 163, 74, 0.06)',
+    activeBg: 'var(--color-success)',
     border: 'var(--color-success)',
-    text: '#fff',
+    activeColor: '#fff',
   },
 };
 
@@ -45,32 +48,34 @@ export default function CalloutBlock({ block, onChange }: CalloutBlockProps) {
     adjustHeight();
   }, [block.content]);
 
-  const colors = VARIANT_COLORS[block.variant];
+  const styles = VARIANT_STYLES[block.variant];
 
   return (
     <div className="w-full">
-      <label
-        className="block text-xs font-medium uppercase tracking-wider mb-2"
-        style={{ color: 'var(--color-text-muted)' }}
-      >
-        Callout
-      </label>
-
-      {/* Variant selector */}
       <div className="flex items-center gap-1 mb-2">
         {VARIANTS.map(({ value, label, icon: Icon }) => {
           const active = block.variant === value;
-          const variantColor = VARIANT_COLORS[value];
+          const vs = VARIANT_STYLES[value];
           return (
             <button
               key={value}
               type="button"
               onClick={() => onChange({ ...block, variant: value })}
-              className="flex items-center gap-1.5 px-3 py-1 text-xs font-medium uppercase tracking-wider border transition-colors"
               style={{
-                backgroundColor: active ? variantColor.bg : 'transparent',
-                color: active ? variantColor.text : 'var(--color-text-secondary)',
-                borderColor: active ? variantColor.border : 'var(--color-border)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                padding: '4px 10px',
+                fontSize: '11px',
+                fontWeight: 600,
+                textTransform: 'uppercase' as const,
+                letterSpacing: '0.04em',
+                border: '1px solid',
+                borderColor: active ? vs.activeBg : 'var(--color-border)',
+                backgroundColor: active ? vs.activeBg : 'transparent',
+                color: active ? vs.activeColor : 'var(--color-text-secondary)',
+                cursor: 'pointer',
+                transition: 'all 150ms ease',
               }}
             >
               <Icon size={12} />
@@ -80,10 +85,11 @@ export default function CalloutBlock({ block, onChange }: CalloutBlockProps) {
         })}
       </div>
 
-      {/* Content textarea with accent left border */}
       <div
-        className="border-l-[3px]"
-        style={{ borderColor: colors.border }}
+        style={{
+          borderLeft: `3px solid ${styles.border}`,
+          backgroundColor: styles.bg,
+        }}
       >
         <textarea
           ref={textareaRef}
@@ -92,11 +98,14 @@ export default function CalloutBlock({ block, onChange }: CalloutBlockProps) {
           onInput={adjustHeight}
           placeholder={`Enter ${block.variant} text...`}
           rows={3}
-          className="w-full px-3 py-2.5 text-sm leading-relaxed resize-none border border-l-0 focus:outline-none focus:border-current transition-colors"
+          className="w-full resize-none outline-none"
           style={{
-            backgroundColor: 'var(--color-background)',
+            padding: '12px 14px',
+            fontSize: '14px',
+            lineHeight: 1.7,
+            backgroundColor: 'transparent',
             color: 'var(--color-text-primary)',
-            borderColor: 'var(--color-border)',
+            border: 'none',
           }}
         />
       </div>

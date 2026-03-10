@@ -3,13 +3,15 @@ import type { Block } from '../../../types/blocks';
 import BlockRow from './BlockRow';
 import AddBlockMenu from './AddBlockMenu';
 import { Plus } from 'lucide-react';
+import { btnSecondary } from '../adminStyles';
 
 interface BlockEditorProps {
   blocks: Block[];
   onChange: (blocks: Block[]) => void;
+  categories?: string[];
 }
 
-export default function BlockEditor({ blocks, onChange }: BlockEditorProps) {
+export default function BlockEditor({ blocks, onChange, categories }: BlockEditorProps) {
   const [insertIndex, setInsertIndex] = useState<number | null>(null);
 
   const handleBlockChange = (index: number, updated: Block) => {
@@ -49,13 +51,13 @@ export default function BlockEditor({ blocks, onChange }: BlockEditorProps) {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
       {blocks.map((block, index) => (
         <div key={block.id}>
-          {/* Between-block insert button */}
+          {/* Between-block separator */}
           {index > 0 && (
             <div
               style={{
                 position: 'relative',
                 height: '1px',
-                background: 'var(--color-border)',
+                borderTop: '1px dashed var(--color-border-subtle)',
                 margin: '0',
               }}
             >
@@ -86,7 +88,8 @@ export default function BlockEditor({ blocks, onChange }: BlockEditorProps) {
                       justifyContent: 'center',
                       background: 'var(--color-surface)',
                       border: '1px solid var(--color-border)',
-                      color: 'var(--color-text-muted)',
+                      borderRadius: '50%',
+                      color: 'var(--color-accent)',
                       cursor: 'pointer',
                       opacity: 0,
                       transition: 'opacity 150ms ease',
@@ -104,7 +107,7 @@ export default function BlockEditor({ blocks, onChange }: BlockEditorProps) {
                   </button>
                 )}
               </div>
-              {/* Expand hover zone so the button is reachable */}
+              {/* Expand hover zone */}
               <div
                 style={{
                   position: 'absolute',
@@ -116,12 +119,17 @@ export default function BlockEditor({ blocks, onChange }: BlockEditorProps) {
                     '.insert-between-btn'
                   ) as HTMLButtonElement | null;
                   if (btn) btn.style.opacity = '1';
+                  // Shift dashed line to accent
+                  const parent = e.currentTarget.parentElement;
+                  if (parent) parent.style.borderTopColor = 'var(--color-accent-muted)';
                 }}
                 onMouseLeave={(e) => {
                   const btn = e.currentTarget.previousElementSibling?.querySelector(
                     '.insert-between-btn'
                   ) as HTMLButtonElement | null;
                   if (btn && insertIndex !== index) btn.style.opacity = '0';
+                  const parent = e.currentTarget.parentElement;
+                  if (parent) parent.style.borderTopColor = 'var(--color-border-subtle)';
                 }}
               />
             </div>
@@ -135,15 +143,16 @@ export default function BlockEditor({ blocks, onChange }: BlockEditorProps) {
             onDelete={() => handleDelete(index)}
             onMoveUp={() => handleMoveUp(index)}
             onMoveDown={() => handleMoveDown(index)}
+            categories={categories}
           />
         </div>
       ))}
 
-      {/* Add block menu at the end */}
+      {/* Add block at end */}
       <div
         style={{
           borderTop: blocks.length > 0 ? '1px solid var(--color-border)' : 'none',
-          padding: '16px 0',
+          padding: '24px 0',
           display: 'flex',
           justifyContent: 'center',
         }}

@@ -21,33 +21,31 @@ export default function BlockquoteBlock({ block, onChange }: BlockquoteBlockProp
   }, [block.content]);
 
   return (
-    <div className="w-full">
-      <label
-        className="block text-xs font-medium uppercase tracking-wider mb-2"
-        style={{ color: 'var(--color-text-muted)' }}
-      >
-        Blockquote
-      </label>
-      <div
-        className="border-l-[3px] pl-0"
-        style={{ borderColor: 'var(--color-accent)' }}
-      >
-        <textarea
-          ref={textareaRef}
-          value={block.content}
-          onChange={(e) => onChange({ ...block, content: e.target.value })}
-          onInput={adjustHeight}
-          placeholder="Enter quote text..."
-          rows={3}
-          className="w-full px-3 py-2.5 text-sm italic leading-relaxed resize-none border border-l-0 focus:outline-none focus:border-current transition-colors"
-          style={{
-            backgroundColor: 'var(--color-background)',
-            color: 'var(--color-text-primary)',
-            borderColor: 'var(--color-border)',
-            fontFamily: 'var(--font-serif)',
-          }}
-        />
-      </div>
+    <div
+      style={{
+        borderLeft: '4px solid var(--color-accent)',
+        backgroundColor: 'var(--color-surface-elevated)',
+      }}
+    >
+      <textarea
+        ref={textareaRef}
+        value={block.content}
+        onChange={(e) => onChange({ ...block, content: e.target.value })}
+        onInput={adjustHeight}
+        placeholder="Enter quote text..."
+        rows={3}
+        className="w-full resize-none outline-none"
+        style={{
+          padding: '12px 14px',
+          fontSize: '14px',
+          lineHeight: 1.7,
+          fontStyle: 'italic',
+          backgroundColor: 'transparent',
+          color: 'var(--color-text-primary)',
+          border: 'none',
+          fontFamily: 'var(--font-serif)',
+        }}
+      />
     </div>
   );
 }

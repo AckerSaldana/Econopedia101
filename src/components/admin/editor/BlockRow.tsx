@@ -1,5 +1,5 @@
 import type { Block } from '../../../types/blocks';
-import { ArrowUp, ArrowDown, Trash2, GripVertical } from 'lucide-react';
+import { ArrowUp, ArrowDown, Trash2 } from 'lucide-react';
 import ParagraphBlock from './blocks/ParagraphBlock';
 import HeadingBlock from './blocks/HeadingBlock';
 import BlockquoteBlock from './blocks/BlockquoteBlock';
@@ -22,6 +22,7 @@ interface BlockRowProps {
   onDelete: () => void;
   onMoveUp: () => void;
   onMoveDown: () => void;
+  categories?: string[];
 }
 
 const BLOCK_TYPE_LABELS: Record<Block['type'], string> = {
@@ -40,7 +41,7 @@ const BLOCK_TYPE_LABELS: Record<Block['type'], string> = {
   formula: 'Formula',
 };
 
-function renderBlockEditor(block: Block, onChange: (block: Block) => void) {
+function renderBlockEditor(block: Block, onChange: (block: Block) => void, categories?: string[]) {
   switch (block.type) {
     case 'paragraph':
       return <ParagraphBlock block={block} onChange={onChange as any} />;
@@ -63,7 +64,7 @@ function renderBlockEditor(block: Block, onChange: (block: Block) => void) {
     case 'callout':
       return <CalloutBlock block={block} onChange={onChange as any} />;
     case 'quiz':
-      return <QuizBlock block={block} onChange={onChange as any} />;
+      return <QuizBlock block={block} onChange={onChange as any} categories={categories} />;
     case 'chart':
       return <ChartBlock block={block} onChange={onChange as any} />;
     case 'formula':
@@ -85,25 +86,35 @@ export default function BlockRow({
   onDelete,
   onMoveUp,
   onMoveDown,
+  categories,
 }: BlockRowProps) {
   return (
-    <div className="flex gap-0 py-3 items-start">
+    <div
+      className="flex gap-0 py-4 items-start group"
+      style={{ transition: 'background-color 150ms ease' }}
+      onMouseEnter={(e) => {
+        (e.currentTarget as HTMLDivElement).style.backgroundColor = 'var(--color-surface-elevated)';
+      }}
+      onMouseLeave={(e) => {
+        (e.currentTarget as HTMLDivElement).style.backgroundColor = 'transparent';
+      }}
+    >
       {/* Left gutter */}
-      <div className="w-[100px] flex-shrink-0 flex flex-col items-start gap-1 pt-1 pr-3">
-        <div className="flex items-center gap-1" style={{ color: 'var(--color-text-muted)' }}>
-          <GripVertical size={14} />
-          <span
-            className="text-[11px] uppercase tracking-wider font-medium"
-            style={{ color: 'var(--color-text-muted)' }}
-          >
-            {BLOCK_TYPE_LABELS[block.type]}
-          </span>
-        </div>
+      <div className="w-[80px] flex-shrink-0 flex flex-col items-start gap-1 pt-1 pr-3">
+        <span
+          className="text-[10px] uppercase tracking-wider font-medium block-type-label"
+          style={{
+            color: 'var(--color-text-muted)',
+            transition: 'color 150ms ease',
+          }}
+        >
+          {BLOCK_TYPE_LABELS[block.type]}
+        </span>
       </div>
 
       {/* Block editor */}
       <div className="flex-1 min-w-0">
-        {renderBlockEditor(block, onChange)}
+        {renderBlockEditor(block, onChange, categories)}
       </div>
 
       {/* Actions */}
@@ -111,11 +122,19 @@ export default function BlockRow({
         <button
           onClick={onMoveUp}
           disabled={index === 0}
-          className="w-7 h-7 flex items-center justify-center border disabled:opacity-30"
+          className="w-7 h-7 flex items-center justify-center disabled:opacity-30"
           style={{
-            borderColor: 'var(--color-border)',
-            backgroundColor: 'var(--color-surface)',
+            border: 'none',
+            backgroundColor: 'transparent',
             color: 'var(--color-text-secondary)',
+            cursor: 'pointer',
+            transition: 'background-color 150ms ease',
+          }}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'var(--color-surface-elevated)';
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'transparent';
           }}
         >
           <ArrowUp size={14} />
@@ -123,22 +142,39 @@ export default function BlockRow({
         <button
           onClick={onMoveDown}
           disabled={index === total - 1}
-          className="w-7 h-7 flex items-center justify-center border disabled:opacity-30"
+          className="w-7 h-7 flex items-center justify-center disabled:opacity-30"
           style={{
-            borderColor: 'var(--color-border)',
-            backgroundColor: 'var(--color-surface)',
+            border: 'none',
+            backgroundColor: 'transparent',
             color: 'var(--color-text-secondary)',
+            cursor: 'pointer',
+            transition: 'background-color 150ms ease',
+          }}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'var(--color-surface-elevated)';
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'transparent';
           }}
         >
           <ArrowDown size={14} />
         </button>
         <button
           onClick={onDelete}
-          className="w-7 h-7 flex items-center justify-center border"
+          className="w-7 h-7 flex items-center justify-center"
           style={{
-            borderColor: 'var(--color-border)',
-            backgroundColor: 'var(--color-surface)',
-            color: '#DC2626',
+            border: 'none',
+            backgroundColor: 'transparent',
+            color: 'var(--color-error)',
+            cursor: 'pointer',
+            opacity: 0.4,
+            transition: 'opacity 150ms ease',
+          }}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.opacity = '1';
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.opacity = '0.4';
           }}
         >
           <Trash2 size={14} />

@@ -10,29 +10,24 @@ const LEVELS: (2 | 3 | 4)[] = [2, 3, 4];
 export default function HeadingBlock({ block, onChange }: HeadingBlockProps) {
   return (
     <div className="w-full">
-      <label
-        className="block text-xs font-medium uppercase tracking-wider mb-2"
-        style={{ color: 'var(--color-text-muted)' }}
-      >
-        Heading
-      </label>
-
       <div className="flex items-center gap-1 mb-2">
         {LEVELS.map((level) => (
           <button
             key={level}
             type="button"
             onClick={() => onChange({ ...block, level })}
-            className="px-3 py-1 text-xs font-semibold uppercase tracking-wider border transition-colors"
             style={{
-              backgroundColor:
-                block.level === level ? 'var(--color-accent)' : 'transparent',
-              color:
-                block.level === level ? '#fff' : 'var(--color-text-secondary)',
-              borderColor:
-                block.level === level
-                  ? 'var(--color-accent)'
-                  : 'var(--color-border)',
+              padding: '4px 10px',
+              fontSize: '11px',
+              fontWeight: 600,
+              textTransform: 'uppercase' as const,
+              letterSpacing: '0.04em',
+              border: '1px solid',
+              borderColor: block.level === level ? 'var(--color-accent)' : 'var(--color-border)',
+              backgroundColor: block.level === level ? 'var(--color-accent)' : 'transparent',
+              color: block.level === level ? '#fff' : 'var(--color-text-secondary)',
+              cursor: 'pointer',
+              transition: 'all 150ms ease',
             }}
           >
             H{level}
@@ -45,20 +40,19 @@ export default function HeadingBlock({ block, onChange }: HeadingBlockProps) {
         value={block.text}
         onChange={(e) => onChange({ ...block, text: e.target.value })}
         placeholder={`Heading ${block.level} text...`}
-        className="w-full px-3 py-2.5 text-sm border focus:outline-none focus:border-current transition-colors"
+        className="w-full outline-none"
         style={{
+          padding: '10px 12px',
           backgroundColor: 'var(--color-background)',
           color: 'var(--color-text-primary)',
-          borderColor: 'var(--color-border)',
+          border: '1px solid var(--color-border)',
           fontFamily: 'var(--font-serif)',
-          fontSize:
-            block.level === 2
-              ? '1.25rem'
-              : block.level === 3
-                ? '1.125rem'
-                : '1rem',
+          fontSize: block.level === 2 ? '1.25rem' : block.level === 3 ? '1.125rem' : '1rem',
           fontWeight: 600,
+          transition: 'border-color 150ms ease',
         }}
+        onFocus={(e) => { (e.target as HTMLInputElement).style.borderColor = 'var(--color-accent)'; }}
+        onBlur={(e) => { (e.target as HTMLInputElement).style.borderColor = 'var(--color-border)'; }}
       />
     </div>
   );

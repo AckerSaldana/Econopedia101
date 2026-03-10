@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Upload, Image as ImageIcon } from 'lucide-react';
+import { Upload } from 'lucide-react';
 import type { ImageBlock as ImageBlockType } from '../../../../types/blocks';
 import { supabase } from '../../../../lib/supabase';
 
@@ -29,9 +29,7 @@ export default function ImageBlock({ block, onChange }: ImageBlockProps) {
         .from('article-images')
         .upload(filePath, file);
 
-      if (uploadError) {
-        throw uploadError;
-      }
+      if (uploadError) throw uploadError;
 
       const { data } = supabase.storage
         .from('article-images')
@@ -47,32 +45,37 @@ export default function ImageBlock({ block, onChange }: ImageBlockProps) {
 
   return (
     <div className="w-full">
-      <label
-        className="block text-xs font-medium uppercase tracking-wider mb-2"
-        style={{ color: 'var(--color-text-muted)' }}
-      >
-        Image
-      </label>
-
-      {/* Upload area / Preview */}
       {block.url ? (
         <div className="mb-3">
           <div
-            className="border overflow-hidden mb-2"
-            style={{ borderColor: 'var(--color-border)' }}
+            style={{
+              borderTop: '2px solid var(--color-accent)',
+              border: '1px solid var(--color-border)',
+              borderTopWidth: '2px',
+              borderTopColor: 'var(--color-accent)',
+              overflow: 'hidden',
+            }}
           >
             <img
               src={block.url}
               alt={block.alt || 'Preview'}
               className="w-full max-h-64 object-contain"
-              style={{ backgroundColor: 'var(--color-surface-elevated, var(--color-background))' }}
+              style={{ backgroundColor: 'var(--color-surface-elevated)' }}
             />
           </div>
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="text-xs font-medium transition-opacity hover:opacity-70"
-            style={{ color: 'var(--color-accent)' }}
+            style={{
+              marginTop: '6px',
+              background: 'none',
+              border: 'none',
+              padding: 0,
+              cursor: 'pointer',
+              fontSize: '12px',
+              fontWeight: 500,
+              color: 'var(--color-accent)',
+            }}
           >
             Replace image
           </button>
@@ -82,11 +85,19 @@ export default function ImageBlock({ block, onChange }: ImageBlockProps) {
           type="button"
           onClick={() => fileInputRef.current?.click()}
           disabled={uploading}
-          className="w-full flex flex-col items-center justify-center gap-2 py-8 border border-dashed transition-colors hover:opacity-80"
+          className="w-full flex flex-col items-center justify-center gap-2 py-8"
           style={{
-            borderColor: 'var(--color-border)',
+            border: '1px dashed var(--color-accent-muted)',
             backgroundColor: 'var(--color-background)',
             color: 'var(--color-text-muted)',
+            cursor: 'pointer',
+            transition: 'border-color 150ms ease',
+          }}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--color-accent)';
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--color-accent-muted)';
           }}
         >
           {uploading ? (
@@ -109,17 +120,11 @@ export default function ImageBlock({ block, onChange }: ImageBlockProps) {
       />
 
       {error && (
-        <p className="mt-1.5 text-xs" style={{ color: 'var(--color-error)' }}>
-          {error}
-        </p>
+        <p className="mt-1.5 text-xs" style={{ color: 'var(--color-error)' }}>{error}</p>
       )}
 
-      {/* Alt text */}
       <div className="mt-3">
-        <label
-          className="block text-xs mb-1"
-          style={{ color: 'var(--color-text-secondary)' }}
-        >
+        <label className="block text-xs mb-1" style={{ color: 'var(--color-text-secondary)' }}>
           Alt text
         </label>
         <input
@@ -127,36 +132,40 @@ export default function ImageBlock({ block, onChange }: ImageBlockProps) {
           value={block.alt}
           onChange={(e) => onChange({ ...block, alt: e.target.value })}
           placeholder="Describe the image for accessibility..."
-          className="w-full px-3 py-2 text-sm border focus:outline-none focus:border-current transition-colors"
+          className="w-full outline-none"
           style={{
+            padding: '10px 12px',
+            fontSize: '13px',
             backgroundColor: 'var(--color-background)',
             color: 'var(--color-text-primary)',
-            borderColor: 'var(--color-border)',
+            border: '1px solid var(--color-border)',
+            transition: 'border-color 150ms ease',
           }}
+          onFocus={(e) => { (e.target as HTMLInputElement).style.borderColor = 'var(--color-accent)'; }}
+          onBlur={(e) => { (e.target as HTMLInputElement).style.borderColor = 'var(--color-border)'; }}
         />
       </div>
 
-      {/* Caption */}
       <div className="mt-2">
-        <label
-          className="block text-xs mb-1"
-          style={{ color: 'var(--color-text-secondary)' }}
-        >
+        <label className="block text-xs mb-1" style={{ color: 'var(--color-text-secondary)' }}>
           Caption (optional)
         </label>
         <input
           type="text"
           value={block.caption || ''}
-          onChange={(e) =>
-            onChange({ ...block, caption: e.target.value || undefined })
-          }
+          onChange={(e) => onChange({ ...block, caption: e.target.value || undefined })}
           placeholder="Image caption..."
-          className="w-full px-3 py-2 text-sm border focus:outline-none focus:border-current transition-colors"
+          className="w-full outline-none"
           style={{
+            padding: '10px 12px',
+            fontSize: '13px',
             backgroundColor: 'var(--color-background)',
             color: 'var(--color-text-primary)',
-            borderColor: 'var(--color-border)',
+            border: '1px solid var(--color-border)',
+            transition: 'border-color 150ms ease',
           }}
+          onFocus={(e) => { (e.target as HTMLInputElement).style.borderColor = 'var(--color-accent)'; }}
+          onBlur={(e) => { (e.target as HTMLInputElement).style.borderColor = 'var(--color-border)'; }}
         />
       </div>
     </div>

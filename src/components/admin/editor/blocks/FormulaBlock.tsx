@@ -40,46 +40,41 @@ export default function FormulaBlock({ block, onChange }: FormulaBlockProps) {
 
   return (
     <div className="w-full">
-      <label
-        className="block text-xs font-medium uppercase tracking-wider mb-2"
-        style={{ color: 'var(--color-text-muted)' }}
-      >
-        Formula (LaTeX)
-      </label>
-
       <input
         type="text"
         value={block.latex}
         onChange={(e) => onChange({ ...block, latex: e.target.value })}
         placeholder="e.g. E = mc^{2}"
         spellCheck={false}
-        className="w-full px-3 py-2.5 text-sm border focus:outline-none focus:border-current transition-colors"
+        className="w-full outline-none"
         style={{
+          padding: '10px 12px',
+          fontSize: '14px',
           backgroundColor: 'var(--color-background)',
           color: 'var(--color-text-primary)',
-          borderColor: 'var(--color-border)',
+          border: '1px solid var(--color-border)',
           fontFamily: 'var(--font-mono)',
+          transition: 'border-color 150ms ease',
         }}
+        onFocus={(e) => { (e.target as HTMLInputElement).style.borderColor = 'var(--color-accent)'; }}
+        onBlur={(e) => { (e.target as HTMLInputElement).style.borderColor = 'var(--color-border)'; }}
       />
 
-      {/* Live preview */}
       {block.latex.trim() && (
         <div
-          className="mt-3 px-4 py-4 border text-center overflow-x-auto"
+          className="mt-3 px-4 py-4 text-center overflow-x-auto"
           style={{
-            borderColor: 'var(--color-border)',
+            borderTop: '2px solid var(--color-accent)',
+            border: '1px solid var(--color-border)',
+            borderTopWidth: '2px',
+            borderTopColor: 'var(--color-accent)',
             backgroundColor: 'var(--color-surface)',
           }}
         >
           {renderError ? (
-            <p className="text-xs" style={{ color: 'var(--color-error)' }}>
-              {renderError}
-            </p>
+            <p className="text-xs" style={{ color: 'var(--color-error)' }}>{renderError}</p>
           ) : (
-            <div
-              ref={previewRef}
-              dangerouslySetInnerHTML={{ __html: renderedHtml }}
-            />
+            <div ref={previewRef} dangerouslySetInnerHTML={{ __html: renderedHtml }} />
           )}
         </div>
       )}

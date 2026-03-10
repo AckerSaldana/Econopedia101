@@ -60,15 +60,15 @@ export default function Matching({
             answered && selections[i] !== pair.right;
 
           return (
-            <div key={i} className="flex items-center gap-3">
+            <div key={i} className="flex items-center gap-3 min-w-0">
               <span
-                className="text-sm font-medium flex-shrink-0 min-w-[120px]"
-                style={{ color: 'var(--color-text-primary)' }}
+                className="text-sm font-medium flex-shrink-0"
+                style={{ color: 'var(--color-text-primary)', maxWidth: '30%' }}
               >
                 {pair.left}
               </span>
               <span
-                className="text-xs"
+                className="text-xs flex-shrink-0"
                 style={{ color: 'var(--color-text-muted)' }}
               >
                 →
@@ -77,7 +77,7 @@ export default function Matching({
                 value={selections[i] || ''}
                 onChange={(e) => handleChange(i, e.target.value)}
                 disabled={answered}
-                className="flex-1 px-3 py-2 border text-sm outline-none appearance-none"
+                className="min-w-0 flex-1 px-3 py-2 border text-sm outline-none appearance-none"
                 style={{
                   borderColor: pairCorrect
                     ? 'var(--color-success)'
@@ -90,6 +90,8 @@ export default function Matching({
                       ? 'rgba(220, 38, 38, 0.05)'
                       : 'transparent',
                   color: 'var(--color-text-primary)',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
                 }}
               >
                 <option value="" disabled>

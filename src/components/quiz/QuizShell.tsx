@@ -19,17 +19,17 @@ export default function QuizShell({
 
   return (
     <div className="max-w-2xl mx-auto">
-      <div className="border-t-2 border-[var(--color-accent)] pt-6 mb-6">
-        <div className="flex items-center justify-between mb-2">
+      <div className="mb-4">
+        <div className="flex items-start justify-between gap-4 mb-2">
           <h2
-            className="text-xl font-semibold"
+            className="text-xl font-semibold min-w-0"
             style={{ color: 'var(--color-text-primary)' }}
           >
             {title}
           </h2>
           <span
-            className="text-xs font-medium"
-            style={{ color: 'var(--color-text-muted)' }}
+            className="text-xs font-medium flex-shrink-0 pt-1.5"
+            style={{ color: 'var(--color-text-muted)', whiteSpace: 'nowrap' }}
           >
             {currentStep} / {totalSteps}
           </span>

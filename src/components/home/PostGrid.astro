@@ -8,8 +8,9 @@ interface Props {
     data: {
       title: string;
       description: string;
-      cover: ImageMetadata;
+      cover: ImageMetadata | string;
       coverAlt: string;
+      coverIsUrl?: boolean;
       categories: string[];
       publishedAt: Date;
       author: { id: string };

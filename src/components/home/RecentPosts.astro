@@ -7,8 +7,9 @@ interface Props {
     slug: string;
     data: {
       title: string;
-      cover: ImageMetadata;
+      cover: ImageMetadata | string;
       coverAlt: string;
+      coverIsUrl?: boolean;
       categories: string[];
       publishedAt: Date;
     };

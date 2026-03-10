@@ -31,6 +31,10 @@ export function useAdminAuth() {
       .then(({ data }) => {
         setIsAdmin(!!data);
         setAdminLoading(false);
+      })
+      .catch(() => {
+        setIsAdmin(false);
+        setAdminLoading(false);
       });
   }, [auth.user, auth.loading]);
 

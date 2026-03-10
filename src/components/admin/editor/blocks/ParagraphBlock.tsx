@@ -21,30 +21,26 @@ export default function ParagraphBlock({ block, onChange }: ParagraphBlockProps)
   }, [block.content]);
 
   return (
-    <div className="w-full">
-      <label
-        className="block text-xs font-medium uppercase tracking-wider mb-2"
-        style={{ color: 'var(--color-text-muted)' }}
-      >
-        Paragraph
-      </label>
-      <textarea
-        ref={textareaRef}
-        value={block.content}
-        onChange={(e) => {
-          onChange({ ...block, content: e.target.value });
-        }}
-        onInput={adjustHeight}
-        placeholder="Write your paragraph..."
-        rows={3}
-        className="w-full px-3 py-2.5 text-sm leading-relaxed resize-none border focus:outline-none focus:border-current transition-colors"
-        style={{
-          backgroundColor: 'var(--color-background)',
-          color: 'var(--color-text-primary)',
-          borderColor: 'var(--color-border)',
-          fontFamily: 'var(--font-sans)',
-        }}
-      />
-    </div>
+    <textarea
+      ref={textareaRef}
+      value={block.content}
+      onChange={(e) => onChange({ ...block, content: e.target.value })}
+      onInput={adjustHeight}
+      placeholder="Write your paragraph..."
+      rows={3}
+      className="w-full resize-none outline-none"
+      style={{
+        padding: '12px 14px',
+        fontSize: '14px',
+        lineHeight: 1.7,
+        backgroundColor: 'var(--color-background)',
+        color: 'var(--color-text-primary)',
+        border: '1px solid var(--color-border)',
+        fontStyle: block.content ? 'normal' : 'italic',
+        transition: 'border-color 150ms ease',
+      }}
+      onFocus={(e) => { (e.target as HTMLTextAreaElement).style.borderColor = 'var(--color-accent)'; }}
+      onBlur={(e) => { (e.target as HTMLTextAreaElement).style.borderColor = 'var(--color-border)'; }}
+    />
   );
 }

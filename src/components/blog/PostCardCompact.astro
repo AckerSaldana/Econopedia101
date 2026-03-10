@@ -8,17 +8,19 @@ interface Props {
     slug: string;
     data: {
       title: string;
-      cover: ImageMetadata;
+      cover: ImageMetadata | string;
       coverAlt: string;
+      coverIsUrl?: boolean;
       categories: string[];
       publishedAt: Date;
     };
   };
   readingTime?: string;
+  loading?: 'eager' | 'lazy';
 }
 
-const { post, readingTime } = Astro.props;
-const { title, cover, coverAlt, categories, publishedAt } = post.data;
+const { post, readingTime, loading = 'lazy' } = Astro.props;
+const { title, cover, coverAlt, coverIsUrl, categories, publishedAt } = post.data;
 ---
 
 <a
@@ -48,12 +50,24 @@ const { title, cover, coverAlt, categories, publishedAt } = post.data;
 
   <!-- Thumbnail: landscape ratio, editorial feel -->
   <div class="w-24 h-16 flex-shrink-0 overflow-hidden">
-    <Image
-      src={cover}
-      alt={coverAlt}
-      widths={[128, 256]}
-      sizes="96px"
-      class="w-full h-full object-cover group-hover:opacity-90 transition-opacity duration-300"
-    />
+    {coverIsUrl ? (
+      <Image
+        src={cover as string}
+        alt={coverAlt}
+        width={192}
+        height={128}
+        loading={loading}
+        class="w-full h-full object-cover group-hover:opacity-90 transition-opacity duration-300"
+      />
+    ) : (
+      <Image
+        src={cover as ImageMetadata}
+        alt={coverAlt}
+        loading={loading}
+        widths={[128, 256]}
+        sizes="96px"
+        class="w-full h-full object-cover group-hover:opacity-90 transition-opacity duration-300"
+      />
+    )}
   </div>
 </a>

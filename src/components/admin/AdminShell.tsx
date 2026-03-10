@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import AdminNav from './AdminNav';
 import { useAdminRouter } from './useAdminRouter';
 import AdminDashboard from './pages/AdminDashboard';
@@ -12,6 +13,18 @@ interface AdminShellProps {
 
 export default function AdminShell({ signOut }: AdminShellProps) {
   const { path, navigate } = useAdminRouter();
+
+  // Lock body scroll so the admin shell owns the full viewport
+  useEffect(() => {
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
+    document.body.style.margin = '0';
+    return () => {
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
+      document.body.style.margin = '';
+    };
+  }, []);
 
   const renderPage = () => {
     // /admin/posts/new
@@ -45,9 +58,17 @@ export default function AdminShell({ signOut }: AdminShellProps) {
   };
 
   return (
-    <div className="flex min-h-screen">
+    <div
+      className="fixed inset-0 flex overflow-hidden"
+      style={{ borderTop: '2px solid var(--color-accent)' }}
+    >
       <AdminNav path={path} navigate={navigate} signOut={signOut} />
-      <main className="flex-1 min-w-0">{renderPage()}</main>
+      <main
+        className="flex-1 min-w-0 overflow-y-auto"
+        style={{ backgroundColor: 'var(--color-background)' }}
+      >
+        {renderPage()}
+      </main>
     </div>
   );
 }

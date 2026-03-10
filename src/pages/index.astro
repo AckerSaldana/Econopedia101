@@ -1,6 +1,4 @@
 ---
-export const prerender = true;
-
 import BaseLayout from '../layouts/BaseLayout.astro';
 import HeroSection from '../components/home/HeroSection.astro';
 import FeaturedPost from '../components/home/FeaturedPost.astro';
@@ -12,10 +10,9 @@ import SidebarWidget from '../components/home/SidebarWidget.astro';
 import PostCardCompact from '../components/blog/PostCardCompact.astro';
 import { SITE } from '../lib/constants';
 import { websiteSchema, organizationSchema } from '../lib/seo';
-import { getCollection } from 'astro:content';
+import { getAllPosts } from '../lib/posts';
 
-const allPosts = (await getCollection('posts', ({ data }) => !data.draft))
-  .sort((a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf());
+const allPosts = await getAllPosts();
 
 const featuredPost = allPosts.find(p => p.data.featured) || allPosts[0];
 const topStories = allPosts.filter(p => p !== featuredPost).slice(0, 4);
@@ -28,7 +25,7 @@ const editorialPicks = allPosts.slice(0, 5);
     <FeaturedPost slot="featured" post={featuredPost} />
     <SidebarWidget slot="sidebar" title="Editor's Picks">
       {editorialPicks.map(post => (
-        <PostCardCompact post={post} />
+        <PostCardCompact post={post} loading="eager" />
       ))}
     </SidebarWidget>
   </HeroSection>

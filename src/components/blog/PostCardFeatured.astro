@@ -9,8 +9,9 @@ interface Props {
     data: {
       title: string;
       description: string;
-      cover: ImageMetadata;
+      cover: ImageMetadata | string;
       coverAlt: string;
+      coverIsUrl?: boolean;
       categories: string[];
       publishedAt: Date;
       author: { id: string };
@@ -21,7 +22,7 @@ interface Props {
 }
 
 const { post, readingTime, label = 'Featured' } = Astro.props;
-const { title, description, cover, coverAlt, categories, publishedAt, author } = post.data;
+const { title, description, cover, coverAlt, coverIsUrl, categories, publishedAt, author } = post.data;
 ---
 
 <a
@@ -31,13 +32,25 @@ const { title, description, cover, coverAlt, categories, publishedAt, author } =
   <div class="grid md:grid-cols-2 gap-6 md:gap-8">
     <!-- Image: full-bleed, no rounded corners, subtle opacity on hover -->
     <div class="aspect-[3/2] md:aspect-auto overflow-hidden">
-      <Image
-        src={cover}
-        alt={coverAlt}
-        widths={[600, 900, 1200]}
-        sizes="(max-width: 768px) 100vw, 50vw"
-        class="w-full h-full object-cover group-hover:opacity-90 transition-opacity duration-300"
-      />
+      {coverIsUrl ? (
+        <Image
+          src={cover as string}
+          alt={coverAlt}
+          width={1200}
+          height={800}
+          loading="eager"
+          class="w-full h-full object-cover group-hover:opacity-90 transition-opacity duration-300"
+        />
+      ) : (
+        <Image
+          src={cover as ImageMetadata}
+          alt={coverAlt}
+          loading="eager"
+          widths={[600, 900, 1200]}
+          sizes="(max-width: 768px) 100vw, 50vw"
+          class="w-full h-full object-cover group-hover:opacity-90 transition-opacity duration-300"
+        />
+      )}
     </div>
 
     <!-- Content: large serif headline drives hierarchy -->

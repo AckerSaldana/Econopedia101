@@ -22,13 +22,19 @@ const { author } = Astro.props;
 <div class="bg-surface-elevated border border-border rounded-xl p-6">
   <div class="flex flex-col sm:flex-row gap-5">
     <div class="flex-shrink-0">
-      <Image
-        src={author.avatar}
-        alt={author.name}
-        width={80}
-        height={80}
-        class="rounded-full object-cover"
-      />
+      {author.avatar ? (
+        <Image
+          src={author.avatar}
+          alt={author.name}
+          width={80}
+          height={80}
+          class="rounded-full object-cover"
+        />
+      ) : (
+        <div class="w-20 h-20 rounded-full bg-accent/10 flex items-center justify-center text-accent font-semibold text-2xl">
+          {author.name.charAt(0)}
+        </div>
+      )}
     </div>
 
     <div class="flex flex-col gap-2">

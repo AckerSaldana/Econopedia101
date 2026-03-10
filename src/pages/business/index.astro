@@ -1,17 +1,14 @@
 ---
-export const prerender = true;
-
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Container from '../../components/ui/Container.astro';
 import CategoryHeader from '../../components/category/CategoryHeader.astro';
 import CategoryGrid from '../../components/category/CategoryGrid.astro';
 import Breadcrumbs from '../../components/common/Breadcrumbs.astro';
 import { CATEGORIES } from '../../lib/constants';
-import { getCollection } from 'astro:content';
+import { getAllPosts } from '../../lib/posts';
 
 const category = CATEGORIES.business;
-const posts = (await getCollection('posts', ({ data }) => !data.draft && data.categories.includes('business')))
-  .sort((a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf());
+const posts = await getAllPosts('business');
 ---
 
 <BaseLayout title={`${category.label} | Econopedia 101`} description={category.description}>

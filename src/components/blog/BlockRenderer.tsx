@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import type { Block } from '../../types/blocks';
 import Quiz from '../quiz/Quiz';
 import ChartDisplay from '../calculators/ChartDisplay';
@@ -14,37 +15,87 @@ function renderInlineMarkdown(text: string): string {
   return text
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.+?)\*/g, '<em>$1</em>')
-    .replace(/`(.+?)`/g, '<code>$1</code>')
-    .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" class="text-accent underline">$1</a>');
-}
-
-function InlineHTML({ html }: { html: string }) {
-  return <span dangerouslySetInnerHTML={{ __html: html }} />;
+    .replace(/`(.+?)`/g, '<code style="font-size:0.875em;padding:2px 6px;background:var(--color-surface);border:1px solid var(--color-border)">$1</code>')
+    .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" style="color:var(--color-accent);text-decoration:underline">$1</a>');
 }
 
 function ParagraphRenderer({ content }: { content: string }) {
-  return <p dangerouslySetInnerHTML={{ __html: renderInlineMarkdown(content) }} />;
+  return (
+    <p
+      style={{
+        lineHeight: 1.75,
+        color: 'var(--color-text-primary)',
+        marginTop: '1.25rem',
+        marginBottom: '1.25rem',
+      }}
+      dangerouslySetInnerHTML={{ __html: renderInlineMarkdown(content) }}
+    />
+  );
 }
 
 function HeadingRenderer({ level, text }: { level: 2 | 3 | 4; text: string }) {
   const Tag = `h${level}` as keyof JSX.IntrinsicElements;
   const id = slugify(text);
-  return <Tag id={id}>{text}</Tag>;
+  const sizes = { 2: '1.75rem', 3: '1.375rem', 4: '1.125rem' };
+  const margins = { 2: '2.5rem', 3: '2rem', 4: '1.75rem' };
+  return (
+    <Tag
+      id={id}
+      style={{
+        fontSize: sizes[level],
+        fontWeight: 600,
+        letterSpacing: '-0.01em',
+        color: 'var(--color-text-primary)',
+        marginTop: margins[level],
+        marginBottom: '0.75rem',
+        lineHeight: 1.3,
+      }}
+    >
+      {text}
+    </Tag>
+  );
 }
 
 function BlockquoteRenderer({ content }: { content: string }) {
   return (
-    <blockquote>
-      <p dangerouslySetInnerHTML={{ __html: renderInlineMarkdown(content) }} />
+    <blockquote
+      style={{
+        borderLeft: '3px solid var(--color-accent)',
+        paddingLeft: '1.25rem',
+        marginLeft: 0,
+        marginRight: 0,
+        marginTop: '1.5rem',
+        marginBottom: '1.5rem',
+        fontStyle: 'italic',
+        color: 'var(--color-text-secondary)',
+        lineHeight: 1.7,
+      }}
+    >
+      <p style={{ margin: 0 }} dangerouslySetInnerHTML={{ __html: renderInlineMarkdown(content) }} />
     </blockquote>
   );
 }
 
 function BulletListRenderer({ items }: { items: string[] }) {
   return (
-    <ul>
+    <ul
+      style={{
+        marginTop: '1.25rem',
+        marginBottom: '1.25rem',
+        paddingLeft: '1.5rem',
+        listStyleType: 'disc',
+      }}
+    >
       {items.map((item, i) => (
-        <li key={i} dangerouslySetInnerHTML={{ __html: renderInlineMarkdown(item) }} />
+        <li
+          key={i}
+          style={{
+            lineHeight: 1.75,
+            color: 'var(--color-text-primary)',
+            marginBottom: '0.5rem',
+          }}
+          dangerouslySetInnerHTML={{ __html: renderInlineMarkdown(item) }}
+        />
       ))}
     </ul>
   );
@@ -52,9 +103,24 @@ function BulletListRenderer({ items }: { items: string[] }) {
 
 function OrderedListRenderer({ items }: { items: string[] }) {
   return (
-    <ol>
+    <ol
+      style={{
+        marginTop: '1.25rem',
+        marginBottom: '1.25rem',
+        paddingLeft: '1.5rem',
+        listStyleType: 'decimal',
+      }}
+    >
       {items.map((item, i) => (
-        <li key={i} dangerouslySetInnerHTML={{ __html: renderInlineMarkdown(item) }} />
+        <li
+          key={i}
+          style={{
+            lineHeight: 1.75,
+            color: 'var(--color-text-primary)',
+            marginBottom: '0.5rem',
+          }}
+          dangerouslySetInnerHTML={{ __html: renderInlineMarkdown(item) }}
+        />
       ))}
     </ol>
   );
@@ -62,7 +128,18 @@ function OrderedListRenderer({ items }: { items: string[] }) {
 
 function CodeRenderer({ language, code }: { language: string; code: string }) {
   return (
-    <pre>
+    <pre
+      style={{
+        backgroundColor: 'var(--color-surface)',
+        borderLeft: '3px solid var(--color-border)',
+        padding: '1rem 1.25rem',
+        marginTop: '1.5rem',
+        marginBottom: '1.5rem',
+        overflowX: 'auto',
+        fontSize: '0.875rem',
+        lineHeight: 1.6,
+      }}
+    >
       <code className={language ? `language-${language}` : undefined}>{code}</code>
     </pre>
   );
@@ -70,33 +147,93 @@ function CodeRenderer({ language, code }: { language: string; code: string }) {
 
 function ImageRenderer({ url, alt, caption }: { url: string; alt: string; caption?: string }) {
   return (
-    <figure>
-      <img src={url} alt={alt} loading="lazy" />
-      {caption && <figcaption>{caption}</figcaption>}
+    <figure style={{ marginTop: '2rem', marginBottom: '2rem', marginLeft: 0, marginRight: 0 }}>
+      <img
+        src={url}
+        alt={alt}
+        loading="lazy"
+        decoding="async"
+        style={{ width: '100%', height: 'auto', display: 'block' }}
+      />
+      {caption && (
+        <figcaption
+          style={{
+            marginTop: '0.75rem',
+            fontSize: '0.8rem',
+            color: 'var(--color-text-muted)',
+            textAlign: 'center',
+          }}
+        >
+          {caption}
+        </figcaption>
+      )}
     </figure>
   );
 }
 
-function TableRenderer({ headers, rows }: { headers: string[]; rows: string[][] }) {
+function DividerRenderer() {
   return (
-    <table>
-      <thead>
-        <tr>
-          {headers.map((h, i) => (
-            <th key={i}>{h}</th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {rows.map((row, i) => (
-          <tr key={i}>
-            {row.map((cell, j) => (
-              <td key={j} dangerouslySetInnerHTML={{ __html: renderInlineMarkdown(cell) }} />
+    <hr
+      style={{
+        border: 'none',
+        borderTop: '1px solid var(--color-border)',
+        marginTop: '2.5rem',
+        marginBottom: '2.5rem',
+        width: '60%',
+        marginLeft: 'auto',
+        marginRight: 'auto',
+      }}
+    />
+  );
+}
+
+function TableRenderer({ headers, rows }: { headers: string[]; rows: string[][] }) {
+  const cellStyle: React.CSSProperties = {
+    padding: '10px 14px',
+    borderBottom: '1px solid var(--color-border)',
+    fontSize: '0.9rem',
+    textAlign: 'left',
+    color: 'var(--color-text-primary)',
+  };
+  return (
+    <div style={{ overflowX: 'auto', marginTop: '1.5rem', marginBottom: '1.5rem' }}>
+      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <thead>
+          <tr>
+            {headers.map((h, i) => (
+              <th
+                key={i}
+                style={{
+                  ...cellStyle,
+                  fontSize: '0.7rem',
+                  fontWeight: 600,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.06em',
+                  color: 'var(--color-text-muted)',
+                  backgroundColor: 'var(--color-surface)',
+                  borderBottom: '2px solid var(--color-border)',
+                }}
+              >
+                {h}
+              </th>
             ))}
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {rows.map((row, i) => (
+            <tr key={i}>
+              {row.map((cell, j) => (
+                <td
+                  key={j}
+                  style={cellStyle}
+                  dangerouslySetInnerHTML={{ __html: renderInlineMarkdown(cell) }}
+                />
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }
 
@@ -115,13 +252,24 @@ function CalloutRenderer({ variant, content }: { variant: 'info' | 'warning' | '
         padding: '1rem 1.25rem',
         marginTop: '1.5rem',
         marginBottom: '1.5rem',
+        lineHeight: 1.6,
       }}
     >
-      <p style={{ fontWeight: 600, fontSize: '0.875rem', marginBottom: '0.25rem', color: c.border }}>
+      <p
+        style={{
+          fontWeight: 600,
+          fontSize: '0.75rem',
+          textTransform: 'uppercase',
+          letterSpacing: '0.06em',
+          marginBottom: '0.375rem',
+          marginTop: 0,
+          color: c.border,
+        }}
+      >
         {c.label}
       </p>
       <p
-        style={{ margin: 0 }}
+        style={{ margin: 0, color: 'var(--color-text-primary)' }}
         dangerouslySetInnerHTML={{ __html: renderInlineMarkdown(content) }}
       />
     </div>
@@ -129,16 +277,41 @@ function CalloutRenderer({ variant, content }: { variant: 'info' | 'warning' | '
 }
 
 function FormulaRenderer({ latex }: { latex: string }) {
-  // KaTeX will be loaded client-side if available
-  try {
-    const katex = (window as any).katex;
-    if (katex) {
-      const html = katex.renderToString(latex, { throwOnError: false, displayMode: true });
-      return <div className="my-4 text-center" dangerouslySetInnerHTML={{ __html: html }} />;
+  const [html, setHtml] = useState<string | null>(null);
+
+  useEffect(() => {
+    function tryRender() {
+      const katex = (window as any).katex;
+      if (katex) {
+        setHtml(katex.renderToString(latex, { throwOnError: false, displayMode: true }));
+        return true;
+      }
+      return false;
     }
-  } catch {}
+
+    if (tryRender()) return;
+
+    // KaTeX not loaded yet — poll until it's ready
+    const interval = setInterval(() => {
+      if (tryRender()) clearInterval(interval);
+    }, 100);
+    return () => clearInterval(interval);
+  }, [latex]);
+
+  const containerStyle: React.CSSProperties = {
+    marginTop: '1.5rem',
+    marginBottom: '1.5rem',
+    textAlign: 'center',
+    padding: '1.25rem',
+    backgroundColor: 'var(--color-surface)',
+  };
+
+  if (html) {
+    return <div style={containerStyle} dangerouslySetInnerHTML={{ __html: html }} />;
+  }
+
   return (
-    <div className="my-4 text-center font-mono text-sm p-4" style={{ backgroundColor: 'var(--color-surface)' }}>
+    <div style={{ ...containerStyle, fontSize: '0.875rem', color: 'var(--color-text-muted)' }}>
       {latex}
     </div>
   );
@@ -161,7 +334,7 @@ function renderBlock(block: Block) {
     case 'image':
       return <ImageRenderer url={block.url} alt={block.alt} caption={block.caption} />;
     case 'divider':
-      return <hr />;
+      return <DividerRenderer />;
     case 'table':
       return <TableRenderer headers={block.headers} rows={block.rows} />;
     case 'callout':
@@ -179,7 +352,7 @@ function renderBlock(block: Block) {
 
 export default function BlockRenderer({ blocks }: { blocks: Block[] }) {
   return (
-    <div className="prose">
+    <div>
       {blocks.map((block) => (
         <div key={block.id}>{renderBlock(block)}</div>
       ))}

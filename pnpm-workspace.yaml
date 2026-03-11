@@ -1,5 +1,8 @@
-allowBuilds:
-  '@biomejs/biome': false
-  esbuild: false
-  sharp: false
-  workerd: false
+packages:
+  - '.'
+
+onlyBuiltDependencies:
+  - '@biomejs/biome'
+  - esbuild
+  - sharp
+  - workerd

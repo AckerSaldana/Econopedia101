@@ -1,4 +1,5 @@
 import { Resend } from 'resend';
+import { supabase } from '../../lib/supabase';
 
 export const prerender = false;
 
@@ -33,6 +34,14 @@ export async function POST({ request }: { request: Request }) {
         headers: { 'Content-Type': 'application/json' },
       });
     }
+
+    // Save subscriber to Supabase (upsert to handle re-subscriptions)
+    await supabase
+      .from('subscribers')
+      .upsert(
+        { email: trimmed, unsubscribed: false },
+        { onConflict: 'email' },
+      );
 
     const resend = new Resend(import.meta.env.RESEND_API_KEY);
 

@@ -5,7 +5,7 @@ import type { SupabasePost } from '../../../types/post';
 import BlockEditor from '../editor/BlockEditor';
 import MetadataSidebar from '../editor/MetadataSidebar';
 import BlockRenderer from '../../../components/blog/BlockRenderer';
-import { ArrowLeft, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { ArrowLeft, Eye, EyeOff, Loader2, Send } from 'lucide-react';
 import { btnPrimary, btnSecondary } from '../adminStyles';
 
 function slugify(text: string): string {
@@ -60,6 +60,8 @@ export default function PostEditor({ postId, navigate }: PostEditorProps) {
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
   const [currentId, setCurrentId] = useState<string | null>(postId || null);
   const [previewing, setPreviewing] = useState(false);
+  const [notifying, setNotifying] = useState(false);
+  const [notifyResult, setNotifyResult] = useState<'idle' | 'sent' | 'error'>('idle');
 
   // Metadata
   const [title, setTitle] = useState('');
@@ -233,6 +235,34 @@ export default function PostEditor({ postId, navigate }: PostEditorProps) {
     setPreviewing((prev) => !prev);
   };
 
+  const handleNotifySubscribers = async () => {
+    if (notifying || !title || !slug) return;
+    setNotifying(true);
+    setNotifyResult('idle');
+    try {
+      const res = await fetch('/api/newsletter/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title,
+          slug,
+          description,
+          coverUrl,
+        }),
+      });
+      if (res.ok) {
+        setNotifyResult('sent');
+      } else {
+        setNotifyResult('error');
+      }
+    } catch {
+      setNotifyResult('error');
+    } finally {
+      setNotifying(false);
+      setTimeout(() => setNotifyResult('idle'), 4000);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -340,6 +370,23 @@ export default function PostEditor({ postId, navigate }: PostEditorProps) {
           >
             Publish
           </button>
+          {!draft && currentId && (
+            <button
+              onClick={handleNotifySubscribers}
+              disabled={notifying}
+              className="disabled:opacity-50"
+              style={{
+                ...btnSecondary,
+                padding: '8px 16px',
+                fontSize: '12px',
+                borderColor: notifyResult === 'sent' ? 'var(--color-success)' : notifyResult === 'error' ? 'var(--color-error)' : undefined,
+                color: notifyResult === 'sent' ? 'var(--color-success)' : notifyResult === 'error' ? 'var(--color-error)' : undefined,
+              }}
+            >
+              {notifying ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
+              {notifying ? 'Sending...' : notifyResult === 'sent' ? 'Sent!' : notifyResult === 'error' ? 'Failed' : 'Notify Subscribers'}
+            </button>
+          )}
         </div>
       </div>
 

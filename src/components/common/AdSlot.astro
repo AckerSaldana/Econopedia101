@@ -1,11 +1,54 @@
 ---
 interface Props {
-  slot: 'leaderboard' | 'rectangle' | 'sidebar';
+  format: 'leaderboard' | 'rectangle' | 'sidebar' | 'in-article';
   id: string;
+  class?: string;
 }
 
-const { slot, id } = Astro.props;
+const { format, id, class: className } = Astro.props;
+const pubId = import.meta.env.PUBLIC_ADSENSE_PUB_ID;
+
+// Map format to recommended AdSense responsive styles
+const formatStyles: Record<string, string> = {
+  leaderboard: 'display:block',
+  rectangle: 'display:block',
+  sidebar: 'display:block',
+  'in-article': 'display:block; text-align:center',
+};
+
+const formatMap: Record<string, string> = {
+  leaderboard: 'auto',
+  rectangle: 'auto',
+  sidebar: 'auto',
+  'in-article': 'fluid',
+};
+
+const layoutMap: Record<string, string | undefined> = {
+  'in-article': 'in-article-ad',
+};
+
+const style = formatStyles[format] || 'display:block';
+const adFormat = formatMap[format] || 'auto';
+const adLayout = layoutMap[format];
 ---
 
-<!-- Mediavine ad slot: activate when traffic threshold reached -->
-<div data-ad={slot} id={`ad-${id}`} aria-hidden="true"></div>
+{pubId && (
+  <div
+    id={`ad-${id}`}
+    class:list={['ad-slot', `ad-${format}`, className]}
+    aria-hidden="true"
+  >
+    <ins
+      class="adsbygoogle"
+      style={style}
+      data-ad-client={pubId}
+      data-ad-slot={id}
+      data-ad-format={adFormat}
+      data-full-width-responsive="true"
+      {...(adLayout ? { 'data-ad-layout': adLayout } : {})}
+    />
+    <script is:inline>
+      (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+  </div>
+)}

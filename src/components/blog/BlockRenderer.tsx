@@ -1,7 +1,14 @@
 import { useState, useEffect } from 'react';
+import DOMPurify from 'dompurify';
 import type { Block } from '../../types/blocks';
 import Quiz from '../quiz/Quiz';
 import ChartDisplay from '../calculators/ChartDisplay';
+import InArticleAd from './InArticleAd';
+
+const PURIFY_CONFIG = {
+  ALLOWED_TAGS: ['strong', 'em', 'code', 'a'],
+  ALLOWED_ATTR: ['href', 'style'],
+};
 
 function slugify(text: string): string {
   return text
@@ -12,11 +19,12 @@ function slugify(text: string): string {
 }
 
 function renderInlineMarkdown(text: string): string {
-  return text
+  const html = text
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.+?)\*/g, '<em>$1</em>')
     .replace(/`(.+?)`/g, '<code style="font-size:0.875em;padding:2px 6px;background:var(--color-surface);border:1px solid var(--color-border)">$1</code>')
     .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" style="color:var(--color-accent);text-decoration:underline">$1</a>');
+  return DOMPurify.sanitize(html, PURIFY_CONFIG);
 }
 
 function ParagraphRenderer({ content }: { content: string }) {
@@ -350,12 +358,29 @@ function renderBlock(block: Block) {
   }
 }
 
+const AD_INTERVAL = 5; // Insert an ad every N content blocks
+const MAX_IN_ARTICLE_ADS = 3; // Cap total in-article ads
+
 export default function BlockRenderer({ blocks }: { blocks: Block[] }) {
+  let adCount = 0;
+
   return (
     <div>
-      {blocks.map((block) => (
-        <div key={block.id}>{renderBlock(block)}</div>
-      ))}
+      {blocks.map((block, i) => {
+        const showAd =
+          adCount < MAX_IN_ARTICLE_ADS &&
+          i > 0 &&
+          (i + 1) % AD_INTERVAL === 0;
+
+        if (showAd) adCount++;
+
+        return (
+          <div key={block.id}>
+            {renderBlock(block)}
+            {showAd && <InArticleAd index={adCount} />}
+          </div>
+        );
+      })}
     </div>
   );
 }

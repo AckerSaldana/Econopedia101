@@ -99,7 +99,7 @@ const pageUrl = Astro.url.href;
       {frontmatter.affiliateDisclosure && <AffiliateDisclosure />}
 
       <!-- Ad slot: top leaderboard -->
-      <AdSlot slot="leaderboard" id="post-top" />
+      <AdSlot format="leaderboard" id="post-top" />
 
       <!-- Post header — full container width, truly centered -->
       <div class="mb-10">
@@ -152,7 +152,7 @@ const pageUrl = Astro.url.href;
 
           <!-- Ad slot: bottom leaderboard -->
           <div class="mt-10">
-            <AdSlot slot="leaderboard" id="post-bottom" />
+            <AdSlot format="leaderboard" id="post-bottom" />
           </div>
 
           <!-- Comments -->
@@ -161,10 +161,11 @@ const pageUrl = Astro.url.href;
           </div>
         </div>
 
-        <!-- Sidebar: Table of Contents -->
+        <!-- Sidebar: Table of Contents + Ad -->
         <aside class="hidden lg:block w-64 flex-shrink-0">
-          <div class="sticky top-36">
+          <div class="sticky top-36 space-y-8">
             <TableOfContents headings={headings} />
+            <AdSlot format="sidebar" id="post-sidebar" />
           </div>
         </aside>
       </div>

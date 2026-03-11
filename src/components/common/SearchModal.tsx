@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import DOMPurify from 'dompurify';
 
 interface SearchResult {
   url: string;
@@ -369,7 +370,7 @@ export default function SearchModal() {
                   {/* Excerpt */}
                   <p
                     className="search-result-excerpt"
-                    dangerouslySetInnerHTML={{ __html: result.excerpt }}
+                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(result.excerpt, { ALLOWED_TAGS: ['mark'] }) }}
                   />
                 </div>
 

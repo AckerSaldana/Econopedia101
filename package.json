@@ -30,6 +30,7 @@
     "@types/react-dom": "^19.1.2",
     "astro": "^5.7.10",
     "astro-pagefind": "^1.6.0",
+    "dompurify": "^3.3.3",
     "katex": "^0.16.38",
     "lucide-react": "^0.469.0",
     "mathjs": "^14.0.0",
@@ -51,7 +52,10 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
     "@types/katex": "^0.16.8",
+    "jsdom": "^28.1.0",
     "typescript": "^5.7.3",
     "vitest": "^4.0.18",
     "wrangler": "^3.99.0"

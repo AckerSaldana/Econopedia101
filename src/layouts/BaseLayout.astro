@@ -52,6 +52,13 @@ const {
   <link rel="stylesheet" href="https://use.typekit.net/cad0vcl.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  {import.meta.env.PUBLIC_ADSENSE_PUB_ID && (
+    <script
+      async
+      src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${import.meta.env.PUBLIC_ADSENSE_PUB_ID}`}
+      crossorigin="anonymous"
+    />
+  )}
   <SEOHead
     title={title}
     description={description}

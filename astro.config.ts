@@ -23,6 +23,9 @@ export default defineConfig({
   ],
   vite: {
     plugins: [tailwindcss()],
+    server: {
+      allowedHosts: ['.trycloudflare.com'],
+    },
   },
   image: {
     domains: ['econopedia101.com', 'xldmpzwqrqoirccvklcn.supabase.co'],

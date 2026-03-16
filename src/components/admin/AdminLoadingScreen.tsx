@@ -8,7 +8,7 @@ export default function AdminLoadingScreen() {
         <p
           className="text-[13px] font-semibold uppercase mb-4"
           style={{
-            fontFamily: 'var(--font-serif)',
+            fontFamily: 'var(--font-sans)',
             letterSpacing: '0.08em',
             color: 'var(--color-accent)',
           }}

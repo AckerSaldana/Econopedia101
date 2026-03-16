@@ -24,15 +24,20 @@ export default function Quiz({ quizId }: QuizProps) {
   const [finished, setFinished] = useState(false);
 
   useEffect(() => {
+    setLoading(true);
+    setError(null);
     getQuizBySlug(quizId)
       .then((data) => {
         if (!data) {
-          setError('Quiz not found');
+          setError(`Quiz "${quizId}" not found`);
         } else {
           setQuiz(data);
         }
       })
-      .catch(() => setError('Failed to load quiz'))
+      .catch((err) => {
+        console.error('Quiz load error:', err);
+        setError('Failed to load quiz. Check console for details.');
+      })
       .finally(() => setLoading(false));
   }, [quizId]);
 

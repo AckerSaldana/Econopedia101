@@ -39,7 +39,7 @@ export default function AdminLoginPage({ signInWithGoogle, signInWithEmail }: Ad
         <p
           className="text-[15px] font-semibold uppercase mb-1"
           style={{
-            fontFamily: 'var(--font-serif)',
+            fontFamily: 'var(--font-sans)',
             letterSpacing: '0.08em',
             color: 'var(--color-accent)',
           }}
@@ -49,7 +49,7 @@ export default function AdminLoginPage({ signInWithGoogle, signInWithEmail }: Ad
         <h1
           className="mb-1"
           style={{
-            fontFamily: 'var(--font-serif)',
+            fontFamily: 'var(--font-sans)',
             fontSize: '28px',
             fontWeight: 600,
             letterSpacing: '-0.01em',

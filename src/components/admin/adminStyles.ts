@@ -85,7 +85,7 @@ export const btnDanger: CSSProperties = {
 /* --- Typography --- */
 
 export const pageTitle: CSSProperties = {
-  fontFamily: 'var(--font-serif)',
+  fontFamily: 'var(--font-sans)',
   fontSize: '28px',
   fontWeight: 600,
   letterSpacing: '-0.01em',
@@ -94,7 +94,7 @@ export const pageTitle: CSSProperties = {
 };
 
 export const sectionTitle: CSSProperties = {
-  fontFamily: 'var(--font-serif)',
+  fontFamily: 'var(--font-sans)',
   fontSize: '18px',
   fontWeight: 600,
   color: 'var(--color-text-primary)',

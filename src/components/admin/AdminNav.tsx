@@ -31,7 +31,7 @@ export default function AdminNav({ path, navigate, signOut }: AdminNavProps) {
           href="/"
           className="text-[15px] font-semibold uppercase"
           style={{
-            fontFamily: 'var(--font-serif)',
+            fontFamily: 'var(--font-sans)',
             letterSpacing: '0.08em',
             color: 'var(--color-accent)',
             textDecoration: 'none',

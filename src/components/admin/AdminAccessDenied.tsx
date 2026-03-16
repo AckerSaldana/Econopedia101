@@ -22,7 +22,7 @@ export default function AdminAccessDenied({ email, signOut }: AdminAccessDeniedP
       >
         <h1
           className="text-2xl font-semibold mb-2"
-          style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-text-primary)' }}
+          style={{ fontFamily: 'var(--font-sans)', color: 'var(--color-text-primary)' }}
         >
           Access Denied
         </h1>

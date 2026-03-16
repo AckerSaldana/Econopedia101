@@ -301,7 +301,7 @@ export default function PostEditor({ postId, navigate }: PostEditorProps) {
           <h1
             className="text-sm"
             style={{
-              fontFamily: 'var(--font-serif)',
+              fontFamily: 'var(--font-sans)',
               fontWeight: 600,
               color: 'var(--color-text-primary)',
             }}
@@ -399,7 +399,7 @@ export default function PostEditor({ postId, navigate }: PostEditorProps) {
               <>
                 <h1
                   style={{
-                    fontFamily: 'var(--font-serif)',
+                    fontFamily: 'var(--font-sans)',
                     fontSize: '36px',
                     fontWeight: 600,
                     letterSpacing: '-0.02em',
@@ -421,7 +421,7 @@ export default function PostEditor({ postId, navigate }: PostEditorProps) {
                   placeholder="Post title"
                   className="w-full mb-8 border-none outline-none bg-transparent"
                   style={{
-                    fontFamily: 'var(--font-serif)',
+                    fontFamily: 'var(--font-sans)',
                     fontSize: '36px',
                     fontWeight: 600,
                     letterSpacing: '-0.02em',

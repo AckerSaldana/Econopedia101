@@ -91,7 +91,7 @@ const pageUrl = Astro.url.href;
   <article>
     <Container>
       <!-- Breadcrumbs -->
-      <div class="pt-8 pb-5">
+      <div class="pt-8 pb-4 border-b border-border">
         <Breadcrumbs items={breadcrumbs} />
       </div>
 
@@ -102,7 +102,7 @@ const pageUrl = Astro.url.href;
       <AdSlot format="leaderboard" id="post-top" />
 
       <!-- Post header — full container width, truly centered -->
-      <div class="mb-10">
+      <div class="mt-6 mb-10">
         <PostHeader
           title={frontmatter.title}
           description={frontmatter.description}

@@ -1,6 +1,4 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import DOMPurify from 'dompurify';
-
 interface SearchResult {
   url: string;
   title: string;
@@ -105,9 +103,9 @@ export default function SearchModal() {
     };
   }, [isOpen, loadPagefind]);
 
-  // Search when query changes
+  // Search when query changes — hybrid: Pagefind (static pages) + API (posts)
   useEffect(() => {
-    if (!query.trim() || !pagefind) {
+    if (!query.trim()) {
       setResults([]);
       setSelectedIndex(0);
       setIsSearching(false);
@@ -118,19 +116,50 @@ export default function SearchModal() {
 
     const timer = setTimeout(async () => {
       try {
-        const search = await pagefind.search(query);
-        const items = await Promise.all(
-          search.results.slice(0, 8).map(async (r: any) => {
-            const data = await r.data();
-            return {
-              url: data.url,
-              title: data.meta?.title || 'Untitled',
-              excerpt: data.excerpt || '',
-              meta: data.meta || {},
-            };
-          }),
-        );
-        setResults(items);
+        // Run Pagefind search and API search in parallel
+        const [pagefindResults, apiResults] = await Promise.all([
+          // Pagefind — static pages (tools, about, etc.)
+          pagefind
+            ? pagefind.search(query).then(async (search: any) =>
+                Promise.all(
+                  search.results.slice(0, 8).map(async (r: any) => {
+                    const data = await r.data();
+                    return {
+                      url: data.url,
+                      title: data.meta?.title || 'Untitled',
+                      excerpt: data.excerpt || '',
+                      meta: data.meta || {},
+                    };
+                  }),
+                ),
+              )
+            : Promise.resolve([] as SearchResult[]),
+          // API — blog posts (MDX + Supabase)
+          fetch(`/api/search?q=${encodeURIComponent(query)}`)
+            .then((r) => (r.ok ? r.json() : []))
+            .then((items: any[]) =>
+              items.map((item) => ({
+                url: item.url,
+                title: item.title,
+                excerpt: item.excerpt || '',
+                meta: item.category ? { category: item.category } : {},
+              })),
+            )
+            .catch(() => [] as SearchResult[]),
+        ]);
+
+        // Merge: API (posts) first, then Pagefind (static), deduplicate by URL
+        const seen = new Set<string>();
+        const merged: SearchResult[] = [];
+        for (const r of [...apiResults, ...pagefindResults]) {
+          const normalized = r.url.replace(/\/index\.html$/, '/').replace(/\.html$/, '');
+          if (!seen.has(normalized)) {
+            seen.add(normalized);
+            merged.push({ ...r, url: normalized });
+          }
+        }
+
+        setResults(merged.slice(0, 12));
         setSelectedIndex(0);
       } finally {
         setIsSearching(false);
@@ -309,7 +338,7 @@ export default function SearchModal() {
           )}
 
           {/* No results state */}
-          {query && results.length === 0 && !isSearching && pagefind && (
+          {query && results.length === 0 && !isSearching && (
             <div className="search-empty-state">
               <p className="search-empty-title">
                 No articles found for "{query}"
@@ -370,7 +399,7 @@ export default function SearchModal() {
                   {/* Excerpt */}
                   <p
                     className="search-result-excerpt"
-                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(result.excerpt, { ALLOWED_TAGS: ['mark'] }) }}
+                    dangerouslySetInnerHTML={{ __html: (() => { try { const dp = require('dompurify'); return (dp.default || dp).sanitize(result.excerpt, { ALLOWED_TAGS: ['mark'] }); } catch { return result.excerpt; } })() }}
                   />
                 </div>
 
@@ -397,7 +426,7 @@ export default function SearchModal() {
         {/* Footer */}
         <div className="search-footer">
           <span className="search-footer-text">
-            Powered by Pagefind
+            Search
           </span>
           <span className="search-footer-brand">
             Econopedia 101

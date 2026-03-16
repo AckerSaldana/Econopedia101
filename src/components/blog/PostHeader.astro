@@ -1,7 +1,6 @@
 ---
 import { Image } from 'astro:assets';
-import CategoryBadge from './CategoryBadge.astro';
-import { formatDate } from '../../lib/utils';
+import { formatDate, getCategoryColor, getCategoryLabel } from '../../lib/utils';
 
 interface Props {
   title: string;
@@ -38,12 +37,11 @@ const {
   <!-- Text block — left-aligned, centered column -->
   <div class="max-w-4xl mx-auto">
     <!-- Categories -->
-    <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
-      {categories.map((cat, i) => (
-        <>
-          {i > 0 && <span class="text-text-muted text-xs select-none" aria-hidden="true">/</span>}
-          <CategoryBadge category={cat} size="md" />
-        </>
+    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px;">
+      {categories.map((cat) => (
+        <span style={`color: ${getCategoryColor(cat)}; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em;`}>
+          {getCategoryLabel(cat)}
+        </span>
       ))}
     </div>
 
@@ -109,6 +107,7 @@ const {
           width={1200}
           height={600}
           loading="eager"
+          fetchpriority="high"
           class="w-full aspect-[2/1] object-cover"
         />
       ) : (
@@ -116,6 +115,7 @@ const {
           src={cover as ImageMetadata}
           alt={coverAlt}
           loading="eager"
+          fetchpriority="high"
           widths={[600, 900, 1200]}
           sizes="(max-width: 768px) 100vw, 672px"
           class="w-full aspect-[2/1] object-cover"

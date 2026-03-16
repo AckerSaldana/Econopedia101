@@ -36,6 +36,7 @@ const authorName = author.id.replace(/-/g, ' ').replace(/\b\w/g, (c: string) => 
         width={1200}
         height={600}
         loading="eager"
+        fetchpriority="high"
         class="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500"
       />
     ) : (
@@ -43,6 +44,7 @@ const authorName = author.id.replace(/-/g, ' ').replace(/\b\w/g, (c: string) => 
         src={cover as ImageMetadata}
         alt={coverAlt}
         loading="eager"
+        fetchpriority="high"
         widths={[400, 600, 800]}
         sizes="(max-width: 1024px) 100vw, 66vw"
         class="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500"

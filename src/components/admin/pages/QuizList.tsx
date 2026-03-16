@@ -158,7 +158,7 @@ export default function QuizList({ navigate }: QuizListProps) {
           <div className="flex items-baseline gap-8 flex-wrap">
             <div className="flex items-baseline gap-2">
               <span style={{
-                fontFamily: 'var(--font-serif)',
+                fontFamily: 'var(--font-sans)',
                 fontSize: '28px',
                 fontWeight: 600,
                 color: 'var(--color-text-primary)',
@@ -170,7 +170,7 @@ export default function QuizList({ navigate }: QuizListProps) {
             </div>
             <div className="flex items-baseline gap-2">
               <span style={{
-                fontFamily: 'var(--font-serif)',
+                fontFamily: 'var(--font-sans)',
                 fontSize: '28px',
                 fontWeight: 600,
                 color: 'var(--color-success)',
@@ -182,7 +182,7 @@ export default function QuizList({ navigate }: QuizListProps) {
             </div>
             <div className="flex items-baseline gap-2">
               <span style={{
-                fontFamily: 'var(--font-serif)',
+                fontFamily: 'var(--font-sans)',
                 fontSize: '28px',
                 fontWeight: 600,
                 color: 'var(--color-warning)',
@@ -484,7 +484,7 @@ export default function QuizList({ navigate }: QuizListProps) {
                     }}
                   />
                   <p style={{
-                    fontFamily: 'var(--font-serif)',
+                    fontFamily: 'var(--font-sans)',
                     fontSize: '18px',
                     fontWeight: 600,
                     color: 'var(--color-text-primary)',
@@ -651,7 +651,7 @@ export default function QuizList({ navigate }: QuizListProps) {
             </p>
             <p
               style={{
-                fontFamily: 'var(--font-serif)',
+                fontFamily: 'var(--font-sans)',
                 fontSize: '14px',
                 fontWeight: 500,
                 color: 'var(--color-text-primary)',

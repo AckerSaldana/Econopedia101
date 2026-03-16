@@ -42,6 +42,9 @@ export interface ImageBlock {
   url: string;
   alt: string;
   caption?: string;
+  width?: number;
+  height?: number;
+  lqip?: string;
 }
 
 export interface DividerBlock {

@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import DOMPurify from 'dompurify';
 import type { Block } from '../../types/blocks';
 import Quiz from '../quiz/Quiz';
 import ChartDisplay from '../calculators/ChartDisplay';
@@ -9,6 +8,18 @@ const PURIFY_CONFIG = {
   ALLOWED_TAGS: ['strong', 'em', 'code', 'a'],
   ALLOWED_ATTR: ['href', 'style'],
 };
+
+function sanitize(html: string): string {
+  if (typeof window === 'undefined') return html;
+  // Lazy-load DOMPurify only in browser
+  try {
+    const DOMPurify = require('dompurify');
+    const purify = DOMPurify.default || DOMPurify;
+    return purify.sanitize(html, PURIFY_CONFIG);
+  } catch {
+    return html;
+  }
+}
 
 function slugify(text: string): string {
   return text
@@ -24,7 +35,7 @@ function renderInlineMarkdown(text: string): string {
     .replace(/\*(.+?)\*/g, '<em>$1</em>')
     .replace(/`(.+?)`/g, '<code style="font-size:0.875em;padding:2px 6px;background:var(--color-surface);border:1px solid var(--color-border)">$1</code>')
     .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" style="color:var(--color-accent);text-decoration:underline">$1</a>');
-  return DOMPurify.sanitize(html, PURIFY_CONFIG);
+  return sanitize(html);
 }
 
 function ParagraphRenderer({ content }: { content: string }) {
@@ -153,16 +164,39 @@ function CodeRenderer({ language, code }: { language: string; code: string }) {
   );
 }
 
-function ImageRenderer({ url, alt, caption }: { url: string; alt: string; caption?: string }) {
+function ImageRenderer({ url, alt, caption, width, height, lqip }: {
+  url: string; alt: string; caption?: string; width?: number; height?: number; lqip?: string;
+}) {
   return (
     <figure style={{ marginTop: '2rem', marginBottom: '2rem', marginLeft: 0, marginRight: 0 }}>
-      <img
-        src={url}
-        alt={alt}
-        loading="lazy"
-        decoding="async"
-        style={{ width: '100%', height: 'auto', display: 'block' }}
-      />
+      <div
+        style={{
+          position: 'relative',
+          overflow: 'hidden',
+          ...(width && height ? { aspectRatio: `${width} / ${height}` } : {}),
+          ...(lqip ? {
+            backgroundImage: `url(${lqip})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          } : {}),
+        }}
+      >
+        <img
+          src={url}
+          alt={alt}
+          width={width}
+          height={height}
+          loading="lazy"
+          decoding="async"
+          onLoad={lqip ? (e) => { (e.target as HTMLImageElement).style.opacity = '1'; } : undefined}
+          style={{
+            width: '100%',
+            height: 'auto',
+            display: 'block',
+            ...(lqip ? { opacity: 0, transition: 'opacity 0.3s ease' } : {}),
+          }}
+        />
+      </div>
       {caption && (
         <figcaption
           style={{
@@ -288,22 +322,26 @@ function FormulaRenderer({ latex }: { latex: string }) {
   const [html, setHtml] = useState<string | null>(null);
 
   useEffect(() => {
-    function tryRender() {
-      const katex = (window as any).katex;
-      if (katex) {
-        setHtml(katex.renderToString(latex, { throwOnError: false, displayMode: true }));
-        return true;
+    import('katex').then((katexModule) => {
+      const katex = katexModule.default || katexModule;
+      setHtml(katex.renderToString(latex, { throwOnError: false, displayMode: true }));
+    }).catch(() => {
+      // Fallback: try window.katex from CDN
+      const tryRender = () => {
+        const k = (window as any).katex;
+        if (k) {
+          setHtml(k.renderToString(latex, { throwOnError: false, displayMode: true }));
+          return true;
+        }
+        return false;
+      };
+      if (!tryRender()) {
+        const interval = setInterval(() => {
+          if (tryRender()) clearInterval(interval);
+        }, 100);
+        setTimeout(() => clearInterval(interval), 5000);
       }
-      return false;
-    }
-
-    if (tryRender()) return;
-
-    // KaTeX not loaded yet — poll until it's ready
-    const interval = setInterval(() => {
-      if (tryRender()) clearInterval(interval);
-    }, 100);
-    return () => clearInterval(interval);
+    });
   }, [latex]);
 
   const containerStyle: React.CSSProperties = {
@@ -340,7 +378,7 @@ function renderBlock(block: Block) {
     case 'code':
       return <CodeRenderer language={block.language} code={block.code} />;
     case 'image':
-      return <ImageRenderer url={block.url} alt={block.alt} caption={block.caption} />;
+      return <ImageRenderer url={block.url} alt={block.alt} caption={block.caption} width={block.width} height={block.height} lqip={block.lqip} />;
     case 'divider':
       return <DividerRenderer />;
     case 'table':

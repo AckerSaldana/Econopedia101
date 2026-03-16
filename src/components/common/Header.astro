@@ -76,8 +76,10 @@ const currentPath = Astro.url.pathname;
         >
           {formattedDate}
         </time>
-        <Logo compact />
-        <div class="flex items-center justify-end gap-2">
+        <div class="col-start-2">
+          <Logo compact />
+        </div>
+        <div class="col-start-3 flex items-center justify-end gap-2">
           <button
             type="button"
             onclick="window.__openSearch?.()"

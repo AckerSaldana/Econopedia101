@@ -245,7 +245,7 @@ export default function AdminDashboard({ navigate }: AdminDashboardProps) {
                 <div key={item.label} className="text-center flex-1">
                   <p
                     style={{
-                      fontFamily: 'var(--font-serif)',
+                      fontFamily: 'var(--font-sans)',
                       fontSize: '36px',
                       fontWeight: 600,
                       lineHeight: 1,

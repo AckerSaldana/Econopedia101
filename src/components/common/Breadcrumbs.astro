@@ -39,7 +39,7 @@ const breadcrumbSchema = {
             </span>
           )}
           {isLast || !item.href ? (
-            <span class="text-text-secondary font-medium" aria-current="page">
+            <span class="text-text-secondary font-medium truncate max-w-[280px] sm:max-w-[400px]" aria-current="page">
               {item.label}
             </span>
           ) : (

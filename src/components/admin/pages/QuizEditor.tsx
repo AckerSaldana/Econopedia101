@@ -227,7 +227,7 @@ function ChartQuestionEditor({ question, onChange }: { question: ChartQuestion; 
               onChange={() => onChange({ ...question, correctIndex: i })}
               style={{ accentColor: 'var(--color-accent)' }}
             />
-            <span style={{ fontFamily: 'var(--font-serif)', fontSize: '13px', fontWeight: 600, color: 'var(--color-text-muted)', width: '16px' }}>
+            <span style={{ fontFamily: 'var(--font-sans)', fontSize: '13px', fontWeight: 600, color: 'var(--color-text-muted)', width: '16px' }}>
               {LETTERS[i]}
             </span>
             <input
@@ -281,7 +281,7 @@ function QuestionEditor({
       <div className="flex items-center justify-between mb-3">
         <span
           style={{
-            fontFamily: 'var(--font-serif)',
+            fontFamily: 'var(--font-sans)',
             fontSize: '14px',
             fontWeight: 600,
             color: 'var(--color-text-primary)',
@@ -374,7 +374,7 @@ function QuestionEditor({
               />
               <span
                 style={{
-                  fontFamily: 'var(--font-serif)',
+                  fontFamily: 'var(--font-sans)',
                   fontSize: '13px',
                   fontWeight: 600,
                   color: 'var(--color-text-muted)',
@@ -676,7 +676,7 @@ export default function QuizEditor({ quizId, navigate }: QuizEditorProps) {
           </button>
           <h1
             style={{
-              fontFamily: 'var(--font-serif)',
+              fontFamily: 'var(--font-sans)',
               fontSize: '22px',
               fontWeight: 600,
               color: 'var(--color-text-primary)',

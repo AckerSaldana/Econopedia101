@@ -238,7 +238,7 @@ export default function AddBlockMenu({ onAdd, onClose }: AddBlockMenuProps) {
               padding: '8px 16px',
               borderBottom: '1px solid var(--color-border)',
               fontSize: '13px',
-              fontFamily: 'var(--font-serif)',
+              fontFamily: 'var(--font-sans)',
               fontWeight: 600,
               color: 'var(--color-text-primary)',
             }}

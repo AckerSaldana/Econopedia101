@@ -2,6 +2,13 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { ChevronDown, ChevronRight, Upload, X } from 'lucide-react';
 import { supabase } from '../../../lib/supabase';
 import { inputBase, labelBase, sectionBase, CATEGORY_COLORS } from '../adminStyles';
+import {
+  validateFile,
+  convertToWebP,
+  formatFileSize,
+  type UploadStage,
+  type ImageMetrics,
+} from '../../../lib/admin/imageUpload';
 
 function slugify(text: string): string {
   return text
@@ -91,7 +98,10 @@ export default function MetadataSidebar(props: MetadataSidebarProps) {
 
   const [slugManual, setSlugManual] = useState(false);
   const [slugError, setSlugError] = useState<string | null>(null);
-  const [uploadingCover, setUploadingCover] = useState(false);
+  const [coverStage, setCoverStage] = useState<UploadStage>('idle');
+  const [coverMetrics, setCoverMetrics] = useState<ImageMetrics | null>(null);
+  const [coverError, setCoverError] = useState<string | null>(null);
+  const [coverDragging, setCoverDragging] = useState(false);
   const [leadMagnetOpen, setLeadMagnetOpen] = useState(!!leadMagnet);
   const [tagInput, setTagInput] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -130,30 +140,65 @@ export default function MetadataSidebar(props: MetadataSidebarProps) {
   );
 
   /* Cover image upload */
-  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const processCoverFile = useCallback(
+    async (file: File) => {
+      setCoverError(null);
+      setCoverMetrics(null);
+
+      // Validate
+      setCoverStage('validating');
+      const validation = await validateFile(file, 'cover');
+      if (!validation.valid) {
+        setCoverError(validation.error!);
+        setCoverStage('error');
+        return;
+      }
+
+      // Convert
+      setCoverStage('converting');
+      let processed;
+      try {
+        processed = await convertToWebP(file, validation.image);
+      } catch {
+        setCoverError('Image conversion failed.');
+        setCoverStage('error');
+        return;
+      }
+
+      // Upload
+      setCoverStage('uploading');
+      const ext = processed.metrics.format === 'webp' ? 'webp' : 'jpeg';
+      const contentType = ext === 'webp' ? 'image/webp' : 'image/jpeg';
+      const path = `covers/${crypto.randomUUID()}.${ext}`;
+
+      try {
+        const { error: uploadError } = await supabase.storage
+          .from('article-images')
+          .upload(path, processed.blob, { contentType, cacheControl: '3600' });
+
+        if (uploadError) throw uploadError;
+
+        const {
+          data: { publicUrl },
+        } = supabase.storage.from('article-images').getPublicUrl(path);
+
+        // Clean up object URL
+        URL.revokeObjectURL(processed.imageElement.src);
+
+        setCoverMetrics(processed.metrics);
+        setCoverStage('done');
+        setCoverUrl(publicUrl);
+      } catch (err) {
+        setCoverError(err instanceof Error ? err.message : 'Upload failed');
+        setCoverStage('error');
+      }
+    },
+    [setCoverUrl],
+  );
+
+  const handleCoverUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
-
-    setUploadingCover(true);
-    const ext = file.name.split('.').pop();
-    const path = `covers/${crypto.randomUUID()}.${ext}`;
-
-    const { error } = await supabase.storage
-      .from('article-images')
-      .upload(path, file, { cacheControl: '3600', upsert: false });
-
-    if (error) {
-      console.error('Cover upload failed:', error.message);
-      setUploadingCover(false);
-      return;
-    }
-
-    const {
-      data: { publicUrl },
-    } = supabase.storage.from('article-images').getPublicUrl(path);
-
-    setCoverUrl(publicUrl);
-    setUploadingCover(false);
+    if (file) processCoverFile(file);
   };
 
   /* Category toggle */
@@ -195,7 +240,7 @@ export default function MetadataSidebar(props: MetadataSidebarProps) {
       <div style={{ padding: '24px 20px' }}>
         <h2
           style={{
-            fontFamily: 'var(--font-serif)',
+            fontFamily: 'var(--font-sans)',
             fontSize: '16px',
             fontWeight: 600,
             color: 'var(--color-text-primary)',
@@ -368,7 +413,7 @@ export default function MetadataSidebar(props: MetadataSidebarProps) {
         <div style={sectionBase}>
           <label style={labelBase}>Cover Image</label>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            {coverUrl && (
+            {coverUrl ? (
               <div>
                 <div
                   style={{
@@ -385,23 +430,111 @@ export default function MetadataSidebar(props: MetadataSidebarProps) {
                     style={{ width: '100%', height: '140px', objectFit: 'cover' }}
                   />
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setCoverUrl('')}
-                  style={{
-                    marginTop: '6px',
-                    background: 'none',
-                    border: 'none',
-                    padding: 0,
-                    cursor: 'pointer',
-                    fontSize: '12px',
-                    color: 'var(--color-error)',
-                    transition: 'opacity 150ms ease',
-                  }}
-                >
-                  Remove
-                </button>
+                {coverMetrics && (
+                  <div
+                    style={{
+                      marginTop: '4px',
+                      fontSize: '11px',
+                      color: 'var(--color-text-muted)',
+                      display: 'flex',
+                      gap: '6px',
+                      flexWrap: 'wrap',
+                    }}
+                  >
+                    <span>{coverMetrics.width} x {coverMetrics.height}</span>
+                    <span
+                      style={{
+                        color: coverMetrics.savings > 0 ? 'var(--color-success)' : 'var(--color-text-muted)',
+                      }}
+                    >
+                      {coverMetrics.format.toUpperCase()} {formatFileSize(coverMetrics.convertedSize)}
+                      {coverMetrics.savings > 0 && ` (saved ${coverMetrics.savings}%)`}
+                    </span>
+                  </div>
+                )}
+                <div style={{ display: 'flex', gap: '12px', marginTop: '6px' }}>
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      padding: 0,
+                      cursor: 'pointer',
+                      fontSize: '12px',
+                      fontWeight: 500,
+                      color: 'var(--color-accent)',
+                    }}
+                  >
+                    Replace
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCoverUrl('');
+                      setCoverMetrics(null);
+                    }}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      padding: 0,
+                      cursor: 'pointer',
+                      fontSize: '12px',
+                      color: 'var(--color-error)',
+                    }}
+                  >
+                    Remove
+                  </button>
+                </div>
               </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  const isProcessing = coverStage === 'validating' || coverStage === 'converting' || coverStage === 'uploading';
+                  if (!isProcessing) fileInputRef.current?.click();
+                }}
+                onDragOver={(e) => { e.preventDefault(); setCoverDragging(true); }}
+                onDragLeave={(e) => { e.preventDefault(); setCoverDragging(false); }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  setCoverDragging(false);
+                  const file = e.dataTransfer.files?.[0];
+                  if (file) processCoverFile(file);
+                }}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '4px',
+                  padding: '16px 12px',
+                  border: `1px dashed ${coverDragging ? 'var(--color-accent)' : 'var(--color-accent-muted)'}`,
+                  borderWidth: coverDragging ? '2px' : '1px',
+                  backgroundColor: coverDragging ? 'var(--color-accent-light)' : 'var(--color-background)',
+                  color: 'var(--color-text-muted)',
+                  cursor: (coverStage === 'validating' || coverStage === 'converting' || coverStage === 'uploading') ? 'default' : 'pointer',
+                  fontSize: '12px',
+                  transition: 'border-color 150ms ease, background-color 150ms ease',
+                  width: '100%',
+                }}
+              >
+                {coverStage === 'validating' ? (
+                  <span>Checking image...</span>
+                ) : coverStage === 'converting' ? (
+                  <span>Converting to WebP...</span>
+                ) : coverStage === 'uploading' ? (
+                  <span>Uploading...</span>
+                ) : (
+                  <>
+                    <Upload size={16} />
+                    <span>Click or drag to upload</span>
+                    <span style={{ fontSize: '10px', opacity: 0.7 }}>
+                      Min 1200 x 600px &mdash; JPEG, PNG, WebP
+                    </span>
+                  </>
+                )}
+              </button>
             )}
             <input
               ref={fileInputRef}
@@ -410,28 +543,11 @@ export default function MetadataSidebar(props: MetadataSidebarProps) {
               onChange={handleCoverUpload}
               style={{ display: 'none' }}
             />
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={uploadingCover}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '6px',
-                padding: '8px 12px',
-                border: '1px solid var(--color-border)',
-                background: 'var(--color-surface)',
-                color: 'var(--color-text-secondary)',
-                cursor: uploadingCover ? 'not-allowed' : 'pointer',
-                fontSize: '13px',
-                opacity: uploadingCover ? 0.6 : 1,
-                transition: 'border-color 150ms ease',
-              }}
-            >
-              <Upload size={14} />
-              {uploadingCover ? 'Uploading...' : 'Upload Image'}
-            </button>
+            {coverError && (
+              <p style={{ margin: 0, fontSize: '12px', color: 'var(--color-error)' }}>
+                {coverError}
+              </p>
+            )}
           </div>
         </div>
 

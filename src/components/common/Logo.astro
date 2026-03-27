@@ -7,7 +7,7 @@ const { compact = false } = Astro.props;
 ---
 
 {compact ? (
-  <a href="/" class="inline-flex items-baseline gap-0.5 no-underline">
+  <a href="/" class="inline-flex items-baseline gap-0.5 no-underline" aria-label="Econopedia 101 — Home">
     <span class="text-lg font-semibold tracking-wider uppercase text-text-primary leading-none">
       Econopedia
     </span>
@@ -16,7 +16,7 @@ const { compact = false } = Astro.props;
     </span>
   </a>
 ) : (
-  <a href="/" class="inline-flex flex-col items-center no-underline group">
+  <a href="/" class="inline-flex flex-col items-center no-underline group" aria-label="Econopedia 101 — Home">
     <div class="flex items-baseline gap-1">
       <span class="text-2xl md:text-3xl lg:text-4xl font-semibold tracking-wider uppercase text-text-primary leading-none">
         Econopedia

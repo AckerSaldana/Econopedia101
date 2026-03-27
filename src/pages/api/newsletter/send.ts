@@ -1,5 +1,5 @@
 import { Resend } from 'resend';
-import { supabase } from '../../../lib/supabase';
+import { supabaseAdmin } from '../../../lib/supabase-admin';
 
 export const prerender = false;
 
@@ -23,12 +23,20 @@ export async function POST({ request }: { request: Request }) {
     }
 
     // Fetch all active subscribers
-    const { data: subscribers, error } = await supabase
+    const { data: subscribers, error: dbError } = await supabaseAdmin
       .from('subscribers')
       .select('email')
       .eq('unsubscribed', false);
 
-    if (error || !subscribers || subscribers.length === 0) {
+    if (dbError) {
+      console.error('Supabase query error:', dbError);
+      return new Response(JSON.stringify({ error: `Database error: ${dbError.message}` }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    if (!subscribers || subscribers.length === 0) {
       return new Response(JSON.stringify({ error: 'No subscribers found' }), {
         status: 404,
         headers: { 'Content-Type': 'application/json' },
@@ -45,7 +53,7 @@ export async function POST({ request }: { request: Request }) {
     for (let i = 0; i < subscribers.length; i += BATCH_SIZE) {
       const batch = subscribers.slice(i, i + BATCH_SIZE);
       const emails = batch.map((sub) => ({
-        from: 'Econopedia 101 <onboarding@resend.dev>',
+        from: 'Econopedia 101 <newsletter@econopedia101.com>',
         to: sub.email,
         subject: `New Article: ${title}`,
         html: `
@@ -69,7 +77,13 @@ export async function POST({ request }: { request: Request }) {
         `,
       }));
 
-      await resend.batch.send(emails);
+      const { data: batchData, error: batchError } = await resend.batch.send(emails);
+      if (batchError) {
+        return new Response(JSON.stringify({ error: `Resend error: ${batchError.message}` }), {
+          status: 500,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
       sent += batch.length;
     }
 
@@ -77,8 +91,9 @@ export async function POST({ request }: { request: Request }) {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });
-  } catch {
-    return new Response(JSON.stringify({ error: 'Failed to send newsletter' }), {
+  } catch (err) {
+    console.error('Newsletter send error:', err);
+    return new Response(JSON.stringify({ error: err instanceof Error ? err.message : 'Failed to send newsletter' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });

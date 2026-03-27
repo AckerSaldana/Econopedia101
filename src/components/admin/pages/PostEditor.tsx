@@ -6,7 +6,6 @@ import BlockEditor from '../editor/BlockEditor';
 import MetadataSidebar from '../editor/MetadataSidebar';
 import BlockRenderer from '../../../components/blog/BlockRenderer';
 import { ArrowLeft, Eye, EyeOff, Loader2, Send } from 'lucide-react';
-import { btnPrimary, btnSecondary } from '../adminStyles';
 
 function slugify(text: string): string {
   return text
@@ -265,149 +264,146 @@ export default function PostEditor({ postId, navigate }: PostEditorProps) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '256px' }}>
         <Loader2 size={24} className="animate-spin" style={{ color: 'var(--color-text-muted)' }} />
       </div>
     );
   }
 
   return (
-    <div className="h-full flex flex-col">
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       {/* Top bar */}
       <div
-        className="flex items-center justify-between px-8 py-4 border-b flex-shrink-0"
-        style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-surface)' }}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '16px 32px',
+          borderBottom: '1px solid var(--color-border)',
+          backgroundColor: 'var(--color-surface)',
+          flexShrink: 0,
+        }}
       >
-        <div className="flex items-center gap-3">
+        {/* Left side: back + title + status */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <button
+            className="admin-btn-ghost admin-btn-ghost--accent"
             onClick={() => navigate('/admin/posts')}
-            className="p-1"
-            style={{
-              color: 'var(--color-text-muted)',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              transition: 'color 150ms ease',
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.color = 'var(--color-accent)';
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.color = 'var(--color-text-muted)';
-            }}
+            style={{ padding: '4px' }}
           >
             <ArrowLeft size={20} />
           </button>
-          <h1
-            className="text-sm"
-            style={{
-              fontFamily: 'var(--font-sans)',
-              fontWeight: 600,
-              color: 'var(--color-text-primary)',
-            }}
-          >
+
+          <div style={{ width: '1px', height: '20px', backgroundColor: 'var(--color-border)' }} />
+
+          <h1 style={{
+            fontSize: '14px',
+            fontFamily: 'var(--font-sans)',
+            fontWeight: 600,
+            color: 'var(--color-text-primary)',
+          }}>
             {postId ? 'Edit Post' : 'New Post'}
           </h1>
-          {/* Save status dot */}
+
+          {/* Save status indicator */}
           {saveStatus === 'saving' && (
-            <span className="flex items-center gap-1.5 text-xs" style={{ color: 'var(--color-text-muted)' }}>
-              <span
-                className="inline-block w-2 h-2"
-                style={{
-                  backgroundColor: 'var(--color-accent)',
-                  borderRadius: '50%',
-                  animation: 'admin-pulse 1.2s ease-in-out infinite',
-                }}
-              />
+            <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: 'var(--color-text-muted)' }}>
+              <span style={{
+                display: 'inline-block',
+                width: '8px',
+                height: '8px',
+                backgroundColor: 'var(--color-accent)',
+                borderRadius: '50%',
+                animation: 'admin-save-pulse 1.2s ease-in-out infinite',
+              }} />
               Saving...
             </span>
           )}
           {saveStatus === 'saved' && (
-            <span className="flex items-center gap-1.5 text-xs" style={{ color: 'var(--color-success)' }}>
-              <span
-                className="inline-block w-2 h-2"
-                style={{
-                  backgroundColor: 'var(--color-success)',
-                  borderRadius: '50%',
-                }}
-              />
+            <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: 'var(--color-success)' }}>
+              <span style={{
+                display: 'inline-block',
+                width: '8px',
+                height: '8px',
+                backgroundColor: 'var(--color-success)',
+                borderRadius: '50%',
+              }} />
               Saved
             </span>
           )}
-          <style>{`
-            @keyframes admin-pulse {
-              0%, 100% { opacity: 1; }
-              50% { opacity: 0.3; }
-            }
-          `}</style>
         </div>
-        <div className="flex items-center gap-3">
+
+        {/* Right side: action buttons */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          {/* Preview toggle */}
           <button
+            className={previewing ? 'admin-btn-primary' : 'admin-btn-secondary'}
             onClick={handlePreview}
-            className="disabled:opacity-40"
-            style={{
-              ...(previewing ? btnPrimary : btnSecondary),
-              padding: '8px 16px',
-              fontSize: '12px',
-            }}
+            style={{ padding: '8px 16px', fontSize: '12px' }}
           >
             {previewing ? <EyeOff size={14} /> : <Eye size={14} />}
             {previewing ? 'Edit' : 'Preview'}
           </button>
+
+          <div style={{ width: '1px', height: '20px', backgroundColor: 'var(--color-border)' }} />
+
+          {/* Save / Publish */}
           <button
+            className="admin-btn-secondary"
             onClick={handleSaveDraft}
             disabled={saving || !title}
-            className="disabled:opacity-40"
-            style={{ ...btnSecondary, padding: '8px 16px', fontSize: '12px' }}
+            style={{ padding: '8px 16px', fontSize: '12px' }}
           >
             Save Draft
           </button>
           <button
+            className="admin-btn-primary"
             onClick={handlePublish}
             disabled={saving || !title}
-            className="disabled:opacity-50"
-            style={{ ...btnPrimary, padding: '8px 16px', fontSize: '12px' }}
+            style={{ padding: '8px 16px', fontSize: '12px' }}
           >
             Publish
           </button>
+
+          {/* Notify subscribers */}
           {!draft && currentId && (
-            <button
-              onClick={handleNotifySubscribers}
-              disabled={notifying}
-              className="disabled:opacity-50"
-              style={{
-                ...btnSecondary,
-                padding: '8px 16px',
-                fontSize: '12px',
-                borderColor: notifyResult === 'sent' ? 'var(--color-success)' : notifyResult === 'error' ? 'var(--color-error)' : undefined,
-                color: notifyResult === 'sent' ? 'var(--color-success)' : notifyResult === 'error' ? 'var(--color-error)' : undefined,
-              }}
-            >
-              {notifying ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
-              {notifying ? 'Sending...' : notifyResult === 'sent' ? 'Sent!' : notifyResult === 'error' ? 'Failed' : 'Notify Subscribers'}
-            </button>
+            <>
+              <div style={{ width: '1px', height: '20px', backgroundColor: 'var(--color-border)' }} />
+              <button
+                className="admin-btn-secondary"
+                onClick={handleNotifySubscribers}
+                disabled={notifying}
+                style={{
+                  padding: '8px 16px',
+                  fontSize: '12px',
+                  borderColor: notifyResult === 'sent' ? 'var(--color-success)' : notifyResult === 'error' ? 'var(--color-error)' : undefined,
+                  color: notifyResult === 'sent' ? 'var(--color-success)' : notifyResult === 'error' ? 'var(--color-error)' : undefined,
+                }}
+              >
+                {notifying ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
+                {notifying ? 'Sending...' : notifyResult === 'sent' ? 'Sent!' : notifyResult === 'error' ? 'Failed' : 'Notify Subscribers'}
+              </button>
+            </>
           )}
         </div>
       </div>
 
       {/* Editor area */}
-      <div className="flex flex-1 min-h-0">
+      <div style={{ display: 'flex', flex: 1, minHeight: 0 }}>
         {/* Block editor / Preview */}
-        <div className="flex-1 overflow-y-auto p-8">
-          <div className="max-w-3xl mx-auto">
+        <div style={{ flex: 1, overflowY: 'auto', padding: '32px' }}>
+          <div style={{ maxWidth: '768px', margin: '0 auto' }}>
             {previewing ? (
               <>
-                <h1
-                  style={{
-                    fontFamily: 'var(--font-sans)',
-                    fontSize: '36px',
-                    fontWeight: 600,
-                    letterSpacing: '-0.02em',
-                    color: 'var(--color-text-primary)',
-                    lineHeight: 1.2,
-                    marginBottom: '2rem',
-                  }}
-                >
+                <h1 style={{
+                  fontFamily: 'var(--font-sans)',
+                  fontSize: '36px',
+                  fontWeight: 600,
+                  letterSpacing: '-0.02em',
+                  color: 'var(--color-text-primary)',
+                  lineHeight: 1.2,
+                  marginBottom: '2rem',
+                }}>
                   {title || 'Untitled'}
                 </h1>
                 <BlockRenderer blocks={blocks} />
@@ -419,8 +415,12 @@ export default function PostEditor({ postId, navigate }: PostEditorProps) {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="Post title"
-                  className="w-full mb-8 border-none outline-none bg-transparent"
                   style={{
+                    width: '100%',
+                    marginBottom: '32px',
+                    border: 'none',
+                    outline: 'none',
+                    backgroundColor: 'transparent',
                     fontFamily: 'var(--font-sans)',
                     fontSize: '36px',
                     fontWeight: 600,
@@ -436,10 +436,13 @@ export default function PostEditor({ postId, navigate }: PostEditorProps) {
         </div>
 
         {/* Metadata sidebar */}
-        <div
-          className="w-[320px] flex-shrink-0 border-l overflow-y-auto"
-          style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-surface)' }}
-        >
+        <div style={{
+          width: '320px',
+          flexShrink: 0,
+          borderLeft: '1px solid var(--color-border)',
+          backgroundColor: 'var(--color-surface)',
+          overflowY: 'auto',
+        }}>
           <MetadataSidebar
             title={title}
             setTitle={setTitle}

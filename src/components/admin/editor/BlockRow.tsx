@@ -90,92 +90,40 @@ export default function BlockRow({
 }: BlockRowProps) {
   return (
     <div
-      className="flex gap-0 py-4 items-start group"
-      style={{ transition: 'background-color 150ms ease' }}
-      onMouseEnter={(e) => {
-        (e.currentTarget as HTMLDivElement).style.backgroundColor = 'var(--color-surface-elevated)';
-      }}
-      onMouseLeave={(e) => {
-        (e.currentTarget as HTMLDivElement).style.backgroundColor = 'transparent';
-      }}
+      className="admin-block-row"
+      style={{ display: 'flex', gap: 0, padding: '16px 0', alignItems: 'flex-start' }}
     >
       {/* Left gutter */}
-      <div className="w-[80px] flex-shrink-0 flex flex-col items-start gap-1 pt-1 pr-3">
-        <span
-          className="text-[10px] uppercase tracking-wider font-medium block-type-label"
-          style={{
-            color: 'var(--color-text-muted)',
-            transition: 'color 150ms ease',
-          }}
-        >
+      <div style={{ width: '80px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '4px', paddingTop: '4px', paddingRight: '12px' }}>
+        <span className="admin-label" style={{ marginBottom: 0, fontSize: '10px' }}>
           {BLOCK_TYPE_LABELS[block.type]}
         </span>
       </div>
 
       {/* Block editor */}
-      <div className="flex-1 min-w-0">
+      <div style={{ flex: 1, minWidth: 0 }}>
         {renderBlockEditor(block, onChange, categories)}
       </div>
 
       {/* Actions */}
-      <div className="flex flex-col gap-0.5 pl-2 pt-0.5 flex-shrink-0">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', paddingLeft: '8px', paddingTop: '2px', flexShrink: 0 }}>
         <button
+          className="admin-block-action"
           onClick={onMoveUp}
           disabled={index === 0}
-          className="w-7 h-7 flex items-center justify-center disabled:opacity-30"
-          style={{
-            border: 'none',
-            backgroundColor: 'transparent',
-            color: 'var(--color-text-secondary)',
-            cursor: 'pointer',
-            transition: 'background-color 150ms ease',
-          }}
-          onMouseEnter={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'var(--color-surface-elevated)';
-          }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'transparent';
-          }}
         >
           <ArrowUp size={14} />
         </button>
         <button
+          className="admin-block-action"
           onClick={onMoveDown}
           disabled={index === total - 1}
-          className="w-7 h-7 flex items-center justify-center disabled:opacity-30"
-          style={{
-            border: 'none',
-            backgroundColor: 'transparent',
-            color: 'var(--color-text-secondary)',
-            cursor: 'pointer',
-            transition: 'background-color 150ms ease',
-          }}
-          onMouseEnter={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'var(--color-surface-elevated)';
-          }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'transparent';
-          }}
         >
           <ArrowDown size={14} />
         </button>
         <button
+          className="admin-block-action admin-block-action--delete"
           onClick={onDelete}
-          className="w-7 h-7 flex items-center justify-center"
-          style={{
-            border: 'none',
-            backgroundColor: 'transparent',
-            color: 'var(--color-error)',
-            cursor: 'pointer',
-            opacity: 0.4,
-            transition: 'opacity 150ms ease',
-          }}
-          onMouseEnter={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.opacity = '1';
-          }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.opacity = '0.4';
-          }}
         >
           <Trash2 size={14} />
         </button>

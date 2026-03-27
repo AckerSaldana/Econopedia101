@@ -17,11 +17,11 @@ const encodedTitle = encodeURIComponent(title);
   <button
     type="button"
     data-share-url={url}
-    class="share-copy-btn inline-flex items-center justify-center w-9 h-9 rounded-lg border border-border text-text-muted hover:text-text-primary hover:bg-surface-elevated transition-colors"
+    class="share-copy-btn inline-flex items-center justify-center w-9 h-9 border border-border text-text-muted hover:text-text-primary hover:bg-surface-elevated transition-colors"
     aria-label="Copy link to clipboard"
   >
     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m9.86-2.04a4.5 4.5 0 0 0-1.242-7.244l-4.5-4.5a4.5 4.5 0 0 0-6.364 6.364L5.25 9.879" />
+      <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75m11.25-3h-4.5m4.5 0v4.5m0-4.5L10.5 13.5" />
     </svg>
   </button>
 
@@ -30,7 +30,7 @@ const encodedTitle = encodeURIComponent(title);
     href={`https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`}
     target="_blank"
     rel="noopener noreferrer"
-    class="inline-flex items-center justify-center w-9 h-9 rounded-lg border border-border text-text-muted hover:text-text-primary hover:bg-surface-elevated transition-colors"
+    class="inline-flex items-center justify-center w-9 h-9 border border-border text-text-muted hover:text-text-primary hover:bg-surface-elevated transition-colors"
     aria-label="Share on X (Twitter)"
   >
     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -43,7 +43,7 @@ const encodedTitle = encodeURIComponent(title);
     href={`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`}
     target="_blank"
     rel="noopener noreferrer"
-    class="inline-flex items-center justify-center w-9 h-9 rounded-lg border border-border text-text-muted hover:text-text-primary hover:bg-surface-elevated transition-colors"
+    class="inline-flex items-center justify-center w-9 h-9 border border-border text-text-muted hover:text-text-primary hover:bg-surface-elevated transition-colors"
     aria-label="Share on Facebook"
   >
     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -56,7 +56,7 @@ const encodedTitle = encodeURIComponent(title);
     href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`}
     target="_blank"
     rel="noopener noreferrer"
-    class="inline-flex items-center justify-center w-9 h-9 rounded-lg border border-border text-text-muted hover:text-text-primary hover:bg-surface-elevated transition-colors"
+    class="inline-flex items-center justify-center w-9 h-9 border border-border text-text-muted hover:text-text-primary hover:bg-surface-elevated transition-colors"
     aria-label="Share on LinkedIn"
   >
     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">

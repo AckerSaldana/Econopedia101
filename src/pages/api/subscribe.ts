@@ -46,7 +46,7 @@ export async function POST({ request }: { request: Request }) {
     const resend = new Resend(import.meta.env.RESEND_API_KEY);
 
     await resend.emails.send({
-      from: 'Econopedia 101 <onboarding@resend.dev>',
+      from: 'Econopedia 101 <newsletter@econopedia101.com>',
       to: trimmed,
       subject: 'Welcome to Econopedia 101',
       html: `
@@ -66,7 +66,7 @@ export async function POST({ request }: { request: Request }) {
 
     // Notify yourself of new subscriber
     await resend.emails.send({
-      from: 'Econopedia 101 <onboarding@resend.dev>',
+      from: 'Econopedia 101 <newsletter@econopedia101.com>',
       to: 'econopedia101@gmail.com',
       subject: `New subscriber: ${trimmed}`,
       html: `<p>New newsletter subscriber: <strong>${trimmed}</strong></p>`,

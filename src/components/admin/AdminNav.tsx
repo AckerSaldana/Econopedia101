@@ -20,18 +20,24 @@ export default function AdminNav({ path, navigate, signOut }: AdminNavProps) {
 
   return (
     <nav
-      className="w-[240px] flex-shrink-0 border-r flex flex-col"
-      style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-surface)' }}
+      className="w-[240px] flex-shrink-0 flex flex-col"
+      style={{
+        borderRight: '1px solid var(--color-border)',
+        backgroundColor: 'var(--color-surface)',
+      }}
     >
+      {/* Header */}
       <div
-        className="p-6"
-        style={{ borderBottom: '2px solid var(--color-accent)' }}
+        className="p-8 pb-6"
+        style={{ borderBottom: '1px solid var(--color-border)' }}
       >
         <a
           href="/"
-          className="text-[15px] font-semibold uppercase"
           style={{
             fontFamily: 'var(--font-sans)',
+            fontSize: '15px',
+            fontWeight: 600,
+            textTransform: 'uppercase',
             letterSpacing: '0.08em',
             color: 'var(--color-accent)',
             textDecoration: 'none',
@@ -39,12 +45,21 @@ export default function AdminNav({ path, navigate, signOut }: AdminNavProps) {
         >
           Econopedia 101
         </a>
-        <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-muted)' }}>
+        <p
+          className="mt-1"
+          style={{
+            fontSize: '12px',
+            color: 'var(--color-text-muted)',
+            letterSpacing: '0.04em',
+            textTransform: 'uppercase',
+          }}
+        >
           Admin Panel
         </p>
       </div>
 
-      <div className="flex-1 py-3">
+      {/* Navigation Items */}
+      <div className="flex-1 py-4">
         {NAV_ITEMS.map((item) => {
           const active = isActive(item.href);
           const Icon = item.icon;
@@ -52,29 +67,7 @@ export default function AdminNav({ path, navigate, signOut }: AdminNavProps) {
             <button
               key={item.href}
               onClick={() => navigate(item.href)}
-              className="w-full flex items-center gap-2.5 px-5 py-2.5 text-sm text-left"
-              style={{
-                backgroundColor: 'transparent',
-                color: active ? 'var(--color-accent)' : 'var(--color-text-secondary)',
-                fontWeight: 500,
-                borderLeft: active ? '3px solid var(--color-accent)' : '3px solid transparent',
-                transition: 'all 150ms ease',
-                cursor: 'pointer',
-                border: 'none',
-                borderLeftWidth: '3px',
-                borderLeftStyle: 'solid',
-                borderLeftColor: active ? 'var(--color-accent)' : 'transparent',
-              }}
-              onMouseEnter={(e) => {
-                if (!active) {
-                  (e.currentTarget as HTMLButtonElement).style.color = 'var(--color-text-primary)';
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!active) {
-                  (e.currentTarget as HTMLButtonElement).style.color = 'var(--color-text-secondary)';
-                }
-              }}
+              className={`admin-nav-item${active ? ' active' : ''}`}
             >
               <Icon size={16} strokeWidth={1.5} />
               {item.label}
@@ -83,24 +76,12 @@ export default function AdminNav({ path, navigate, signOut }: AdminNavProps) {
         })}
       </div>
 
-      <div className="p-3 border-t" style={{ borderColor: 'var(--color-border)' }}>
-        <button
-          onClick={signOut}
-          className="w-full flex items-center gap-2.5 px-3 py-2 text-sm"
-          style={{
-            color: 'var(--color-text-muted)',
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            transition: 'color 150ms ease',
-          }}
-          onMouseEnter={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.color = 'var(--color-error)';
-          }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.color = 'var(--color-text-muted)';
-          }}
-        >
+      {/* Sign Out */}
+      <div
+        className="p-4"
+        style={{ borderTop: '1px solid var(--color-border)' }}
+      >
+        <button onClick={signOut} className="admin-signout">
           <LogOut size={16} strokeWidth={1.5} />
           Sign Out
         </button>

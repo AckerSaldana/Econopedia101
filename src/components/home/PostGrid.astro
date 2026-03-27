@@ -1,6 +1,7 @@
 ---
 import PostCard from '../blog/PostCard.astro';
 import Container from '../ui/Container.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
 
 interface Props {
   posts: Array<{
@@ -22,15 +23,9 @@ interface Props {
 const { posts, title } = Astro.props;
 ---
 
-<section class="py-5 lg:py-6">
+<section class="py-(--spacing-block)">
   <Container>
-    <!-- Economist-style section heading -->
-    <div class="border-t-2 border-text-primary pt-3 mb-4 flex items-baseline justify-between">
-      <h2 class="text-xs font-bold uppercase tracking-[0.12em] text-text-primary">{title}</h2>
-      <a href="/blog" class="text-[10px] text-text-muted hover:text-accent transition-colors">
-        View all &rarr;
-      </a>
-    </div>
+    <SectionHeading title={title} href="/blog" />
 
     <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
       {posts.slice(0, 4).map((post) => (

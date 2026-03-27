@@ -1,5 +1,6 @@
 ---
 import Container from '../ui/Container.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
 
 const tools = [
   {
@@ -27,13 +28,7 @@ const tools = [
 
 <section class="py-(--spacing-section) bg-surface-elevated border-y border-border">
   <Container>
-    <!-- Section heading -->
-    <div class="border-t-2 border-text-primary pt-3 mb-8 flex items-baseline justify-between">
-      <h2 class="text-xs font-bold uppercase tracking-[0.12em] text-text-primary">Interactive Tools</h2>
-      <a href="/tools" class="text-[10px] text-text-muted hover:text-accent transition-colors">
-        View all &rarr;
-      </a>
-    </div>
+    <SectionHeading title="Interactive Tools" href="/tools" class="mb-8" />
 
     <!-- Tools grid -->
     <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">

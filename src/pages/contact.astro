@@ -34,7 +34,12 @@ const breadcrumbs = [
         <div class="grid lg:grid-cols-5 gap-12">
           <!-- Contact Form -->
           <div class="lg:col-span-3">
-            <form action="#" method="POST" class="space-y-6">
+            <form id="contact-form" class="space-y-6">
+              <!-- Honeypot — hidden from real users, catches bots -->
+              <div style="position: absolute; left: -9999px;" aria-hidden="true">
+                <label for="website">Website</label>
+                <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
+              </div>
               <div class="grid sm:grid-cols-2 gap-6">
                 <Input
                   name="name"
@@ -79,6 +84,8 @@ const breadcrumbs = [
                   <polygon points="22 2 15 22 11 13 2 9 22 2" />
                 </svg>
               </Button>
+
+              <div id="form-status" class="mt-4 text-sm" role="status" aria-live="polite"></div>
             </form>
           </div>
 
@@ -130,3 +137,62 @@ const breadcrumbs = [
     </Section>
   </Container>
 </BaseLayout>
+
+<script>
+  const form = document.getElementById('contact-form') as HTMLFormElement;
+  const status = document.getElementById('form-status') as HTMLDivElement;
+  const submitBtn = form.querySelector('button[type="submit"]') as HTMLButtonElement;
+  const originalBtnHtml = submitBtn.innerHTML;
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    status.textContent = '';
+
+    const formData = new FormData(form);
+    const name = (formData.get('name') as string)?.trim();
+    const email = (formData.get('email') as string)?.trim();
+    const subject = (formData.get('subject') as string)?.trim();
+    const message = (formData.get('message') as string)?.trim();
+    const website = (formData.get('website') as string) ?? '';
+
+    if (!name || !email || !subject || !message) {
+      showStatus('Please fill out all fields.', 'error');
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span> Sending...';
+
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, subject, message, website }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to send message');
+      }
+
+      showStatus('Message sent! We\'ll get back to you soon.', 'success');
+      form.reset();
+    } catch (err) {
+      showStatus(
+        err instanceof Error ? err.message : 'Something went wrong. Please try again.',
+        'error'
+      );
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalBtnHtml;
+    }
+  });
+
+  function showStatus(msg: string, type: 'success' | 'error') {
+    status.textContent = msg;
+    status.className = `mt-4 text-sm font-medium ${
+      type === 'success' ? 'text-success' : 'text-error'
+    }`;
+  }
+</script>

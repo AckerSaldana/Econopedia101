@@ -60,7 +60,7 @@ export default function AdminShell({ signOut }: AdminShellProps) {
   return (
     <div
       className="fixed inset-0 flex overflow-hidden"
-      style={{ borderTop: '2px solid var(--color-accent)' }}
+      style={{ borderTop: '3px solid var(--color-accent)' }}
     >
       <AdminNav path={path} navigate={navigate} signOut={signOut} />
       <main

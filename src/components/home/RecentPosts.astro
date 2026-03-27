@@ -1,6 +1,7 @@
 ---
 import PostCardCompact from '../blog/PostCardCompact.astro';
 import Container from '../ui/Container.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
 
 interface Props {
   posts: Array<{
@@ -21,15 +22,9 @@ const { posts, title } = Astro.props;
 ---
 
 {posts.length > 0 && (
-  <section class="py-5 lg:py-6 border-t border-border">
+  <section class="py-(--spacing-block) border-t border-border">
     <Container>
-      <!-- Economist-style section heading -->
-      <div class="border-t-2 border-text-primary pt-3 mb-4 flex items-baseline justify-between">
-        <h2 class="text-xs font-bold uppercase tracking-[0.12em] text-text-primary">{title}</h2>
-        <a href="/blog" class="text-[10px] text-text-muted hover:text-accent transition-colors">
-          View all &rarr;
-        </a>
-      </div>
+      <SectionHeading title={title} href="/blog" />
 
       <!-- Flat grid: rows stay aligned across columns -->
       <div class="grid md:grid-cols-2 border-t border-border">

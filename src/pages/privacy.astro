@@ -4,6 +4,8 @@ export const prerender = true;
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Container from '../components/ui/Container.astro';
 import Breadcrumbs from '../components/common/Breadcrumbs.astro';
+import Separator from '../components/ui/Separator.astro';
+import SectionHeading from '../components/ui/SectionHeading.astro';
 import { SITE } from '../lib/constants';
 
 const breadcrumbs = [
@@ -11,189 +13,187 @@ const breadcrumbs = [
   { label: 'Privacy Policy' },
 ];
 
-const lastUpdated = '8 March 2026';
+const lastUpdated = '14 March 2026';
+
+const sections = [
+  { id: 'transparency', label: 'Transparency & Data Protection' },
+  { id: 'cookies', label: 'Cookie Usage' },
+  { id: 'affiliate', label: 'Affiliate Marketing Disclosure' },
+  { id: 'ai-transparency', label: 'AI Transparency & Research Disclosure' },
+  { id: 'research-data', label: 'Research Data & Professional Insights' },
+  { id: 'your-rights', label: 'Your Rights' },
+  { id: 'contact', label: 'Contact Us' },
+];
 ---
 
-<BaseLayout title="Privacy Policy | Econopedia 101" description="Read the Econopedia 101 privacy policy. Learn how we collect, use, and protect your personal data.">
+<BaseLayout title="Privacy Policy | Econopedia 101" description="Read the Econopedia 101 privacy policy. Learn how we collect, use, and protect your personal data under UK GDPR.">
   <Container>
     <div class="py-8">
       <Breadcrumbs items={breadcrumbs} />
     </div>
 
-    <article class="max-w-3xl pb-16">
-      <header class="mb-10">
+    <article>
+      <!-- Hero Section -->
+      <section class="py-5 lg:py-6">
+        <div class="border-t-2 border-text-primary pt-3 mb-4">
+          <p class="text-xs font-bold uppercase tracking-[0.12em] text-text-primary">Legal</p>
+        </div>
         <h1 class="text-4xl lg:text-5xl font-semibold text-text-primary mb-3">
           Privacy Policy
         </h1>
-        <p class="text-text-muted text-sm">
+        <p class="text-xl text-text-secondary leading-relaxed mb-2">
+          Your Privacy Matters to Us
+        </p>
+        <p class="text-sm text-text-muted">
           Last updated: {lastUpdated}
         </p>
-      </header>
+      </section>
 
-      <div class="prose prose-lg max-w-none text-text-secondary space-y-8">
-        <!-- Introduction -->
-        <section>
+      <!-- Intro + Table of Contents -->
+      <section class="py-5 lg:py-6">
+        <div class="grid lg:grid-cols-[2fr_1px_1fr] gap-y-4 lg:gap-y-0">
+          <div class="lg:pr-5 text-text-secondary text-base leading-relaxed">
+            <p>
+              Welcome to {SITE.name}. Your privacy is fundamentally important to us. This policy outlines
+              how we collect, use and protect your information as you explore our learning platform,
+              news hub and revision resources.
+            </p>
+          </div>
+
+          <!-- Vertical rule -->
+          <div class="hidden lg:block bg-border" aria-hidden="true"></div>
+
+          <div class="border-t lg:border-t-0 border-border pt-4 lg:pt-0 lg:pl-5">
+            <nav aria-label="Table of contents">
+              <p class="text-xs font-bold uppercase tracking-[0.12em] text-text-primary mb-3">In this policy</p>
+              <ol class="space-y-1.5">
+                {sections.map((section, i) => (
+                  <li>
+                    <a href={`#${section.id}`} class="text-sm text-accent hover:underline">
+                      {i + 1}. {section.label}
+                    </a>
+                  </li>
+                ))}
+              </ol>
+            </nav>
+          </div>
+        </div>
+      </section>
+
+      <Separator />
+
+      <!-- Section 1: Transparency & Data Protection -->
+      <section id="transparency" class="py-5 lg:py-6 scroll-mt-32">
+        <SectionHeading title="1. Transparency & Data Protection (UK GDPR)" />
+        <div class="max-w-3xl text-text-secondary text-base leading-relaxed space-y-4">
           <p>
-            At {SITE.name}, your privacy is important to us. This Privacy Policy explains how we collect,
-            use, disclose, and safeguard your information when you visit our website at{' '}
-            <a href={SITE.url} class="text-accent hover:underline">{SITE.url}</a>.
-            Please read this policy carefully. If you do not agree with the terms of this policy,
-            please do not access the site.
+            As a UK-based platform, we comply with the UK General Data Protection Regulation (UK GDPR).
+            We only collect personal information, such as your name or email address, when you voluntarily
+            provide it — for example, by subscribing to our newsletter or using our contact form.
           </p>
-        </section>
+          <p>
+            We strictly do not sell or rent your personal data to third parties.
+          </p>
+        </div>
+      </section>
 
-        <!-- Data Collection -->
-        <section>
-          <h2 class="text-2xl font-semibold text-text-primary mb-4">
-            Information We Collect
-          </h2>
-          <p class="mb-4">We may collect information about you in a variety of ways, including:</p>
+      <!-- Section 2: Cookie Usage -->
+      <section id="cookies" class="py-5 lg:py-6 scroll-mt-32">
+        <SectionHeading title="2. Cookie Usage" />
+        <div class="max-w-3xl text-text-secondary text-base leading-relaxed space-y-4">
+          <p>
+            {SITE.name} uses cookies to enhance your experience. Cookies are small text files stored
+            on your device that help us analyse web traffic, remember your preferences and see which
+            parts of our site are most useful to students and professionals.
+          </p>
           <ul class="list-disc pl-6 space-y-2">
             <li>
-              <strong class="text-text-primary">Personal Data:</strong> When you voluntarily provide it, such as
-              your name and email address when signing up for free resources, creating an account, or submitting a contact form.
+              <strong class="text-text-primary">Analytics:</strong> We may use service providers
+              to monitor and analyse the use of our site.
             </li>
             <li>
-              <strong class="text-text-primary">Usage Data:</strong> Information automatically collected when
-              you visit our site, such as your IP address, browser type, operating system, referring URLs,
-              pages viewed, and the dates and times of your visits.
-            </li>
-            <li>
-              <strong class="text-text-primary">Device Data:</strong> Information about the device you use to
-              access our site, including device type, screen resolution, and language preferences.
+              <strong class="text-text-primary">Management:</strong> You can choose to accept or
+              decline cookies through your browser settings or the consent banner on our homepage.
             </li>
           </ul>
-        </section>
+        </div>
+      </section>
 
-        <!-- Cookies -->
-        <section>
-          <h2 class="text-2xl font-semibold text-text-primary mb-4">
-            Cookies and Tracking Technologies
-          </h2>
-          <p class="mb-4">
-            We may use cookies, web beacons, tracking pixels, and other tracking technologies
-            to help customise the site and improve your experience. You can instruct your browser
-            to refuse all cookies or to indicate when a cookie is being sent. However, if you do not
-            accept cookies, you may not be able to use some parts of our site.
+      <!-- Section 3: Affiliate Marketing Disclosure -->
+      <section id="affiliate" class="py-5 lg:py-6 scroll-mt-32">
+        <SectionHeading title="3. Affiliate Marketing Disclosure" />
+        <div class="max-w-3xl text-text-secondary text-base leading-relaxed space-y-4">
+          <p>
+            {SITE.name} is a reader-supported platform. We participate in affiliate marketing programs,
+            which means we may earn a small commission on qualifying purchases made through our links
+            — such as for recommended textbooks or calculators.
           </p>
           <p>
-            Types of cookies we may use:
+            This happens at no additional cost to you and helps us maintain our educational resources.
+            We only recommend products that we believe provide genuine value to your wider economic,
+            financial and business studies.
           </p>
-          <ul class="list-disc pl-6 space-y-2 mt-2">
-            <li><strong class="text-text-primary">Essential cookies:</strong> Necessary for the site to function properly.</li>
-            <li><strong class="text-text-primary">Analytics cookies:</strong> Help us understand how visitors interact with the site.</li>
-            <li><strong class="text-text-primary">Preference cookies:</strong> Remember your settings and preferences.</li>
-          </ul>
-        </section>
+        </div>
+      </section>
 
-        <!-- Analytics -->
-        <section>
-          <h2 class="text-2xl font-semibold text-text-primary mb-4">
-            Analytics
-          </h2>
+      <!-- Section 4: AI Transparency & Research Disclosure -->
+      <section id="ai-transparency" class="py-5 lg:py-6 scroll-mt-32">
+        <SectionHeading title="4. AI Transparency & Research Disclosure" />
+        <div class="max-w-3xl text-text-secondary text-base leading-relaxed space-y-4">
           <p>
-            We may use third-party analytics services such as Microsoft Clarity and Google Analytics
-            to monitor and analyse web traffic. These services may collect and use data about your
-            browsing behaviour to help us improve our site. The data collected is generally aggregated
-            and anonymised where possible.
-          </p>
-        </section>
-
-        <!-- Third-Party Services -->
-        <section>
-          <h2 class="text-2xl font-semibold text-text-primary mb-4">
-            Third-Party Services
-          </h2>
-          <p class="mb-4">
-            Our site may contain links to third-party websites and services. We are not responsible
-            for the privacy practices of those third parties. We encourage you to review their privacy
-            policies before providing any information.
+            In line with EU AI Act (Regulation 2024/1689), we disclose that {SITE.name} utilises
+            advanced AI tools to assist in data research and market trend synthesis. However, we
+            operate under a strict Human-in-the-Loop editorial model.
           </p>
           <p>
-            We may use third-party services for email communications, form processing, and content
-            delivery. These providers may have access to your personal information only to perform
-            these tasks on our behalf and are obligated not to disclose or use it for any other purpose.
+            Every article is manually reviewed, fact-checked and refined by our team to ensure
+            academic accuracy and a personal, human touch.
           </p>
-        </section>
+        </div>
+      </section>
 
-        <!-- Affiliate Disclosure -->
-        <section>
-          <h2 class="text-2xl font-semibold text-text-primary mb-4">
-            Affiliate Links
-          </h2>
+      <!-- Section 5: Research Data & Professional Insights -->
+      <section id="research-data" class="py-5 lg:py-6 scroll-mt-32">
+        <SectionHeading title="5. Research Data & Professional Insights" />
+        <div class="max-w-3xl text-text-secondary text-base leading-relaxed space-y-4">
           <p>
-            Some articles on {SITE.name} may contain affiliate links. This means we may earn a small
-            commission if you click through and make a purchase, at no additional cost to you.
-            Affiliate partnerships do not influence our editorial content or recommendations.
-            All opinions expressed are our own.
+            While we utilise high-level data from professional financial tools such as Bloomberg
+            for research purposes, {SITE.name} is an independent educational platform.
           </p>
-        </section>
-
-        <!-- User Rights -->
-        <section>
-          <h2 class="text-2xl font-semibold text-text-primary mb-4">
-            Your Rights
-          </h2>
-          <p class="mb-4">
-            Depending on your location, you may have the following rights regarding your personal data:
-          </p>
-          <ul class="list-disc pl-6 space-y-2">
-            <li>The right to access the personal data we hold about you.</li>
-            <li>The right to request correction of inaccurate personal data.</li>
-            <li>The right to request deletion of your personal data.</li>
-            <li>The right to withdraw consent at any time where we rely on consent to process your data.</li>
-            <li>The right to opt out of marketing communications.</li>
-            <li>The right to data portability.</li>
-          </ul>
-          <p class="mt-4">
-            To exercise any of these rights, please contact us using the details below.
-          </p>
-        </section>
-
-        <!-- Children -->
-        <section>
-          <h2 class="text-2xl font-semibold text-text-primary mb-4">
-            Children's Privacy
-          </h2>
           <p>
-            Our site is intended for a general audience and is not directed at children under 13.
-            We do not knowingly collect personal information from children. If you believe we have
-            inadvertently collected data from a child, please contact us so we can promptly remove it.
+            Please note that our content is strictly for educational and informational purposes
+            and does not constitute financial advice.
           </p>
-        </section>
+        </div>
+      </section>
 
-        <!-- Changes -->
-        <section>
-          <h2 class="text-2xl font-semibold text-text-primary mb-4">
-            Changes to This Policy
-          </h2>
+      <!-- Section 6: Your Rights -->
+      <section id="your-rights" class="py-5 lg:py-6 scroll-mt-32">
+        <SectionHeading title="6. Your Rights" />
+        <div class="max-w-3xl text-text-secondary text-base leading-relaxed space-y-4">
           <p>
-            We may update this Privacy Policy from time to time. We will notify you of any changes
-            by posting the new policy on this page and updating the "Last updated" date. You are
-            advised to review this policy periodically for any changes.
+            Under UK data protection law, you have the right to access, correct or delete your
+            personal data. You also have the right to withdraw your consent to our use of cookies
+            at any time.
           </p>
-        </section>
+        </div>
+      </section>
 
-        <!-- Contact -->
-        <section>
-          <h2 class="text-2xl font-semibold text-text-primary mb-4">
-            Contact Us
-          </h2>
+      <!-- Section 7: Contact Us -->
+      <section id="contact" class="pt-5 lg:pt-6 pb-12 lg:pb-16 scroll-mt-32">
+        <SectionHeading title="7. Contact Us" />
+        <div class="max-w-3xl text-text-secondary text-base leading-relaxed space-y-4">
           <p>
-            If you have any questions or concerns about this Privacy Policy, please contact us at:
+            If you have any questions regarding this Privacy Policy or how we handle your data,
+            please do not hesitate to contact us at{' '}
+            <a href="mailto:info@econopedia101.com" class="text-accent hover:underline">info@econopedia101.com</a>.
           </p>
-          <ul class="list-none mt-4 space-y-1">
-            <li>
-              <strong class="text-text-primary">Email:</strong>{' '}
-              <a href="mailto:hello@econopedia101.com" class="text-accent hover:underline">hello@econopedia101.com</a>
-            </li>
-            <li>
-              <strong class="text-text-primary">Website:</strong>{' '}
-              <a href="/contact" class="text-accent hover:underline">{SITE.url}/contact</a>
-            </li>
-          </ul>
-        </section>
-      </div>
+          <p>
+            We value your privacy and aim to respond to all inquiries promptly.{' '}
+            <a href="/about" class="text-accent hover:underline">See more about us</a>.
+          </p>
+        </div>
+      </section>
     </article>
   </Container>
 </BaseLayout>

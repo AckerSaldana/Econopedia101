@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../../lib/supabase';
 import { Plus, Star, Puzzle, ExternalLink, ChevronRight } from 'lucide-react';
-import { pageTitle, sectionTitle, labelBase, btnPrimary } from '../adminStyles';
 
 interface AdminDashboardProps {
   navigate: (to: string) => void;
@@ -94,44 +93,17 @@ export default function AdminDashboard({ navigate }: AdminDashboardProps) {
 
   if (loading) {
     return (
-      <div className="p-8 max-w-5xl mx-auto">
-        <div className="animate-pulse space-y-4">
-          <div
-            className="h-8 w-48"
-            style={{ backgroundColor: 'var(--color-border)', opacity: 0.5 }}
-          />
-          <div className="grid grid-cols-1 md:grid-cols-[1fr_300px] gap-6">
+      <div className="p-10 max-w-5xl mx-auto">
+        <div className="space-y-6">
+          <div className="admin-skeleton" style={{ height: '32px', width: '180px' }} />
+          <div className="grid grid-cols-1 md:grid-cols-[1fr_300px] gap-8">
             <div className="space-y-6">
-              <div
-                className="h-40"
-                style={{
-                  backgroundColor: 'var(--color-border)',
-                  opacity: 0.3,
-                }}
-              />
-              <div
-                className="h-56"
-                style={{
-                  backgroundColor: 'var(--color-border)',
-                  opacity: 0.3,
-                }}
-              />
+              <div className="admin-skeleton" style={{ height: '160px' }} />
+              <div className="admin-skeleton" style={{ height: '280px' }} />
             </div>
             <div className="space-y-6">
-              <div
-                className="h-36"
-                style={{
-                  backgroundColor: 'var(--color-border)',
-                  opacity: 0.3,
-                }}
-              />
-              <div
-                className="h-36"
-                style={{
-                  backgroundColor: 'var(--color-border)',
-                  opacity: 0.3,
-                }}
-              />
+              <div className="admin-skeleton" style={{ height: '140px' }} />
+              <div className="admin-skeleton" style={{ height: '160px' }} />
             </div>
           </div>
         </div>
@@ -189,41 +161,30 @@ export default function AdminDashboard({ navigate }: AdminDashboardProps) {
   ];
 
   return (
-    <div className="p-8 max-w-5xl mx-auto">
+    <div className="p-10 max-w-5xl mx-auto">
       {/* Header */}
-      <div className="flex items-start justify-between mb-8">
+      <div className="flex items-start justify-between mb-10">
         <div>
-          <p
-            className="text-xs uppercase mb-1"
-            style={{
-              letterSpacing: '0.06em',
-              color: 'var(--color-text-muted)',
-              fontWeight: 600,
-            }}
-          >
+          <p className="admin-label" style={{ marginBottom: '4px' }}>
             {getGreeting()}
           </p>
-          <h1 style={pageTitle}>Dashboard</h1>
+          <h1 className="admin-page-title">Dashboard</h1>
         </div>
-        <button onClick={() => navigate('/admin/posts/new')} style={btnPrimary}>
+        <button
+          className="admin-btn-primary"
+          onClick={() => navigate('/admin/posts/new')}
+        >
           <Plus size={16} />
           New Post
         </button>
       </div>
 
       {/* 2-Column Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-[1fr_300px] gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-[1fr_300px] gap-8">
         {/* LEFT COLUMN */}
-        <div className="space-y-6 min-w-0">
+        <div className="space-y-8 min-w-0">
           {/* Overview Card */}
-          <div
-            style={{
-              backgroundColor: 'var(--color-surface)',
-              border: '1px solid var(--color-border)',
-              borderTop: '2px solid var(--color-accent)',
-              padding: '24px',
-            }}
-          >
+          <div className="admin-card-accent">
             <div className="flex justify-between">
               {[
                 {
@@ -243,60 +204,28 @@ export default function AdminDashboard({ navigate }: AdminDashboardProps) {
                 },
               ].map((item) => (
                 <div key={item.label} className="text-center flex-1">
-                  <p
-                    style={{
-                      fontFamily: 'var(--font-sans)',
-                      fontSize: '36px',
-                      fontWeight: 600,
-                      lineHeight: 1,
-                      color: item.color,
-                    }}
-                  >
+                  <p className="admin-stat-value" style={{ color: item.color }}>
                     {item.value}
                   </p>
-                  <p
-                    className="mt-2"
-                    style={{
-                      fontSize: '11px',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.06em',
-                      color: 'var(--color-text-muted)',
-                      fontWeight: 600,
-                    }}
-                  >
-                    {item.label}
-                  </p>
+                  <p className="admin-stat-label">{item.label}</p>
                 </div>
               ))}
             </div>
 
-            <div
-              className="my-4"
-              style={{
-                height: '1px',
-                backgroundColor: 'var(--color-border)',
-              }}
-            />
+            <hr className="admin-divider" style={{ margin: '20px 0' }} />
 
             <div
               className="flex items-center gap-6"
-              style={{
-                fontSize: '13px',
-                color: 'var(--color-text-secondary)',
-              }}
+              style={{ fontSize: '13px', color: 'var(--color-text-secondary)' }}
             >
               <span className="flex items-center gap-1.5">
                 <Star size={14} />
-                <span style={{ fontFamily: 'var(--font-mono)' }}>
-                  {stats.featuredPosts}
-                </span>{' '}
+                <span className="admin-mono">{stats.featuredPosts}</span>{' '}
                 featured
               </span>
               <span className="flex items-center gap-1.5">
                 <Puzzle size={14} />
-                <span style={{ fontFamily: 'var(--font-mono)' }}>
-                  {stats.totalQuizzes}
-                </span>{' '}
+                <span className="admin-mono">{stats.totalQuizzes}</span>{' '}
                 quizzes{' '}
                 <span style={{ color: 'var(--color-text-muted)' }}>
                   &middot; {stats.publishedQuizzes} published
@@ -307,65 +236,30 @@ export default function AdminDashboard({ navigate }: AdminDashboardProps) {
 
           {/* Recent Activity */}
           <div>
-            <div className="mb-4">
-              <h2 style={sectionTitle}>Recent Activity</h2>
-              <div
-                className="mt-1"
-                style={{
-                  width: '48px',
-                  height: '2px',
-                  backgroundColor: 'var(--color-accent)',
-                }}
-              />
+            <div className="mb-5">
+              <h2 className="admin-section-title">Recent Activity</h2>
             </div>
 
             {recentPosts.length === 0 ? (
-              <div className="py-8 text-center">
-                <p
-                  className="text-sm"
-                  style={{ color: 'var(--color-text-muted)' }}
-                >
+              <div className="py-10 text-center">
+                <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
                   No posts yet. Create your first post to get started.
                 </p>
               </div>
             ) : (
               <>
                 <div>
-                  {recentPosts.map((post, i) => (
+                  {recentPosts.map((post) => (
                     <button
                       key={post.id}
                       onClick={() => navigate(`/admin/posts/${post.id}`)}
-                      className="w-full flex items-center justify-between text-left"
-                      style={{
-                        padding: '12px 8px',
-                        borderBottom:
-                          i < recentPosts.length - 1
-                            ? '1px solid var(--color-border)'
-                            : 'none',
-                        background: 'transparent',
-                        cursor: 'pointer',
-                        transition: 'background-color 150ms ease',
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor =
-                          'var(--color-surface-elevated)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = 'transparent';
-                      }}
+                      className="admin-row-bordered"
+                      style={{ justifyContent: 'space-between' }}
                     >
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2.5">
                           <span
-                            className="shrink-0"
-                            style={{
-                              width: '8px',
-                              height: '8px',
-                              borderRadius: '50%',
-                              backgroundColor: post.draft
-                                ? 'var(--color-warning)'
-                                : 'var(--color-accent)',
-                            }}
+                            className={`admin-dot ${post.draft ? 'admin-dot-draft' : 'admin-dot-live'}`}
                           />
                           <span
                             className="truncate"
@@ -379,25 +273,18 @@ export default function AdminDashboard({ navigate }: AdminDashboardProps) {
                           </span>
                         </div>
                         <p
-                          className="ml-[18px] mt-0.5"
+                          className="mt-0.5"
                           style={{
                             fontSize: '12px',
                             color: 'var(--color-text-muted)',
+                            marginLeft: '18px',
                           }}
                         >
                           {timeAgo(post.updated_at)}
                         </p>
                       </div>
                       <span
-                        style={{
-                          fontSize: '11px',
-                          textTransform: 'uppercase',
-                          letterSpacing: '0.06em',
-                          fontWeight: 600,
-                          color: post.draft
-                            ? 'var(--color-warning)'
-                            : 'var(--color-success)',
-                        }}
+                        className={`admin-status ${post.draft ? 'admin-status-draft' : 'admin-status-live'}`}
                       >
                         {post.draft ? 'Draft' : 'Published'}
                       </span>
@@ -406,16 +293,7 @@ export default function AdminDashboard({ navigate }: AdminDashboardProps) {
                 </div>
                 <button
                   onClick={() => navigate('/admin/posts')}
-                  className="flex items-center gap-1 mt-3"
-                  style={{
-                    fontSize: '13px',
-                    color: 'var(--color-accent)',
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    fontWeight: 500,
-                    padding: 0,
-                  }}
+                  className="admin-link mt-4"
                 >
                   View all posts
                   <ChevronRight size={14} />
@@ -428,46 +306,15 @@ export default function AdminDashboard({ navigate }: AdminDashboardProps) {
         {/* RIGHT COLUMN */}
         <div className="space-y-6">
           {/* Quick Actions Card */}
-          <div
-            style={{
-              backgroundColor: 'var(--color-surface)',
-              border: '1px solid var(--color-border)',
-              padding: '16px',
-            }}
-          >
-            <p style={{ ...labelBase, marginBottom: '12px' }}>Quick Actions</p>
-            {quickActions.map((action, i) => (
+          <div className="admin-card" style={{ padding: '20px' }}>
+            <p className="admin-label" style={{ marginBottom: '14px' }}>
+              Quick Actions
+            </p>
+            {quickActions.map((action) => (
               <button
                 key={action.label}
                 onClick={action.action}
-                className="w-full flex items-center justify-between"
-                style={{
-                  fontSize: '13px',
-                  color: 'var(--color-text-secondary)',
-                  padding: '10px 0',
-                  borderBottom:
-                    i < quickActions.length - 1
-                      ? '1px solid var(--color-border)'
-                      : 'none',
-                  background: 'none',
-                  border: 'none',
-                  borderBottomWidth:
-                    i < quickActions.length - 1 ? '1px' : undefined,
-                  borderBottomStyle:
-                    i < quickActions.length - 1 ? 'solid' : undefined,
-                  borderBottomColor:
-                    i < quickActions.length - 1
-                      ? 'var(--color-border)'
-                      : undefined,
-                  cursor: 'pointer',
-                  transition: 'color 150ms ease',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = 'var(--color-accent)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = 'var(--color-text-secondary)';
-                }}
+                className="admin-action-row"
               >
                 <span>{action.label}</span>
                 <action.icon size={14} />
@@ -476,15 +323,11 @@ export default function AdminDashboard({ navigate }: AdminDashboardProps) {
           </div>
 
           {/* Content Breakdown Card */}
-          <div
-            style={{
-              backgroundColor: 'var(--color-surface)',
-              border: '1px solid var(--color-border)',
-              padding: '16px',
-            }}
-          >
-            <p style={{ ...labelBase, marginBottom: '12px' }}>Content</p>
-            <div className="space-y-2.5">
+          <div className="admin-card" style={{ padding: '20px' }}>
+            <p className="admin-label" style={{ marginBottom: '14px' }}>
+              Content
+            </p>
+            <div className="space-y-3">
               {breakdownItems.map((item) => (
                 <div
                   key={item.label}
@@ -518,9 +361,8 @@ export default function AdminDashboard({ navigate }: AdminDashboardProps) {
                     />
                   </div>
                   <span
-                    className="shrink-0"
+                    className="shrink-0 admin-mono"
                     style={{
-                      fontFamily: 'var(--font-mono)',
                       color: 'var(--color-text-secondary)',
                       width: '20px',
                       textAlign: 'right',

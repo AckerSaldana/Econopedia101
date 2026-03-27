@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { inputBase, labelBase, btnPrimary } from './adminStyles';
 
 interface AdminLoginPageProps {
   signInWithGoogle: () => void;
@@ -26,100 +25,76 @@ export default function AdminLoginPage({ signInWithGoogle, signInWithEmail }: Ad
       className="min-h-screen flex items-center justify-center p-4"
       style={{ backgroundColor: 'var(--color-background)' }}
     >
-      <div
-        className="w-full max-w-[400px] p-10"
-        style={{
-          borderTop: '2px solid var(--color-accent)',
-          border: '1px solid var(--color-border)',
-          borderTopWidth: '2px',
-          borderTopColor: 'var(--color-accent)',
-          backgroundColor: 'var(--color-surface)',
-        }}
-      >
+      <div className="admin-card-accent" style={{ width: '100%', maxWidth: '420px', padding: '40px' }}>
+        {/* Branding */}
         <p
-          className="text-[15px] font-semibold uppercase mb-1"
           style={{
             fontFamily: 'var(--font-sans)',
+            fontSize: '15px',
+            fontWeight: 600,
+            textTransform: 'uppercase',
             letterSpacing: '0.08em',
             color: 'var(--color-accent)',
+            marginBottom: '4px',
           }}
         >
           Econopedia 101
         </p>
-        <h1
-          className="mb-1"
-          style={{
-            fontFamily: 'var(--font-sans)',
-            fontSize: '28px',
-            fontWeight: 600,
-            letterSpacing: '-0.01em',
-            color: 'var(--color-text-primary)',
-          }}
-        >
+        <h1 className="admin-page-title" style={{ marginBottom: '4px' }}>
           Admin Login
         </h1>
-        <p className="text-sm mb-8" style={{ color: 'var(--color-text-muted)' }}>
+        <p
+          className="text-sm"
+          style={{ color: 'var(--color-text-muted)', marginBottom: '32px' }}
+        >
           Sign in to manage Econopedia 101
         </p>
 
-        <button
-          onClick={signInWithGoogle}
-          className="w-full px-4 py-2.5 text-sm font-semibold mb-6"
-          style={{
-            border: '1px solid var(--color-border)',
-            color: 'var(--color-text-primary)',
-            backgroundColor: 'var(--color-background)',
-            cursor: 'pointer',
-            transition: 'border-color 150ms ease',
-          }}
-          onMouseEnter={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--color-accent)';
-          }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--color-border)';
-          }}
-        >
+        {/* Google OAuth */}
+        <button onClick={signInWithGoogle} className="admin-btn-oauth" style={{ marginBottom: '24px' }}>
           Continue with Google
         </button>
 
-        <div className="flex items-center gap-3 mb-6">
-          <hr className="flex-1" style={{ borderColor: 'var(--color-border)' }} />
-          <span className="text-xs uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
+        {/* Divider */}
+        <div className="flex items-center gap-3" style={{ marginBottom: '24px' }}>
+          <hr className="admin-divider" style={{ flex: 1 }} />
+          <span
+            style={{
+              fontSize: '11px',
+              textTransform: 'uppercase',
+              letterSpacing: '0.08em',
+              color: 'var(--color-text-muted)',
+            }}
+          >
             or
           </span>
-          <hr className="flex-1" style={{ borderColor: 'var(--color-border)' }} />
+          <hr className="admin-divider" style={{ flex: 1 }} />
         </div>
 
+        {/* Email / Password Form */}
         <form onSubmit={handleEmailLogin}>
-          <label style={labelBase}>Email</label>
+          <label className="admin-label">Email</label>
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="mb-4"
-            style={inputBase}
+            className="admin-input"
+            style={{ marginBottom: '16px' }}
             required
           />
 
-          <label style={labelBase}>Password</label>
+          <label className="admin-label">Password</label>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="mb-4"
-            style={inputBase}
+            className="admin-input"
+            style={{ marginBottom: '16px' }}
             required
           />
 
           {error && (
-            <div
-              className="mb-4 px-3 py-2.5 text-xs"
-              style={{
-                borderLeft: '3px solid var(--color-error)',
-                backgroundColor: 'rgba(220, 38, 38, 0.06)',
-                color: 'var(--color-error)',
-              }}
-            >
+            <div className="admin-alert-error" style={{ marginBottom: '16px' }}>
               {error}
             </div>
           )}
@@ -127,8 +102,8 @@ export default function AdminLoginPage({ signInWithGoogle, signInWithEmail }: Ad
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 disabled:opacity-50"
-            style={btnPrimary}
+            className="admin-btn-primary"
+            style={{ width: '100%', justifyContent: 'center', padding: '12px 20px' }}
           >
             {loading ? 'Signing in...' : 'Sign In'}
           </button>

@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { ChevronDown, ChevronRight, Upload, X } from 'lucide-react';
 import { supabase } from '../../../lib/supabase';
-import { inputBase, labelBase, sectionBase, CATEGORY_COLORS } from '../adminStyles';
+import { CATEGORY_COLORS } from '../adminStyles';
 import {
   validateFile,
   convertToWebP,
@@ -226,49 +226,43 @@ export default function MetadataSidebar(props: MetadataSidebarProps) {
     setTags(tags.filter((t) => t !== tag));
   };
 
+  const isProcessing = coverStage === 'validating' || coverStage === 'converting' || coverStage === 'uploading';
+
   return (
-    <aside
-      style={{
-        width: '320px',
-        flexShrink: 0,
-        borderLeft: '1px solid var(--color-border)',
-        background: 'var(--color-background)',
-        overflowY: 'auto',
-        height: '100%',
-      }}
-    >
+    <aside style={{
+      width: '320px',
+      flexShrink: 0,
+      borderLeft: '1px solid var(--color-border)',
+      background: 'var(--color-background)',
+      overflowY: 'auto',
+      height: '100%',
+    }}>
       <div style={{ padding: '24px 20px' }}>
-        <h2
-          style={{
-            fontFamily: 'var(--font-sans)',
-            fontSize: '16px',
-            fontWeight: 600,
-            color: 'var(--color-text-primary)',
-            margin: '0 0 16px',
-            paddingBottom: '12px',
-            borderBottom: '2px solid var(--color-accent)',
-          }}
-        >
-          Post Metadata
-        </h2>
+        <h2 style={{
+          fontFamily: 'var(--font-sans)',
+          fontSize: '16px',
+          fontWeight: 600,
+          color: 'var(--color-text-primary)',
+          margin: '0 0 16px',
+          paddingBottom: '12px',
+          borderBottom: '2px solid var(--color-accent)',
+        }}>Post Metadata</h2>
 
         {/* Title */}
-        <div style={sectionBase}>
-          <label style={labelBase}>Title</label>
+        <div className="admin-sidebar-section">
+          <label className="admin-label">Title</label>
           <input
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Post title..."
-            style={inputBase}
-            onFocus={(e) => { (e.target as HTMLInputElement).style.borderColor = 'var(--color-accent)'; }}
-            onBlur={(e) => { (e.target as HTMLInputElement).style.borderColor = 'var(--color-border)'; }}
+            className="admin-input"
           />
         </div>
 
         {/* Slug */}
-        <div style={sectionBase}>
-          <label style={labelBase}>Slug</label>
+        <div className="admin-sidebar-section">
+          <label className="admin-label">Slug</label>
           <input
             type="text"
             value={slug}
@@ -278,15 +272,7 @@ export default function MetadataSidebar(props: MetadataSidebarProps) {
             }}
             onBlur={() => validateSlug(slug)}
             placeholder="post-slug"
-            style={{
-              ...inputBase,
-              fontFamily: 'var(--font-mono)',
-              fontSize: '13px',
-              borderColor: slugError ? 'var(--color-error)' : 'var(--color-border)',
-            }}
-            onFocus={(e) => {
-              if (!slugError) (e.target as HTMLInputElement).style.borderColor = 'var(--color-accent)';
-            }}
+            className={`admin-input admin-input--mono${slugError ? ' admin-input--error' : ''}`}
           />
           {slugError && (
             <p style={{ margin: '4px 0 0', fontSize: '12px', color: 'var(--color-error)' }}>
@@ -296,18 +282,16 @@ export default function MetadataSidebar(props: MetadataSidebarProps) {
         </div>
 
         {/* Description */}
-        <div style={sectionBase}>
+        <div className="admin-sidebar-section">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-            <label style={labelBase}>Description</label>
-            <span
-              style={{
-                fontSize: '11px',
-                fontFamily: 'var(--font-mono)',
-                color: description.length > 160 ? 'var(--color-error)' : 'var(--color-text-muted)',
-                padding: description.length > 160 ? '1px 6px' : undefined,
-                backgroundColor: description.length > 160 ? 'rgba(220, 38, 38, 0.08)' : undefined,
-              }}
-            >
+            <label className="admin-label">Description</label>
+            <span style={{
+              fontSize: '11px',
+              fontFamily: 'var(--font-mono)',
+              color: description.length > 160 ? 'var(--color-error)' : 'var(--color-text-muted)',
+              padding: description.length > 160 ? '1px 6px' : undefined,
+              backgroundColor: description.length > 160 ? 'rgba(220, 38, 38, 0.08)' : undefined,
+            }}>
               {description.length}/160
             </span>
           </div>
@@ -316,15 +300,14 @@ export default function MetadataSidebar(props: MetadataSidebarProps) {
             onChange={(e) => setDescription(e.target.value)}
             placeholder="A brief description for SEO..."
             rows={3}
-            style={{ ...inputBase, resize: 'vertical' as const }}
-            onFocus={(e) => { (e.target as HTMLTextAreaElement).style.borderColor = 'var(--color-accent)'; }}
-            onBlur={(e) => { (e.target as HTMLTextAreaElement).style.borderColor = 'var(--color-border)'; }}
+            className="admin-input"
+            style={{ resize: 'vertical' }}
           />
         </div>
 
         {/* Categories */}
-        <div style={{ ...sectionBase, marginBottom: '8px' }}>
-          <label style={{ ...labelBase, marginBottom: '10px' }}>Categories</label>
+        <div className="admin-sidebar-section" style={{ paddingBottom: '8px' }}>
+          <label className="admin-label" style={{ marginBottom: '10px' }}>Categories</label>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
             {CATEGORIES.map((cat) => {
               const selected = categories.includes(cat.value);
@@ -333,21 +316,10 @@ export default function MetadataSidebar(props: MetadataSidebarProps) {
                 <button
                   key={cat.value}
                   type="button"
+                  className={`admin-category-btn${selected ? ' selected' : ''}`}
                   onClick={() => toggleCategory(cat.value)}
                   style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    padding: '8px 12px',
-                    border: 'none',
-                    borderLeft: `3px solid ${selected ? catColor : 'transparent'}`,
-                    backgroundColor: selected ? 'var(--color-surface-elevated)' : 'transparent',
-                    color: selected ? 'var(--color-text-primary)' : 'var(--color-text-secondary)',
-                    cursor: 'pointer',
-                    fontSize: '13px',
-                    fontWeight: selected ? 500 : 400,
-                    textAlign: 'left' as const,
-                    transition: 'all 150ms ease',
+                    borderLeftColor: selected ? catColor : 'transparent',
                   }}
                 >
                   {cat.label}
@@ -358,38 +330,17 @@ export default function MetadataSidebar(props: MetadataSidebarProps) {
         </div>
 
         {/* Tags */}
-        <div style={sectionBase}>
-          <label style={labelBase}>Tags</label>
+        <div className="admin-sidebar-section">
+          <label className="admin-label">Tags</label>
           {tags.length > 0 && (
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '8px' }}>
               {tags.map((tag) => (
-                <span
-                  key={tag}
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '4px',
-                    padding: '3px 8px',
-                    border: '1px solid var(--color-border)',
-                    fontSize: '11px',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.04em',
-                    color: 'var(--color-text-secondary)',
-                    fontWeight: 500,
-                  }}
-                >
+                <span key={tag} className="admin-tag">
                   {tag}
                   <button
                     type="button"
+                    className="admin-tag-remove"
                     onClick={() => removeTag(tag)}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      padding: 0,
-                      cursor: 'pointer',
-                      color: 'var(--color-text-muted)',
-                      display: 'flex',
-                    }}
                   >
                     <X size={10} />
                   </button>
@@ -403,27 +354,18 @@ export default function MetadataSidebar(props: MetadataSidebarProps) {
             onChange={(e) => setTagInput(e.target.value)}
             onKeyDown={handleTagKeyDown}
             placeholder="Type and press Enter..."
-            style={{ ...inputBase, fontSize: '13px' }}
-            onFocus={(e) => { (e.target as HTMLInputElement).style.borderColor = 'var(--color-accent)'; }}
-            onBlur={(e) => { (e.target as HTMLInputElement).style.borderColor = 'var(--color-border)'; }}
+            className="admin-input"
+            style={{ fontSize: '13px' }}
           />
         </div>
 
         {/* Cover Image */}
-        <div style={sectionBase}>
-          <label style={labelBase}>Cover Image</label>
+        <div className="admin-sidebar-section">
+          <label className="admin-label">Cover Image</label>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {coverUrl ? (
               <div>
-                <div
-                  style={{
-                    borderTop: '2px solid var(--color-accent)',
-                    border: '1px solid var(--color-border)',
-                    borderTopWidth: '2px',
-                    borderTopColor: 'var(--color-accent)',
-                    overflow: 'hidden',
-                  }}
-                >
+                <div className="admin-card-accent" style={{ overflow: 'hidden' }}>
                   <img
                     src={coverUrl}
                     alt={coverAlt || 'Cover preview'}
@@ -431,22 +373,18 @@ export default function MetadataSidebar(props: MetadataSidebarProps) {
                   />
                 </div>
                 {coverMetrics && (
-                  <div
-                    style={{
-                      marginTop: '4px',
-                      fontSize: '11px',
-                      color: 'var(--color-text-muted)',
-                      display: 'flex',
-                      gap: '6px',
-                      flexWrap: 'wrap',
-                    }}
-                  >
+                  <div style={{
+                    marginTop: '4px',
+                    fontSize: '11px',
+                    color: 'var(--color-text-muted)',
+                    display: 'flex',
+                    gap: '6px',
+                    flexWrap: 'wrap',
+                  }}>
                     <span>{coverMetrics.width} x {coverMetrics.height}</span>
-                    <span
-                      style={{
-                        color: coverMetrics.savings > 0 ? 'var(--color-success)' : 'var(--color-text-muted)',
-                      }}
-                    >
+                    <span style={{
+                      color: coverMetrics.savings > 0 ? 'var(--color-success)' : 'var(--color-text-muted)',
+                    }}>
                       {coverMetrics.format.toUpperCase()} {formatFileSize(coverMetrics.convertedSize)}
                       {coverMetrics.savings > 0 && ` (saved ${coverMetrics.savings}%)`}
                     </span>
@@ -455,33 +393,20 @@ export default function MetadataSidebar(props: MetadataSidebarProps) {
                 <div style={{ display: 'flex', gap: '12px', marginTop: '6px' }}>
                   <button
                     type="button"
+                    className="admin-link-btn"
                     onClick={() => fileInputRef.current?.click()}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      padding: 0,
-                      cursor: 'pointer',
-                      fontSize: '12px',
-                      fontWeight: 500,
-                      color: 'var(--color-accent)',
-                    }}
+                    style={{ color: 'var(--color-accent)' }}
                   >
                     Replace
                   </button>
                   <button
                     type="button"
+                    className="admin-link-btn"
                     onClick={() => {
                       setCoverUrl('');
                       setCoverMetrics(null);
                     }}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      padding: 0,
-                      cursor: 'pointer',
-                      fontSize: '12px',
-                      color: 'var(--color-error)',
-                    }}
+                    style={{ color: 'var(--color-error)' }}
                   >
                     Remove
                   </button>
@@ -490,8 +415,8 @@ export default function MetadataSidebar(props: MetadataSidebarProps) {
             ) : (
               <button
                 type="button"
+                className={`admin-upload-zone${coverDragging ? ' dragging' : ''}${isProcessing ? ' processing' : ''}`}
                 onClick={() => {
-                  const isProcessing = coverStage === 'validating' || coverStage === 'converting' || coverStage === 'uploading';
                   if (!isProcessing) fileInputRef.current?.click();
                 }}
                 onDragOver={(e) => { e.preventDefault(); setCoverDragging(true); }}
@@ -501,22 +426,6 @@ export default function MetadataSidebar(props: MetadataSidebarProps) {
                   setCoverDragging(false);
                   const file = e.dataTransfer.files?.[0];
                   if (file) processCoverFile(file);
-                }}
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '4px',
-                  padding: '16px 12px',
-                  border: `1px dashed ${coverDragging ? 'var(--color-accent)' : 'var(--color-accent-muted)'}`,
-                  borderWidth: coverDragging ? '2px' : '1px',
-                  backgroundColor: coverDragging ? 'var(--color-accent-light)' : 'var(--color-background)',
-                  color: 'var(--color-text-muted)',
-                  cursor: (coverStage === 'validating' || coverStage === 'converting' || coverStage === 'uploading') ? 'default' : 'pointer',
-                  fontSize: '12px',
-                  transition: 'border-color 150ms ease, background-color 150ms ease',
-                  width: '100%',
                 }}
               >
                 {coverStage === 'validating' ? (
@@ -552,56 +461,38 @@ export default function MetadataSidebar(props: MetadataSidebarProps) {
         </div>
 
         {/* Cover Alt */}
-        <div style={sectionBase}>
-          <label style={labelBase}>Cover Alt Text</label>
+        <div className="admin-sidebar-section">
+          <label className="admin-label">Cover Alt Text</label>
           <input
             type="text"
             value={coverAlt}
             onChange={(e) => setCoverAlt(e.target.value)}
             placeholder="Describe the cover image..."
-            style={inputBase}
-            onFocus={(e) => { (e.target as HTMLInputElement).style.borderColor = 'var(--color-accent)'; }}
-            onBlur={(e) => { (e.target as HTMLInputElement).style.borderColor = 'var(--color-border)'; }}
+            className="admin-input"
           />
         </div>
 
         {/* Published At */}
-        <div style={sectionBase}>
-          <label style={labelBase}>Published At</label>
+        <div className="admin-sidebar-section">
+          <label className="admin-label">Published At</label>
           <input
             type="datetime-local"
             value={publishedAt}
             onChange={(e) => setPublishedAt(e.target.value)}
-            style={{
-              ...inputBase,
-              fontFamily: 'var(--font-mono)',
-              fontSize: '13px',
-            }}
-            onFocus={(e) => { (e.target as HTMLInputElement).style.borderColor = 'var(--color-accent)'; }}
-            onBlur={(e) => { (e.target as HTMLInputElement).style.borderColor = 'var(--color-border)'; }}
+            className="admin-input admin-input--mono"
           />
         </div>
 
         {/* Flags */}
-        <div style={sectionBase}>
-          <label style={labelBase}>Flags</label>
+        <div className="admin-sidebar-section">
+          <label className="admin-label">Flags</label>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             {[
               { label: 'Featured', checked: featured, onChange: setFeatured },
               { label: 'Draft', checked: draft, onChange: setDraft },
               { label: 'Affiliate Disclosure', checked: affiliateDisclosure, onChange: setAffiliateDisclosure },
             ].map((flag) => (
-              <label
-                key={flag.label}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  fontSize: '13px',
-                  color: 'var(--color-text-primary)',
-                  cursor: 'pointer',
-                }}
-              >
+              <label key={flag.label} className="admin-checkbox-label">
                 <input
                   type="checkbox"
                   checked={flag.checked}
@@ -615,30 +506,23 @@ export default function MetadataSidebar(props: MetadataSidebarProps) {
         </div>
 
         {/* Author */}
-        <div style={sectionBase}>
-          <label style={labelBase}>Author Name</label>
+        <div className="admin-sidebar-section">
+          <label className="admin-label">Author Name</label>
           <input
             type="text"
             value={authorName}
             onChange={(e) => setAuthorName(e.target.value)}
             placeholder="Author name..."
-            style={{ ...inputBase, marginBottom: '12px' }}
-            onFocus={(e) => { (e.target as HTMLInputElement).style.borderColor = 'var(--color-accent)'; }}
-            onBlur={(e) => { (e.target as HTMLInputElement).style.borderColor = 'var(--color-border)'; }}
+            className="admin-input"
+            style={{ marginBottom: '12px' }}
           />
-          <label style={labelBase}>Author Slug</label>
+          <label className="admin-label">Author Slug</label>
           <input
             type="text"
             value={authorSlug}
             onChange={(e) => setAuthorSlug(e.target.value)}
             placeholder="author-slug"
-            style={{
-              ...inputBase,
-              fontFamily: 'var(--font-mono)',
-              fontSize: '13px',
-            }}
-            onFocus={(e) => { (e.target as HTMLInputElement).style.borderColor = 'var(--color-accent)'; }}
-            onBlur={(e) => { (e.target as HTMLInputElement).style.borderColor = 'var(--color-border)'; }}
+            className="admin-input admin-input--mono"
           />
         </div>
 
@@ -646,6 +530,7 @@ export default function MetadataSidebar(props: MetadataSidebarProps) {
         <div style={{ padding: '20px 0' }}>
           <button
             type="button"
+            className="admin-label"
             onClick={() => {
               const next = !leadMagnetOpen;
               setLeadMagnetOpen(next);
@@ -661,7 +546,6 @@ export default function MetadataSidebar(props: MetadataSidebarProps) {
               border: 'none',
               padding: 0,
               cursor: 'pointer',
-              ...labelBase,
               marginBottom: 0,
             }}
           >
@@ -670,50 +554,46 @@ export default function MetadataSidebar(props: MetadataSidebarProps) {
           </button>
 
           {leadMagnetOpen && leadMagnet && (
-            <div
-              style={{
-                marginTop: '12px',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '12px',
-              }}
-            >
+            <div style={{
+              marginTop: '12px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '12px',
+            }}>
               <div>
-                <label style={labelBase}>Lead Magnet Title</label>
+                <label className="admin-label">Lead Magnet Title</label>
                 <input
                   type="text"
                   value={leadMagnet.title}
                   onChange={(e) => setLeadMagnet({ ...leadMagnet, title: e.target.value })}
                   placeholder="Free download title..."
-                  style={inputBase}
+                  className="admin-input"
                 />
               </div>
               <div>
-                <label style={labelBase}>Lead Magnet Description</label>
+                <label className="admin-label">Lead Magnet Description</label>
                 <textarea
                   value={leadMagnet.description}
                   onChange={(e) => setLeadMagnet({ ...leadMagnet, description: e.target.value })}
                   placeholder="Short description..."
                   rows={2}
-                  style={{ ...inputBase, resize: 'vertical' as const }}
+                  className="admin-input"
+                  style={{ resize: 'vertical' }}
                 />
               </div>
               <div>
-                <label style={labelBase}>Lead Magnet File URL</label>
+                <label className="admin-label">Lead Magnet File URL</label>
                 <input
                   type="text"
                   value={leadMagnet.file}
                   onChange={(e) => setLeadMagnet({ ...leadMagnet, file: e.target.value })}
                   placeholder="https://..."
-                  style={{
-                    ...inputBase,
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: '13px',
-                  }}
+                  className="admin-input admin-input--mono"
                 />
               </div>
               <button
                 type="button"
+                className="admin-btn-secondary"
                 onClick={() => {
                   setLeadMagnet(null);
                   setLeadMagnetOpen(false);
@@ -721,12 +601,8 @@ export default function MetadataSidebar(props: MetadataSidebarProps) {
                 style={{
                   alignSelf: 'flex-start',
                   padding: '6px 12px',
-                  border: '1px solid var(--color-border)',
-                  background: 'var(--color-surface)',
-                  color: 'var(--color-error)',
-                  cursor: 'pointer',
                   fontSize: '12px',
-                  transition: 'border-color 150ms ease',
+                  color: 'var(--color-error)',
                 }}
               >
                 Remove Lead Magnet

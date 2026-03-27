@@ -115,7 +115,7 @@
   line-height: 1.7;
   background-color: var(--color-surface-elevated);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
+  border-radius: 0;
   padding: 1.25em 1.5em;
   margin-top: 1.5em;
   margin-bottom: 1.5em;
@@ -133,7 +133,7 @@
 
 /* Images */
 .prose img {
-  border-radius: var(--radius-lg);
+  border-radius: 0;
   width: 100%;
   height: auto;
   margin-top: 1.5em;

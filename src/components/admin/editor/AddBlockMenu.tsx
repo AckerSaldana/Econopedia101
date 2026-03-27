@@ -186,30 +186,8 @@ export default function AddBlockMenu({ onAdd, onClose }: AddBlockMenuProps) {
       {!onClose && (
         <button
           type="button"
+          className="admin-add-block-btn"
           onClick={() => setOpen((prev) => !prev)}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-            padding: '8px 16px',
-            border: '1px solid var(--color-border)',
-            background: 'var(--color-surface)',
-            color: 'var(--color-text-secondary)',
-            cursor: 'pointer',
-            fontSize: '13px',
-            fontWeight: 500,
-            letterSpacing: '0.02em',
-            textTransform: 'uppercase' as const,
-            transition: 'border-color 150ms ease, color 150ms ease',
-          }}
-          onMouseEnter={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--color-accent)';
-            (e.currentTarget as HTMLButtonElement).style.color = 'var(--color-accent)';
-          }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--color-border)';
-            (e.currentTarget as HTMLButtonElement).style.color = 'var(--color-text-secondary)';
-          }}
         >
           <Plus size={16} />
           Add Block
@@ -233,31 +211,25 @@ export default function AddBlockMenu({ onAdd, onClose }: AddBlockMenuProps) {
             overflowY: 'auto',
           }}
         >
-          <div
-            style={{
-              padding: '8px 16px',
-              borderBottom: '1px solid var(--color-border)',
-              fontSize: '13px',
-              fontFamily: 'var(--font-sans)',
-              fontWeight: 600,
-              color: 'var(--color-text-primary)',
-            }}
-          >
+          <div style={{
+            padding: '8px 16px',
+            borderBottom: '1px solid var(--color-border)',
+            fontSize: '13px',
+            fontFamily: 'var(--font-sans)',
+            fontWeight: 600,
+            color: 'var(--color-text-primary)',
+          }}>
             Add Block
           </div>
 
           {grouped.map(({ group, items }) => (
             <div key={group}>
-              <div
-                style={{
-                  padding: '8px 16px 4px',
-                  fontSize: '9px',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.08em',
-                  color: 'var(--color-text-muted)',
-                  fontWeight: 600,
-                }}
-              >
+              <div className="admin-label" style={{
+                padding: '8px 16px 4px',
+                marginBottom: 0,
+                fontSize: '9px',
+                letterSpacing: '0.08em',
+              }}>
                 {group}
               </div>
               {items.map((option) => {
@@ -266,31 +238,8 @@ export default function AddBlockMenu({ onAdd, onClose }: AddBlockMenuProps) {
                   <button
                     key={option.type}
                     type="button"
+                    className="admin-menu-item"
                     onClick={() => handleSelect(option)}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '10px',
-                      width: '100%',
-                      padding: '10px 16px',
-                      border: 'none',
-                      background: 'transparent',
-                      color: 'var(--color-text-primary)',
-                      cursor: 'pointer',
-                      fontSize: '13px',
-                      textAlign: 'left',
-                      transition: 'background 100ms ease',
-                    }}
-                    onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLButtonElement).style.background = 'var(--color-accent-light)';
-                      const icon = e.currentTarget.querySelector('svg');
-                      if (icon) icon.style.color = 'var(--color-accent)';
-                    }}
-                    onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
-                      const icon = e.currentTarget.querySelector('svg');
-                      if (icon) icon.style.color = '';
-                    }}
                   >
                     <Icon size={16} />
                     <span>{option.label}</span>

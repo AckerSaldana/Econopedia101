@@ -1,0 +1,26 @@
+---
+interface Props {
+  title: string;
+  href?: string;
+  linkText?: string;
+  variant?: 'primary' | 'secondary' | 'accent';
+  class?: string;
+}
+
+const { title, href, linkText = 'View all', variant = 'primary', class: className } = Astro.props;
+
+const borderClasses: Record<string, string> = {
+  primary: 'border-t-2 border-text-primary',
+  secondary: 'border-t border-accent',
+  accent: 'border-t-2 border-accent',
+};
+---
+
+<div class:list={[borderClasses[variant], 'pt-3 mb-4 flex items-baseline justify-between', className]}>
+  <h2 class="text-xs font-bold uppercase tracking-[0.12em] text-text-primary">{title}</h2>
+  {href && (
+    <a href={href} class="text-[10px] text-text-muted hover:text-accent transition-colors">
+      {linkText} &rarr;
+    </a>
+  )}
+</div>

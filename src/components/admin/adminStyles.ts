@@ -2,7 +2,9 @@ import type { CSSProperties } from 'react';
 
 /* ------------------------------------------------------------------ */
 /*  Shared admin panel style constants                                 */
-/*  All use CSS variables so dark mode works automatically.            */
+/*  New components should use admin.css classes instead of these        */
+/*  CSSProperties objects. Kept for backward compatibility with        */
+/*  files not yet migrated.                                            */
 /* ------------------------------------------------------------------ */
 
 const transition = 'all 150ms ease';
@@ -38,7 +40,7 @@ export const sectionBase: CSSProperties = {
   borderBottom: '1px solid var(--color-border)',
 };
 
-/* --- Buttons --- */
+/* --- Buttons (prefer .admin-btn-* CSS classes in new code) --- */
 
 export const btnPrimary: CSSProperties = {
   display: 'inline-flex',

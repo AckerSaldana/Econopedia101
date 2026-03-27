@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Plus, Pencil, Trash2, Eye } from 'lucide-react';
 import { supabase } from '../../../lib/supabase';
 import type { SupabasePost } from '../../../types/post';
-import { pageTitle, labelBase, btnPrimary, btnSecondary, btnDanger, CATEGORY_COLORS } from '../adminStyles';
+import { CATEGORY_COLORS } from '../adminStyles';
 
 type FilterTab = 'all' | 'draft' | 'published';
 
@@ -51,14 +51,6 @@ export default function PostList({ navigate }: PostListProps) {
   const [deleting, setDeleting] = useState<string | null>(null);
   const [counts, setCounts] = useState({ all: 0, draft: 0, published: 0 });
   const [latestDate, setLatestDate] = useState<string | null>(null);
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768);
-    check();
-    window.addEventListener('resize', check);
-    return () => window.removeEventListener('resize', check);
-  }, []);
 
   const fetchCounts = useCallback(async () => {
     const { count: allCount } = await supabase
@@ -199,32 +191,20 @@ export default function PostList({ navigate }: PostListProps) {
     { key: 'published', label: 'Published', count: counts.published },
   ];
 
-  const thStyle: React.CSSProperties = {
-    fontSize: '11px',
-    textTransform: 'uppercase',
-    letterSpacing: '0.06em',
-    color: 'var(--color-text-muted)',
-    fontWeight: 600,
-    padding: '12px 16px',
-    textAlign: 'left' as const,
-    backgroundColor: 'transparent',
-    borderBottom: '1px solid var(--color-border)',
-  };
-
   const currentCount = filter === 'all' ? counts.all : filter === 'draft' ? counts.draft : counts.published;
   const allLoaded = !hasMore && posts.length > 0;
 
   return (
-    <div className="p-8 max-w-5xl mx-auto">
+    <div style={{ padding: '32px', maxWidth: '960px', margin: '0 auto' }}>
       {/* Header */}
-      <div className="flex items-start justify-between mb-8">
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '32px' }}>
         <div>
-          <span style={{ ...labelBase, marginBottom: '8px' }}>Content Management</span>
-          <h1 style={pageTitle}>Posts</h1>
+          <span className="admin-label" style={{ marginBottom: '8px' }}>Content Management</span>
+          <h1 className="admin-page-title">Posts</h1>
         </div>
         <button
+          className="admin-btn-primary"
           onClick={() => navigate('/admin/posts/new')}
-          style={btnPrimary}
         >
           <Plus size={16} />
           New Post
@@ -232,18 +212,10 @@ export default function PostList({ navigate }: PostListProps) {
       </div>
 
       {/* Summary Bar */}
-      <div
-        style={{
-          backgroundColor: 'var(--color-surface)',
-          border: '1px solid var(--color-border)',
-          borderTop: '2px solid var(--color-accent)',
-          padding: '20px 24px',
-          marginBottom: 0,
-        }}
-      >
-        <div className="flex items-baseline justify-between flex-wrap gap-4">
-          <div className="flex items-baseline gap-8 flex-wrap">
-            <div className="flex items-baseline gap-2">
+      <div className="admin-card-accent" style={{ padding: '20px 24px', marginBottom: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: '32px', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
               <span style={{
                 fontFamily: 'var(--font-sans)',
                 fontSize: '28px',
@@ -253,9 +225,9 @@ export default function PostList({ navigate }: PostListProps) {
               }}>
                 {counts.all}
               </span>
-              <span style={{ ...labelBase, marginBottom: 0 }}>Total</span>
+              <span className="admin-label" style={{ marginBottom: 0 }}>Total</span>
             </div>
-            <div className="flex items-baseline gap-2">
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
               <span style={{
                 fontFamily: 'var(--font-sans)',
                 fontSize: '28px',
@@ -265,9 +237,9 @@ export default function PostList({ navigate }: PostListProps) {
               }}>
                 {counts.published}
               </span>
-              <span style={{ ...labelBase, marginBottom: 0 }}>Published</span>
+              <span className="admin-label" style={{ marginBottom: 0 }}>Published</span>
             </div>
-            <div className="flex items-baseline gap-2">
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
               <span style={{
                 fontFamily: 'var(--font-sans)',
                 fontSize: '28px',
@@ -277,7 +249,7 @@ export default function PostList({ navigate }: PostListProps) {
               }}>
                 {counts.draft}
               </span>
-              <span style={{ ...labelBase, marginBottom: 0 }}>Drafts</span>
+              <span className="admin-label" style={{ marginBottom: 0 }}>Drafts</span>
             </div>
           </div>
           {latestDate && (
@@ -292,49 +264,19 @@ export default function PostList({ navigate }: PostListProps) {
       </div>
 
       {/* Filter Tabs */}
-      <div
-        className="flex gap-0"
-        style={{
-          borderBottom: '1px solid var(--color-border)',
-          backgroundColor: 'var(--color-surface)',
-          borderLeft: '1px solid var(--color-border)',
-          borderRight: '1px solid var(--color-border)',
-        }}
-      >
+      <div className="admin-tabs--bordered">
         {TABS.map((tab) => (
           <button
             key={tab.key}
             onClick={() => setFilter(tab.key)}
-            style={{
-              ...labelBase,
-              marginBottom: 0,
-              padding: '10px 16px',
-              color:
-                filter === tab.key
-                  ? 'var(--color-accent)'
-                  : 'var(--color-text-muted)',
-              backgroundColor: 'transparent',
-              border: 'none',
-              borderBottom:
-                filter === tab.key
-                  ? '2px solid var(--color-accent)'
-                  : '2px solid transparent',
-              marginBlockEnd: '-1px',
-              cursor: 'pointer',
-              transition: 'color 150ms ease',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-            }}
+            className={`admin-tab${filter === tab.key ? ' active' : ''}`}
           >
             {tab.label}
-            <span
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: '11px',
-                opacity: 0.6,
-              }}
-            >
+            <span style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: '11px',
+              opacity: 0.6,
+            }}>
               {tab.count}
             </span>
           </button>
@@ -344,8 +286,9 @@ export default function PostList({ navigate }: PostListProps) {
       {/* Error */}
       {error && (
         <div
-          className="px-4 py-3 mt-4"
           style={{
+            padding: '12px 16px',
+            marginTop: '16px',
             borderLeft: '2px solid var(--color-error)',
             backgroundColor: 'rgba(220, 38, 38, 0.04)',
             color: 'var(--color-error)',
@@ -357,56 +300,25 @@ export default function PostList({ navigate }: PostListProps) {
       )}
 
       {/* Table */}
-      <div className="mt-0" style={{ overflowX: 'auto' }}>
-        <table className="w-full" style={{ borderCollapse: 'collapse', minWidth: '600px' }}>
+      <div>
+        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr>
-              <th style={thStyle}>Title</th>
-              <th style={{ ...thStyle, width: '90px' }}>Status</th>
-              <th style={thStyle}>Categories</th>
-              <th style={{ ...thStyle, width: '140px' }}>Date</th>
-              <th style={{ ...thStyle, width: '100px' }} />
+              <th className="admin-label" style={{ padding: '12px 16px', textAlign: 'left', borderBottom: '1px solid var(--color-border)', marginBottom: 0 }}>Title</th>
+              <th className="admin-label" style={{ padding: '12px 16px', textAlign: 'left', borderBottom: '1px solid var(--color-border)', marginBottom: 0, whiteSpace: 'nowrap' }}>Status</th>
+              <th className="admin-label" style={{ padding: '12px 16px', textAlign: 'left', borderBottom: '1px solid var(--color-border)', marginBottom: 0, whiteSpace: 'nowrap' }}>Categories</th>
+              <th className="admin-label" style={{ padding: '12px 16px', textAlign: 'left', borderBottom: '1px solid var(--color-border)', marginBottom: 0, whiteSpace: 'nowrap' }}>Date</th>
+              <th style={{ padding: '12px 16px', borderBottom: '1px solid var(--color-border)', width: '80px' }} />
             </tr>
           </thead>
           <tbody>
             {posts.map((post) => (
-              <tr
-                key={post.id}
-                style={{ borderBottom: '1px solid var(--color-border-subtle, var(--color-border))' }}
-                onMouseEnter={(e) => {
-                  const row = e.currentTarget;
-                  row.style.backgroundColor = 'var(--color-surface-elevated)';
-                  const actions = row.querySelector('[data-actions]') as HTMLElement | null;
-                  if (actions) actions.style.opacity = '1';
-                }}
-                onMouseLeave={(e) => {
-                  const row = e.currentTarget;
-                  row.style.backgroundColor = 'transparent';
-                  const actions = row.querySelector('[data-actions]') as HTMLElement | null;
-                  if (actions && !isMobile) actions.style.opacity = '0';
-                }}
-              >
+              <tr key={post.id} className="admin-row-bordered">
                 {/* Title */}
                 <td style={{ padding: '14px 16px' }}>
                   <button
+                    className="admin-row-title"
                     onClick={() => navigate(`/admin/posts/${post.id}`)}
-                    style={{
-                      textAlign: 'left',
-                      color: 'var(--color-text-primary)',
-                      background: 'none',
-                      border: 'none',
-                      padding: 0,
-                      cursor: 'pointer',
-                      fontWeight: 500,
-                      fontSize: '14px',
-                      transition: 'color 150ms ease',
-                    }}
-                    onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLButtonElement).style.color = 'var(--color-accent)';
-                    }}
-                    onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLButtonElement).style.color = 'var(--color-text-primary)';
-                    }}
                   >
                     {post.title}
                   </button>
@@ -426,29 +338,9 @@ export default function PostList({ navigate }: PostListProps) {
 
                 {/* Status */}
                 <td style={{ padding: '14px 16px' }}>
-                  <div className="flex items-center gap-2">
-                    <span
-                      style={{
-                        display: 'inline-block',
-                        width: '6px',
-                        height: '6px',
-                        borderRadius: '50%',
-                        backgroundColor: post.draft ? 'var(--color-warning)' : 'var(--color-success)',
-                        flexShrink: 0,
-                      }}
-                    />
-                    <span
-                      style={{
-                        fontSize: '11px',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.06em',
-                        color: 'var(--color-text-secondary)',
-                        fontWeight: 600,
-                      }}
-                    >
-                      {post.draft ? 'Draft' : 'Live'}
-                    </span>
-                  </div>
+                  <span className={post.draft ? 'admin-status-draft' : 'admin-status-live'}>
+                    {post.draft ? 'Draft' : 'Live'}
+                  </span>
                 </td>
 
                 {/* Categories */}
@@ -465,28 +357,24 @@ export default function PostList({ navigate }: PostListProps) {
                       ))}
                     </span>
                   ) : (
-                    <span
-                      style={{
-                        fontSize: '12px',
-                        color: 'var(--color-text-muted)',
-                        fontStyle: 'italic',
-                      }}
-                    >
+                    <span style={{
+                      fontSize: '12px',
+                      color: 'var(--color-text-muted)',
+                      fontStyle: 'italic',
+                    }}>
                       Uncategorised
                     </span>
                   )}
                 </td>
 
                 {/* Date */}
-                <td
-                  style={{
-                    padding: '14px 16px',
-                    fontSize: '12px',
-                    color: 'var(--color-text-muted)',
-                    fontFamily: 'var(--font-mono)',
-                    whiteSpace: 'nowrap',
-                  }}
-                >
+                <td style={{
+                  padding: '14px 16px',
+                  fontSize: '12px',
+                  color: 'var(--color-text-muted)',
+                  fontFamily: 'var(--font-mono)',
+                  whiteSpace: 'nowrap',
+                }}>
                   {post.published_at
                     ? formatDateShort(new Date(post.published_at))
                     : formatDateShort(new Date(post.created_at))}
@@ -495,83 +383,31 @@ export default function PostList({ navigate }: PostListProps) {
                 {/* Actions */}
                 <td style={{ padding: '14px 16px' }}>
                   <div
-                    data-actions
-                    className="flex items-center justify-end gap-1"
-                    style={{
-                      opacity: isMobile ? 1 : 0,
-                      transition: 'opacity 150ms ease',
-                    }}
+                    className="admin-row-actions"
+                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '4px' }}
                   >
                     {!post.draft && (
                       <a
                         href={`/${post.slug}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          width: '28px',
-                          height: '28px',
-                          color: 'var(--color-text-muted)',
-                          transition: 'color 150ms ease',
-                        }}
+                        className="admin-icon-btn"
                         title="View"
-                        onMouseEnter={(e) => {
-                          (e.currentTarget as HTMLAnchorElement).style.color = 'var(--color-accent)';
-                        }}
-                        onMouseLeave={(e) => {
-                          (e.currentTarget as HTMLAnchorElement).style.color = 'var(--color-text-muted)';
-                        }}
                       >
                         <Eye size={14} strokeWidth={1.5} />
                       </a>
                     )}
                     <button
+                      className="admin-icon-btn"
                       onClick={() => navigate(`/admin/posts/${post.id}`)}
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: '28px',
-                        height: '28px',
-                        color: 'var(--color-text-muted)',
-                        background: 'none',
-                        border: 'none',
-                        cursor: 'pointer',
-                        transition: 'color 150ms ease',
-                      }}
                       title="Edit"
-                      onMouseEnter={(e) => {
-                        (e.currentTarget as HTMLButtonElement).style.color = 'var(--color-accent)';
-                      }}
-                      onMouseLeave={(e) => {
-                        (e.currentTarget as HTMLButtonElement).style.color = 'var(--color-text-muted)';
-                      }}
                     >
                       <Pencil size={14} strokeWidth={1.5} />
                     </button>
                     <button
+                      className="admin-icon-btn admin-icon-btn--error"
                       onClick={() => handleDelete(post)}
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: '28px',
-                        height: '28px',
-                        color: 'var(--color-text-muted)',
-                        background: 'none',
-                        border: 'none',
-                        cursor: 'pointer',
-                        transition: 'color 150ms ease',
-                      }}
                       title="Delete"
-                      onMouseEnter={(e) => {
-                        (e.currentTarget as HTMLButtonElement).style.color = 'var(--color-error)';
-                      }}
-                      onMouseLeave={(e) => {
-                        (e.currentTarget as HTMLButtonElement).style.color = 'var(--color-text-muted)';
-                      }}
                     >
                       <Trash2 size={14} strokeWidth={1.5} />
                     </button>
@@ -585,16 +421,14 @@ export default function PostList({ navigate }: PostListProps) {
               <tr>
                 <td
                   colSpan={5}
-                  style={{ padding: '48px 16px', textAlign: 'center' }}
+                  style={{ padding: '64px 16px', textAlign: 'center' }}
                 >
-                  <div
-                    style={{
-                      width: '40px',
-                      height: '1px',
-                      backgroundColor: 'var(--color-border)',
-                      margin: '0 auto 16px',
-                    }}
-                  />
+                  <div style={{
+                    width: '40px',
+                    height: '1px',
+                    backgroundColor: 'var(--color-border)',
+                    margin: '0 auto 20px',
+                  }} />
                   <p style={{
                     fontFamily: 'var(--font-sans)',
                     fontSize: '18px',
@@ -611,7 +445,7 @@ export default function PostList({ navigate }: PostListProps) {
                   <p style={{
                     fontSize: '13px',
                     color: 'var(--color-text-muted)',
-                    marginBottom: filter === 'all' ? '16px' : '0',
+                    marginBottom: filter === 'all' ? '20px' : '0',
                   }}>
                     {filter === 'all'
                       ? 'Create your first post to get started.'
@@ -621,8 +455,8 @@ export default function PostList({ navigate }: PostListProps) {
                   </p>
                   {filter === 'all' && (
                     <button
+                      className="admin-btn-secondary"
                       onClick={() => navigate('/admin/posts/new')}
-                      style={btnSecondary}
                     >
                       Create Post
                     </button>
@@ -637,73 +471,23 @@ export default function PostList({ navigate }: PostListProps) {
               SKELETON_WIDTHS.map((w, i) => (
                 <tr
                   key={`skeleton-${i}`}
-                  style={{ borderBottom: '1px solid var(--color-border-subtle, var(--color-border))' }}
+                  style={{ borderBottom: '1px solid var(--color-border)' }}
                 >
                   <td style={{ padding: '14px 16px' }}>
-                    <div
-                      className="animate-pulse"
-                      style={{
-                        height: '14px',
-                        width: `${w}%`,
-                        backgroundColor: 'var(--color-border)',
-                        opacity: 0.5,
-                      }}
-                    />
-                    <div
-                      className="animate-pulse"
-                      style={{
-                        height: '10px',
-                        width: `${w * 0.6}%`,
-                        backgroundColor: 'var(--color-border)',
-                        opacity: 0.3,
-                        marginTop: '6px',
-                      }}
-                    />
+                    <div className="admin-skeleton" style={{ height: '14px', width: `${w}%`, opacity: 0.5 }} />
+                    <div className="admin-skeleton" style={{ height: '10px', width: `${w * 0.6}%`, opacity: 0.3, marginTop: '6px' }} />
                   </td>
                   <td style={{ padding: '14px 16px' }}>
-                    <div className="flex items-center gap-2">
-                      <div
-                        className="animate-pulse"
-                        style={{
-                          width: '6px',
-                          height: '6px',
-                          borderRadius: '50%',
-                          backgroundColor: 'var(--color-border)',
-                          opacity: 0.5,
-                        }}
-                      />
-                      <div
-                        className="animate-pulse"
-                        style={{
-                          height: '10px',
-                          width: '36px',
-                          backgroundColor: 'var(--color-border)',
-                          opacity: 0.5,
-                        }}
-                      />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <div className="admin-skeleton" style={{ width: '6px', height: '6px', borderRadius: '50%', opacity: 0.5 }} />
+                      <div className="admin-skeleton" style={{ height: '10px', width: '36px', opacity: 0.5 }} />
                     </div>
                   </td>
                   <td style={{ padding: '14px 16px' }}>
-                    <div
-                      className="animate-pulse"
-                      style={{
-                        height: '10px',
-                        width: '60px',
-                        backgroundColor: 'var(--color-border)',
-                        opacity: 0.5,
-                      }}
-                    />
+                    <div className="admin-skeleton" style={{ height: '10px', width: '60px', opacity: 0.5 }} />
                   </td>
                   <td style={{ padding: '14px 16px' }}>
-                    <div
-                      className="animate-pulse"
-                      style={{
-                        height: '10px',
-                        width: '72px',
-                        backgroundColor: 'var(--color-border)',
-                        opacity: 0.5,
-                      }}
-                    />
+                    <div className="admin-skeleton" style={{ height: '10px', width: '72px', opacity: 0.5 }} />
                   </td>
                   <td style={{ padding: '14px 16px' }} />
                 </tr>
@@ -715,10 +499,11 @@ export default function PostList({ navigate }: PostListProps) {
       {/* Pagination Footer */}
       {posts.length > 0 && (
         <div
-          className="flex items-center"
           style={{
             borderTop: '1px solid var(--color-border)',
             padding: '12px 16px',
+            display: 'flex',
+            alignItems: 'center',
             justifyContent: allLoaded ? 'center' : 'space-between',
           }}
         >
@@ -741,14 +526,10 @@ export default function PostList({ navigate }: PostListProps) {
               </span>
               {hasMore && (
                 <button
+                  className="admin-btn-secondary"
                   onClick={loadMore}
                   disabled={loading}
-                  style={{
-                    ...btnSecondary,
-                    fontSize: '12px',
-                    padding: '8px 16px',
-                    opacity: loading ? 0.5 : 1,
-                  }}
+                  style={{ fontSize: '12px', padding: '8px 16px' }}
                 >
                   {loading ? 'Loading...' : 'Load more'}
                 </button>
@@ -761,54 +542,40 @@ export default function PostList({ navigate }: PostListProps) {
       {/* Delete Confirmation Dialog */}
       {deletingPost && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center"
-          style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)' }}
+          className="admin-modal-overlay"
           onClick={(e) => {
             if (e.target === e.currentTarget) cancelDelete();
           }}
         >
-          <div
-            className="w-full max-w-sm"
-            style={{
-              backgroundColor: 'var(--color-background)',
-              border: '1px solid var(--color-border)',
-              borderTopWidth: '2px',
-              borderTopColor: 'var(--color-error)',
-              padding: '24px',
-            }}
-          >
-            <h2 style={{ ...labelBase, marginBottom: '12px', color: 'var(--color-text-primary)' }}>
+          <div className="admin-modal">
+            <h2 className="admin-label" style={{ marginBottom: '12px', color: 'var(--color-text-primary)' }}>
               Confirm Deletion
             </h2>
-            <p
-              style={{
-                fontSize: '13px',
-                color: 'var(--color-text-secondary)',
-                marginBottom: '8px',
-              }}
-            >
+            <p style={{
+              fontSize: '13px',
+              color: 'var(--color-text-secondary)',
+              marginBottom: '8px',
+            }}>
               Are you sure you want to delete this post? This action cannot be
               undone.
             </p>
-            <p
-              style={{
-                fontFamily: 'var(--font-sans)',
-                fontSize: '14px',
-                fontWeight: 500,
-                color: 'var(--color-text-primary)',
-                borderLeft: '2px solid var(--color-accent)',
-                paddingLeft: '12px',
-                paddingBlock: '4px',
-                marginBottom: '20px',
-              }}
-            >
+            <p style={{
+              fontFamily: 'var(--font-sans)',
+              fontSize: '14px',
+              fontWeight: 500,
+              color: 'var(--color-text-primary)',
+              borderLeft: '2px solid var(--color-accent)',
+              paddingLeft: '12px',
+              paddingBlock: '4px',
+              marginBottom: '20px',
+            }}>
               {deletingPost.title}
             </p>
-            <div className="flex justify-end gap-2">
-              <button onClick={cancelDelete} style={btnSecondary}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+              <button className="admin-btn-secondary" onClick={cancelDelete}>
                 Cancel
               </button>
-              <button onClick={confirmDelete} style={btnDanger}>
+              <button className="admin-btn-danger" onClick={confirmDelete}>
                 Delete Post
               </button>
             </div>
